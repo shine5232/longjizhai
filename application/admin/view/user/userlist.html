@@ -1,10 +1,10 @@
 {include file="public/head"}
     <body>
     <div class="x-body">
-       <button class="layui-btn  layui-btn-small layui-btn-danger" onclick="delAll()">批量删除</button>
-        <button class="layui-btn layui-btn-small " 
+       <button class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">批量删除</button>
+        <button class="layui-btn layui-btn-sm " 
         onclick="x_admin_show('添加用户','showAdd.html',800,480)"></i>添加用户</button>
-        <button onclick="javascript:location.reload()" class="layui-btn layui-btn-small">刷新</button>
+        <button onclick="javascript:location.reload()" class="layui-btn layui-btn-sm">刷新</button>
         <span class="x-right" style="line-height:40px">共有数据:<i class="i_count">{$users->total()}</i>条</span>
 
     <table class="layui-table">
@@ -16,6 +16,7 @@
             <th>ID</th>
             <th>登录名</th>
             <th>账号类型</th>
+            <th>所属区域</th>
             <th>创建时间</th>
             <th>最后登录时间</th>
             <th>最后登录IP</th>
@@ -31,6 +32,13 @@
 	            <td>{$vo.id}</td>
 	            <td>{$vo.username}</td>
               <td>{$vo.title}</td>
+              <td>
+                {if condition="empty($vo.province_name)"}
+                  总站
+                {else /}
+                  {$vo.province_name}-{$vo.city_name}
+                {/if}
+              </td>
 	            <td>{$vo.create_time}</td>
 	            <td>
                 {if condition="empty($vo.last_login_time)"}
@@ -42,9 +50,9 @@
               <td>{$vo.last_login_ip}</td>
 	            <td>
 
-  <button class="layui-btn layui-btn-mini" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',500,410)">编辑</button>
+  <button class="layui-btn layui-btn-xs" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',800,480)">编辑</button>
                 {if condition="$vo.id != 1"}
-                 <button onclick="delUser(this,{$vo.id})" class="layui-btn layui-btn-mini layui-btn-danger">删除</button>
+                 <button onclick="delUser(this,{$vo.id})" class="layui-btn layui-btn-xs layui-btn-danger">删除</button>
                 {/if}
 	           </td>
 	        </tr>

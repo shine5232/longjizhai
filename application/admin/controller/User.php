@@ -55,7 +55,9 @@ class User extends Controller
         $data = Db::name('User')->alias('a')
             ->join('auth_group_access b','a.id = b.uid','INNER')
             ->join('auth_group c','b.group_id = c.id','INNER')
-            ->field('a.*,c.title')
+            ->join('region d','a.province = d.region_code','LEFT')
+            ->join('region e','a.city = e.region_code','LEFT')
+            ->field('a.*,c.title,d.region_name as province_name,e.region_name as city_name')
             ->order('a.id asc')
             ->paginate(12);
         $this->assign('users', $data);
@@ -81,7 +83,6 @@ class User extends Controller
         unset($post['group_id']);
         $validate = validate('User');
         $res      = $validate->check($post);
-        var_dump($res);die;
         if ($res !== true) {
             $this->error($validate->getError());
         } else {
@@ -104,15 +105,21 @@ class User extends Controller
         $data = Db::name('User')
             ->alias('a')
             ->join('auth_group_access b','b.uid=a.id','left')
-            ->field('a.*,b.group_id')
+            ->join('region d','a.province = d.region_code','LEFT')
+            ->join('region e','a.city = e.region_code','LEFT')
+            ->field('a.*,b.group_id,d.region_name as province_name,e.region_name as city_name')
             ->where('id', $id)
             ->find();
         $auth_group = Db::name('auth_group')
         ->field('id,title')
         ->order('id desc')
         ->select();
+        $province = _getRegion();
+        $city = _getRegion($data['province']);
         $this->assign('auth_group', $auth_group);
         $this->assign('data', $data);
+        $this->assign('province', $province);
+        $this->assign('city', $city);
         return $this->fetch();
     }
     //编辑提交
@@ -137,11 +144,10 @@ class User extends Controller
                     ->update(
                         [
                             'username' => $post['username'],
-                            'email'    => $post['email'],
+                            'province' => $post['province'],
+                            'city' => $post['city'],
                         ]);
-                Db::name('auth_group_access')
-                ->where('uid',$post['id'])
-                ->update(['group_id'=>$group_id]);
+                Db::name('auth_group_access')->where('uid',$post['id'])->update(['group_id'=>$group_id]);
                 $this->success('编辑成功');
             }
         } else {
@@ -151,9 +157,7 @@ class User extends Controller
             } else {
                 unset($post['check_password']);
                 $post['password'] = md5($post['password']);
-                $db               = Db::name('user')
-                    ->where('id', $post['id'])
-                    ->update($post);
+                $db = Db::name('user')->where('id', $post['id'])->update($post);
                 $this->success('编辑成功');
             }
         }

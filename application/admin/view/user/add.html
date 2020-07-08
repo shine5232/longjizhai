@@ -44,11 +44,6 @@
 						<option value="">请选择市</option>
 					</select>
 				</div>
-				<div class="layui-input-inline">
-					<select name="county" lay-filter="county" id="county" lay-verify="required">
-						<option value="">请选择县/区</option>
-					</select>
-				</div>
 			</div>
 			<div class="layui-form-item">
 				<label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码</label>
@@ -91,13 +86,13 @@ layui.use(['form','layer'], function(){
 	form.on('select(group)',function(data){
 		if(data.value != 1 && data.value != 144){
 			if(typeof($("#province").attr("lay-verify"))=="undefined"){
-				$('#province').addAttr('lay-verify','required');
+				$('#province').attr('lay-verify','required');
 			}
 			if(typeof($("#city").attr("lay-verify"))=="undefined"){
-				$('#city').addAttr('lay-verify','required');
+				$('#city').attr('lay-verify','required');
 			}
 			if(typeof($("#county").attr("lay-verify"))=="undefined"){
-				$('#county').addAttr('lay-verify','required');
+				$('#county').attr('lay-verify','required');
 			}
 			$('#region').show();
 		}else{
@@ -125,7 +120,8 @@ layui.use(['form','layer'], function(){
 							option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
 						});
 						$('#city').html(option);
-						layui.form.render('select');
+						$('#county').html('<option value="">请选择县/区</option>');
+						form.render('select');
 					}
 				}else{
 					layer.msg(data.msg);
@@ -136,8 +132,36 @@ layui.use(['form','layer'], function(){
 			}
 		});
 	});
+	/*
+	* 监听城市选择
+	*/
+	/* form.on('select(city)',function(data){
+		$.ajax({
+			url:"http://www.longjizhai1.com/api/region/index",
+			data:{'code':data.value,'type':'2'},
+			type:"post",
+			dataType:"json",
+			success:function(data){
+				var res = data.data;
+				if(data.code == 200){
+					if(res.length > 0){
+						var option = '<option value="">请选择县/区</option>';
+						res.forEach(function(v,i){
+							option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+						});
+						$('#county').html(option);
+						form.render('select');
+					}
+				}else{
+					layer.msg(data.msg);
+				}
+			},
+			error:function(data){
+				layer.msg(data.msg);
+			}
+		});
+	}); */
 });
-	
 	$(document).ready(function () {
 		var options = {
 			type: 'post',           //post提交

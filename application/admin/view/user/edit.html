@@ -1,142 +1,209 @@
 {include file='public/head'}
+
 <body>
-<style type="text/css" media="screen">
-header {
-    color: black;
-}
-</style>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<form class="layui-form" id='mainForm' method="post" action="editUser">
 
+			<input type="hidden" name="id" value="{$data.id}">
 
-<div class="x-body" >
-	<form class="layui-form" id='mainForm' method="post" action="editUser">
+			<div class="layui-form-item">
+				<label class="layui-form-label">角&nbsp;&nbsp;&nbsp;色</label>
+				<div class="layui-input-block">
+					<select value="{$data['group_id']}" lay-filter="group" name="group_id" lay-verify="required">
+						{php}
+						foreach($auth_group as $vo){
+						if($vo['id']==$data['group_id']){
+						{/php}
+						<option value="{$vo.id}" selected>{$vo.title}</option>
+						{php} }else{ {/php}
+						<option value="{$vo.id}">{$vo.title}</option>
+						{php} } } {/php}
 
-		<input type="hidden" name="id" value="{$data.id}">
-		
-		<div class="layui-form-item">
-                <label class="layui-form-label">角&nbsp;&nbsp;&nbsp;色</label>
-                <div class="layui-input-block">
-                    <select  value="{$data['group_id']}"  name="group_id" id='group_id'>
-                        {php}
-                            foreach($auth_group as $vo){
-                            	if($vo['id']==$data['group_id']){  
-                        {/php} 
-                           <option  value="{$vo.id}" selected>{$vo.title}</option>
-                            {php}	}else{   {/php}
- 						    <option value="{$vo.id}">{$vo.title}</option>
-                            {php}  }   } {/php}
-                       
-                    </select>
-                </div>
-        </div>
-
-		<div class="layui-form-item">
-		    <label class="layui-form-label">用户名</label>
-		    <div class="layui-input-block">
-		    <input type="text" id="username" value="{$data.username}"  name="username" lay-verify="required|username" autocomplete="off" placeholder="请输入用户名" class="layui-input">
-		    </div>
-		  </div>
-
-		<!-- <div class="layui-form-item">
-		    <label class="layui-form-label">邮&nbsp;&nbsp;&nbsp;箱</label>
-		    <div class="layui-input-block">
-		    <input type="text" id="email" value="{$data.email}" name="email" placeholder="请输入注册邮箱" autocomplete="off" class="layui-input">
-		    </div>
-		</div> -->
-
-		<div class="layui-form-item">
-		    <label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码</label>
-		    <div class="layui-input-block">
-		    <input type="password" id="password"  name="password" lay-verify="pass" placeholder="留空为不修改" autocomplete="off" class="layui-input">
-		    </div>
-	  	</div>
-
-	  	<div class="layui-form-item">
-		    <label class="layui-form-label">确&nbsp;&nbsp;&nbsp;认</label>
-		    <div class="layui-input-block">
-		    	<input type="password"  id="check_password"  name="check_password"  placeholder="确认密码" autocomplete="off" class="layui-input">
-		    </div>
-	  	</div>
-
-
-		<div class="layui-form-item">
-		    <div class="layui-input-block">
-		      <button style="margin-left: 20%" class="layui-btn" lay-submit="" lay-filter="toSubmit">提交</button>
-		      <button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
-		    </div>
-		</div>
-
-
-	</form>
-</div>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">用户名</label>
+				<div class="layui-input-block">
+					<input type="text" id="username" value="{$data.username}" name="username"
+						lay-verify="required|username" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+				</div>
+			</div>
+			{php}
+			if($data['group_id'] != '1' && $data['group_id'] != '144'){ {/php}
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
+				<div class="layui-input-inline">
+					<select name="province" lay-filter="province" id="province" lay-verify="required">
+						<option value="">请选择省</option>
+						{volist name='province' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_name == $data.province_name"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="city" lay-filter="city" id="city" lay-verify="required">
+						<option value="">请选择市</option>
+						{volist name='city' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_name == $data.city_name"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>
+			{php} } {/php}
+			<div class="layui-form-item">
+				<label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码</label>
+				<div class="layui-input-block">
+					<input type="password" id="password" name="password" lay-verify="pass" placeholder="留空为不修改"
+						autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">确&nbsp;&nbsp;&nbsp;认</label>
+				<div class="layui-input-block">
+					<input type="password" id="check_password" name="check_password" placeholder="确认密码"
+						autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button style="margin-left: 20%" class="layui-btn" lay-submit="" lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
 </body>
-
-
+{include file='public/foot'}
 <script type="text/javascript">
-		
-
+	layui.use(['form', 'layer'], function () {
 		var form = layui.form;
 		var layer = layui.layer;
-			  //自定义验证规则
-			  form.verify({
-			    username: function(value){
-			      if(value.length < 5){
-			        return '标题至少得5个字符啊';
-			      }
-			    }
-			  });
-		//监听提交
-		form.on('submit(demo1)', function(data){
-		      layer.alert(JSON.stringify(data.field), {
-		      title: '最终的提交信息'
-		    })
-		    return false;
-		  });
-	$(document).ready(function(){ 
-	    	// var options = { 
-	        // target:
-	        // target element(s) to be updated with server response 
-	        // beforeSubmit:  showRequest,  // pre-submit callback 
-	        // success: function(data){
-	        //  		console.log(data);
-	        //  },  
-	        // other available options: 
-	        //url:       url         // override for form's 'action' attribute 
-	        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
-	        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
-	        //clearForm: true        // clear all form fields after successful submit 
-	        //resetForm: true        // reset the form after successful submit 
-	        // $.ajax options can be used here too, for example: 
-	        //timeout:   3000 
-	    // };
-	    var options = {
-		      type:'post',           //post提交
-		      // url:'http://ask.tongzhuo100.com/server/****.php?='+Math.random(),   //url
-		      dataType:"json",        //json格式
-		      data:{},    //如果需要提交附加参数，视情况添加
-		      clearForm: false,        //成功提交后，清除所有表单元素的值
-		      resetForm: false,        //成功提交后，重置所有表单元素的值
-		      cache:false,          
-		      async:false,          //同步返回
-		      success:function(data){
-		      	console.log(data);
-		      	if(data.code==0){
-		      		layer.msg(data.msg);
-		      	}else{
-		      		layer.msg(data.msg,{icon:1,time:500},function(){
-		      			$("#reset").click();
-		      			x_admin_close();
-		      			parent.location.reload();
-		      		});
-		      	}
-		        //服务器端返回处理逻辑
-		      },
-		      error:function(XmlHttpRequest,textStatus,errorThrown){
-		        layer.msg('操作失败:服务器处理失败');
-		      }
-		    }; 
+		form.verify({
+			username: function (value) {
+				if (value.length < 5) {
+					return '用户名至少得5个字符啊';
+				}
+			}
+		});
+		/*
+		* 监听角色选择
+		*/
+		form.on('select(group)', function (data) {
+			if (data.value != 1 && data.value != 144) {
+				if (typeof ($("#province").attr("lay-verify")) == "undefined") {
+					$('#province').attr('lay-verify', 'required');
+				}
+				if (typeof ($("#city").attr("lay-verify")) == "undefined") {
+					$('#city').attr('lay-verify', 'required');
+				}
+				if (typeof ($("#county").attr("lay-verify")) == "undefined") {
+					$('#county').attr('lay-verify', 'required');
+				}
+				$('#region').show();
+			} else {
+				$('#region').hide();
+				$('#province').removeAttr('lay-verify');
+				$('#city').removeAttr('lay-verify');
+				$('#county').removeAttr('lay-verify');
+			}
+		});
+		/*
+		* 监听省份选择
+		*/
+		form.on('select(province)', function (data) {
+			$.ajax({
+				url: "http://www.longjizhai1.com/api/region/index",
+				data: { 'code': data.value, 'type': '2' },
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					var res = data.data;
+					if (data.code == 200) {
+						if (res.length > 0) {
+							var option = '<option value="">请选择市</option>';
+							res.forEach(function (v, i) {
+								option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+							});
+							$('#city').html(option);
+							$('#county').html('<option value="">请选择县/区</option>');
+							form.render('select');
+						}
+					} else {
+						layer.msg(data.msg);
+					}
+				},
+				error: function (data) {
+					layer.msg(data.msg);
+				}
+			});
+		});
+		/*
+		* 监听城市选择
+		*/
+		/* form.on('select(city)', function (data) {
+			$.ajax({
+				url: "http://www.longjizhai1.com/api/region/index",
+				data: { 'code': data.value, 'type': '2' },
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					var res = data.data;
+					if (data.code == 200) {
+						if (res.length > 0) {
+							var option = '<option value="">请选择县/区</option>';
+							res.forEach(function (v, i) {
+								option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+							});
+							$('#county').html(option);
+							form.render('select');
+						}
+					} else {
+						layer.msg(data.msg);
+					}
+				},
+				error: function (data) {
+					layer.msg(data.msg);
+				}
+			});
+		}); */
+	});
+	$(document).ready(function () {
+		var options = {
+			type: 'post',           //post提交
+			// url:'http://ask.tongzhuo100.com/server/****.php?='+Math.random(),   //url
+			dataType: "json",        //json格式
+			data: {},    //如果需要提交附加参数，视情况添加
+			clearForm: false,        //成功提交后，清除所有表单元素的值
+			resetForm: false,        //成功提交后，重置所有表单元素的值
+			cache: false,
+			async: false,          //同步返回
+			success: function (data) {
+				console.log(data);
+				if (data.code == 0) {
+					layer.msg(data.msg);
+				} else {
+					layer.msg(data.msg, { icon: 1, time: 500 }, function () {
+						$("#reset").click();
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+				//服务器端返回处理逻辑
+			},
+			error: function (XmlHttpRequest, textStatus, errorThrown) {
+				layer.msg('操作失败:服务器处理失败');
+			}
+		};
 
-	    // bind form using 'ajaxForm' 
-	    $('#mainForm').ajaxForm(options).submit(function(data){}); 
+		// bind form using 'ajaxForm' 
+		$('#mainForm').ajaxForm(options).submit(function (data) { });
 	});
 </script>
-{include file='public/foot'}
+
+</html>

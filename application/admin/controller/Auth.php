@@ -30,7 +30,7 @@ class auth extends Main
 		}else{
 			Db::name('auth_rule')
 			->insert($post);
-			$this->success('success');
+			$this->success('添加成功');
 		}
     }
     function showEdit(){
@@ -67,7 +67,7 @@ class auth extends Main
             Db::name('auth_rule')
             ->where('id',$id)
             ->update($post);
-            $this->success('success');
+            $this->success('修改成功');
         }
     }
     function delete(){
@@ -86,7 +86,7 @@ class auth extends Main
             }else{
                  Db::name('auth_rule')
                     ->delete($id);
-                    $this->success('success');
+                    $this->success('删除成功');
             }
         }
     }
@@ -140,9 +140,9 @@ class auth extends Main
     {
         if ($this->request->isPost()){
             $post = $this->request->post();
-            if($post['id']==1){
+            /* if($post['id']==1){
                $this->error('超级管理员信息无法编辑');
-            }
+            } */
             $group_data['id']    = $post['id'];
             $group_data['rules'] = is_array($post['auth_rule_ids']) ? implode(',', $post['auth_rule_ids']) : '';
             if (Db::name('auth_group')->where('id',$post['id'])->update($group_data) !== false) {
