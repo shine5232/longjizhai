@@ -3,7 +3,7 @@
     <div class="x-body">
        <button class="layui-btn  layui-btn-small layui-btn-danger" onclick="delAll()">批量删除</button>
         <button class="layui-btn layui-btn-small " 
-        onclick="x_admin_show('添加用户','showAdd.html',500,410)"></i>添加用户</button>
+        onclick="x_admin_show('添加用户','showAdd.html',800,480)"></i>添加用户</button>
         <button onclick="javascript:location.reload()" class="layui-btn layui-btn-small">刷新</button>
         <span class="x-right" style="line-height:40px">共有数据:<i class="i_count">{$users->total()}</i>条</span>
 
@@ -15,7 +15,7 @@
             </th>
             <th>ID</th>
             <th>登录名</th>
-            <th>注册邮箱</th>
+            <th>账号类型</th>
             <th>创建时间</th>
             <th>最后登录时间</th>
             <th>最后登录IP</th>
@@ -30,7 +30,7 @@
 	            </td>
 	            <td>{$vo.id}</td>
 	            <td>{$vo.username}</td>
-              <td>{$vo.email}</td>
+              <td>{$vo.title}</td>
 	            <td>{$vo.create_time}</td>
 	            <td>
                 {if condition="empty($vo.last_login_time)"}
@@ -42,8 +42,10 @@
               <td>{$vo.last_login_ip}</td>
 	            <td>
 
-	<button class="layui-btn layui-btn-mini" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',500,410)">编辑</button>
-	             	<button onclick="delUser(this,{$vo.id})" class="layui-btn layui-btn-mini layui-btn-danger">删除</button>
+  <button class="layui-btn layui-btn-mini" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',500,410)">编辑</button>
+                {if condition="$vo.id != 1"}
+                 <button onclick="delUser(this,{$vo.id})" class="layui-btn layui-btn-mini layui-btn-danger">删除</button>
+                {/if}
 	           </td>
 	        </tr>
         {/volist}

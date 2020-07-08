@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+use think\Db;
+
 function isMobile()
 {
     if (isset($_SERVER['HTTP_X_WAP_PROFILE'])) {
@@ -167,4 +169,27 @@ function getCity($ip = '')
     }
     
     return $data;   
+}
+/**
+ * 获取地区数据
+ */
+function _getRegion($parent_code=false){
+    if($parent_code){
+        $data = Db::name('region')->where('region_superior_code',$parent_code)->field('region_id,region_code,region_name,region_short_name')->select();
+    }else{
+        $data = Db::name('region')->where('region_level',1)->field('region_id,region_code,region_name,region_short_name')->select();
+    }
+    return $data; 
+}
+/**
+ * api返回json数据
+ */
+function json($code,$msg="",$data=array()){  
+    $result=array(  
+      'code'=>$code,  
+      'msg'=>$msg, 
+      'data'=>$data
+    );  
+    //输出json  
+    echo json_encode($result);
 }

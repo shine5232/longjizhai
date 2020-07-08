@@ -8,7 +8,7 @@ class User extends Validate
     protected $rule = [
         'username'       => 'require|min:5|max:30|unique:user',
         'password'       => 'require|min:5|max:30',
-        'email'          => 'require|email|unique:user',
+        'email'          => 'email|unique:user',
         'check_password' => 'require|confirm:password',
     ];
     protected $message = [
@@ -27,11 +27,10 @@ class User extends Validate
         'login' => ['username' => 'require|min:5|max:30', 'password'],
         'edit'  => [
             'username' => 'require|min:5|max:30|unique:user',
-            'email'    => 'require|email',
         ],
         'editPassword'  => [
             'username' => 'require|min:5|max:30|unique:user',
-            'email'    => 'require|email',
+            'email'    => 'email',
             'password',
             'check_password',
         ],

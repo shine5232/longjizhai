@@ -41,7 +41,11 @@
             <td>
                 <button class="layui-btn layui-btn-mini" onclick="x_admin_show('用户授权','showAuth.html?id={$vo.id}',500,350)">授权</button>
                 <button class="layui-btn layui-btn-mini" onclick="x_admin_show('角色编辑','showRoleEdit.html?id={$vo.id}',500,250)">编辑</button>
+                {php}
+                if($vo['id']!=1){
+                {/php}
                 <button onclick="delRole(this,{$vo.id})" class="layui-btn layui-btn-mini layui-btn-danger">删除</button>
+                {php}}{/php}
              </td>
           </tr>
           {/volist}

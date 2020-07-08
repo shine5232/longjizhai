@@ -52,8 +52,11 @@ class User extends Controller
 
     public function userlist()
     {
-        $data = Db::name('User')
-            ->order('id asc')
+        $data = Db::name('User')->alias('a')
+            ->join('auth_group_access b','a.id = b.uid','INNER')
+            ->join('auth_group c','b.group_id = c.id','INNER')
+            ->field('a.*,c.title')
+            ->order('a.id asc')
             ->paginate(12);
         $this->assign('users', $data);
         return $this->fetch();
@@ -65,7 +68,10 @@ class User extends Controller
         ->field('id,title')
         ->order('id desc')
         ->select();
-        return $this->fetch('add',['auth_group'=>$auth_group]);
+        $region = _getRegion();
+        $this->assign('auth_group',$auth_group);
+        $this->assign('regin',$region);
+        return $this->fetch('add');
     }
     //增加用户
     public function addUser()
@@ -75,6 +81,7 @@ class User extends Controller
         unset($post['group_id']);
         $validate = validate('User');
         $res      = $validate->check($post);
+        var_dump($res);die;
         if ($res !== true) {
             $this->error($validate->getError());
         } else {
