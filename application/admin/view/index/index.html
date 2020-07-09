@@ -64,9 +64,8 @@
             {if condition="!empty($vo['icon'])"}
             <i class="layui-icon">&#{$vo.icon};</i>
             {else/}
-            <i class="layui-icon"></i>
+            <i class="layui-icon">&#xe602;</i>
             {/if}
-            <!-- <i class="iconfont">&#xe620;</i> -->
             <cite>{$vo.title}</cite>
             <i class="iconfont nav_right">&#xe697;</i>
           </a>
@@ -76,7 +75,7 @@
             <li>
               <a _href="{:url($v.name)}">
                 {if condition="empty($v['icon'])"}
-                <i class="layui-icon"></i>
+                <i class="layui-icon">&#xe602;</i>
                 {else/}
                 <i class="layui-icon">&#{$v.icon};</i>
                 {/if}
@@ -86,10 +85,13 @@
                 {foreach name="v['children']" item="vs"}
                 <li>
                   <a _href="{:url($vs.name)}">
+                    {if condition="empty($vs['icon'])"}
+                    <i class="layui-icon">&#xe602;</i>
+                    {else/}
                     <i class="layui-icon">&#{$vs.icon};</i>
+                    {/if}
                     <cite> {$vs.title}</cite>
                   </a>
-
                 </li>
                 {/foreach}
               </ul>
@@ -97,13 +99,15 @@
             {else/}
             <li>
               <a _href="{:url($v.name)}">
+                {if condition="empty($v['icon'])"}
+                <i class="layui-icon">&#xe602;</i>
+                {else/}
                 <i class="layui-icon">&#{$v.icon};</i>
+                {/if}
                 <cite> {$v.title}</cite>
               </a>
             </li>
-
             {/if}
-
         </li>
         {/foreach}
       </ul>

@@ -6,76 +6,28 @@ use think\Db;
 use think\Session;
 use think\Validate;
 
-class User extends Controller
+class Branch extends Controller
 {
-
+    /**
+     * 分站列表页
+     */
     public function index(){
-        return $this->fetch('login');
-    }
-
-    public function login()
-    {
-        $post     = $this->request->post();
-        if(empty($post)){
-            $this->redirect('user/index');
-        }
-        $validate = validate('User');
-        $validate->scene('login');
-        $username  =  $post['username'];
-        $user = Db::name('user')
-            ->where('username', $username)
-            ->find();
-        if (!$validate->check($post)) {
-            $this->error($validate->getError());
-        } else {
-            $sql_password = Db::name('user')
-                ->where('username', $post['username'])
-                ->value('password');
-            if (md5($post['password']) !== $sql_password) {
-                $this->error('密码错误');
-            } else {
-                session('username', $post['username']);
-                session('user_id', $user['id']);
-                session('user',$user);
-                Db::name('user')
-                    ->where('username',$post['username'])
-                    ->update(['last_login_ip'=>$_SERVER['REMOTE_ADDR'],'last_login_time'=>date('Y-m-d h:i:s',time())]);
-                $this->success('登陆成功', 'index/index');
-            }
-        }
-    }
-    //注销
-    public function logOut()
-    {
-        session('username', null);
-        session('user_id', null);
-        session('user',null);
-        $this->redirect('admin/user/index');
-    }
-
-    public function userlist()
-    {
-        $data = Db::name('User')->alias('a')
-            ->join('auth_group_access b','a.id = b.uid','INNER')
-            ->join('auth_group c','b.group_id = c.id','INNER')
+        $data = Db::name('Branch')->alias('a')
             ->join('region d','a.province = d.region_code','LEFT')
             ->join('region e','a.city = e.region_code','LEFT')
             ->join('region f','a.county = f.region_code','LEFT')
-            ->field('a.*,c.title,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
+            ->field('a.*,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
             ->order('a.id asc')
             ->paginate(12);
-        $this->assign('users', $data);
+        $this->assign('branch', $data);
         return $this->fetch();
     }
-    //打开新增界面
-    public function showAdd()
+    /**
+     * 新增分站页
+     */
+    public function branchAdd()
     {
-        $auth_group = Db::name('auth_group')
-        ->field('id,title')
-        ->order('id desc')
-        ->select();
         $region = _getRegion();
-        $this->assign('auth_group',$auth_group);
         $this->assign('regin',$region);
         return $this->fetch('add');
     }

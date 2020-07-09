@@ -19,7 +19,7 @@
                           {volist name='auth' id='vo'}
                             <tr>
                                 <td>{$vo.id}</td>
-                                <td>&nbsp;{$vo.level-1|str_repeat='&nbsp;丨---',###}{$vo.title}</td>
+                                <td class="text-left">&nbsp;{$vo.level-1|str_repeat='&nbsp;丨---',###}{$vo.title}</td>
                                 <td>{$vo.name}</td>
                                 <td>
                                     <i class="layui-icon">
@@ -51,6 +51,7 @@
 	      </div>
     </div>
 </body>
+{include file="public/foot"}
 <script>
 function deleteAuthRule(id){
     layer.confirm('确定要删除吗?',{
@@ -75,4 +76,4 @@ function deleteAuthRule(id){
         });
 }
 </script>
-{include file="public/foot"}
+</html>

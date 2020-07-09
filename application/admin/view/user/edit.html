@@ -42,7 +42,7 @@
 					<select name="province" lay-filter="province" id="province" lay-verify="required">
 						<option value="">请选择省</option>
 						{volist name='province' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_name == $data.province_name"}selected{/if}>{$vo.region_name}</option>
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.province"}selected{/if}>{$vo.region_name}</option>
 						{/volist}
 					</select>
 				</div>
@@ -50,7 +50,15 @@
 					<select name="city" lay-filter="city" id="city" lay-verify="required">
 						<option value="">请选择市</option>
 						{volist name='city' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_name == $data.city_name"}selected{/if}>{$vo.region_name}</option>
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.city"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="county" lay-filter="county" id="county" lay-verify="required">
+						<option value="">请选择区/县</option>
+						{volist name='city' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.county"}selected{/if}>{$vo.region_name}</option>
 						{/volist}
 					</select>
 				</div>
@@ -131,7 +139,7 @@
 								option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
 							});
 							$('#city').html(option);
-							$('#county').html('<option value="">请选择县/区</option>');
+							$('#county').html('<option value="">请选择区/县</option>');
 							form.render('select');
 						}
 					} else {
@@ -146,7 +154,7 @@
 		/*
 		* 监听城市选择
 		*/
-		/* form.on('select(city)', function (data) {
+		form.on('select(city)', function (data) {
 			$.ajax({
 				url: "http://www.longjizhai1.com/api/region/index",
 				data: { 'code': data.value, 'type': '2' },
@@ -156,7 +164,7 @@
 					var res = data.data;
 					if (data.code == 200) {
 						if (res.length > 0) {
-							var option = '<option value="">请选择县/区</option>';
+							var option = '<option value="">请选择区/县</option>';
 							res.forEach(function (v, i) {
 								option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
 							});
@@ -171,7 +179,7 @@
 					layer.msg(data.msg);
 				}
 			});
-		}); */
+		});
 	});
 	$(document).ready(function () {
 		var options = {

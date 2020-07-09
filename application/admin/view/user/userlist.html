@@ -36,7 +36,7 @@
                 {if condition="empty($vo.province_name)"}
                   总站
                 {else /}
-                  {$vo.province_name}-{$vo.city_name}
+                  {$vo.province_name}-{$vo.city_name}-{$vo.county_name}
                 {/if}
               </td>
 	            <td>{$vo.create_time}</td>
@@ -67,6 +67,7 @@
 	      </div>
     </div>
 </body>
+{include file="public/foot"}
     <script>
      
       layui.use(['laydate','form'], function(){
@@ -134,4 +135,4 @@
         });
       }
     </script>
-{include file="public/foot"}
+</html>

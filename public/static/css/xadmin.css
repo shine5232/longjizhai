@@ -202,7 +202,7 @@ xblock{
 .container{
 	width: 100%;
 	height: 45px;
-	background-color: #01aaed;
+	background-color: #000;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -417,6 +417,12 @@ xblock{
 .layui-tab-title li{
 	font-size: 12px;
 }
+.text-left{
+	text-align: left !important;
+}
+.text-right{
+	text-align: right !important;
+}
 .layui-table td, .layui-table th{
 	font-size: 12px;
 	text-align: center;
@@ -433,7 +439,7 @@ table th, table td {
 	position: fixed;
 	bottom: 0px;
 	width: 100%;
-	background-color: #01aaed;
+	background-color: #000;
 	border-top: 1px solid rgba(255, 255, 255, 0.2);
 	line-height: 41px;
 	color: #fff;
@@ -473,5 +479,3 @@ table th, table td {
 		margin: 10px;
 	}
 }
-
-

@@ -1,32 +1,24 @@
 {include file='public/head'}
-
 <body>
 	<style type="text/css" media="screen">
 		header {
 			color: black;
 		}
-		#region{
-			display: none;
-		}
 	</style>
 	<div class="x-body">
 		<form class="layui-form" id='mainForm' method="post" action="addUser">
 			<div class="layui-form-item">
-				<label class="layui-form-label">角&nbsp;&nbsp;&nbsp;色</label>
+				<label class="layui-form-label">名&nbsp;&nbsp;&nbsp;称</label>
 				<div class="layui-input-block">
-					<select lay-filter="group" name="group_id" lay-verify="required">
-						<option value="">请选择</option>
-						{volist name='auth_group' id='vo'}
-						<option value="{$vo.id}">{$vo.title}</option>
-						{/volist}
-					</select>
+					<input type="text" id="name" name="name" lay-verify="required|name" autocomplete="off"
+						placeholder="请输入分站名称" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">用户名</label>
+				<label class="layui-form-label">拼&nbsp;&nbsp;&nbsp;音</label>
 				<div class="layui-input-block">
-					<input type="text" id="username" name="username" lay-verify="required|username" autocomplete="off"
-						placeholder="请输入用户名" class="layui-input">
+					<input type="text" id="pinyin" name="pinyin" lay-verify="required|pinyin" autocomplete="off"
+						placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item" id="region">
@@ -51,19 +43,11 @@
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码</label>
-				<div class="layui-input-block">
-					<input type="password" id="password" name="password" lay-verify="required|pass" placeholder="请输入密码"
-						autocomplete="off" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">确&nbsp;&nbsp;&nbsp;认</label>
-				<div class="layui-input-block">
-					<input type="password" id="check_password" name="check_password" lay-verify="required"
-						placeholder="请输入密码" autocomplete="off" class="layui-input">
-				</div>
-			</div>
+                <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;态</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="switch" lay-skin="switch">
+                </div>
+              </div>
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button style="margin-left: 20%" class="layui-btn" lay-submit="" lay-filter="toSubmit">提交</button>
@@ -79,7 +63,7 @@ layui.use(['form','layer'], function(){
   	var form = layui.form;
   	var layer = layui.layer;
   	form.verify({
-		username: function (value) {
+		name: function (value) {
 			if (value.length < 5) {
 				return '用户名至少得5个字符啊';
 			}
