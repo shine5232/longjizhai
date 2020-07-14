@@ -9,21 +9,15 @@ use think\Validate;
 class Branch extends Controller
 {
     /**
-     * 分站列表页
+     * 分站列表页面
      */
     public function index(){
-        $data = Db::name('Branch')->alias('a')
-            ->join('region d','a.province = d.region_code','LEFT')
-            ->join('region e','a.city = e.region_code','LEFT')
-            ->join('region f','a.county = f.region_code','LEFT')
-            ->field('a.*,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
-            ->order('a.id asc')
-            ->paginate(12);
-        $this->assign('branch', $data);
+        $this->assign('branch_name','');
+        $this->assign('status','');
         return $this->fetch();
     }
     /**
-     * 新增分站页
+     * 新增分站页面
      */
     public function branchAdd()
     {
@@ -31,116 +25,32 @@ class Branch extends Controller
         $this->assign('regin',$region);
         return $this->fetch('add');
     }
-    //增加用户
-    public function addUser()
-    {
-        $post     = $this->request->post();
-        $group_id = $post['group_id'];
-        unset($post['group_id']);
-        $validate = validate('User');
-        $res      = $validate->check($post);
-        if ($res !== true) {
-            $this->error($validate->getError());
-        } else {
-            unset($post['check_password']);
-            $post['password'] = md5($post['password']);
-            $post['last_login_ip'] = '0.0.0.0';
-            $post['create_time']   = date('Y-m-d h:i:s', time());
-            $db = Db::name('user')
-                ->insert($post);
-            $userId = Db::name('user')->getLastInsID();
-             Db::name('auth_group_access')
-                ->insert(['uid'=>$userId,'group_id'=>$group_id]);
-            $this->success('success');
-        }
+    /**
+     * 搜索分站页面
+     */
+    public function search(){
+        $region = _getRegion();
+        $this->assign('regin',$region);
+        return $this->fetch();
     }
     //编辑页面
-    public function edit($id)
+    public function branchEdit($id)
     {
-        
-        $data = Db::name('User')
+        $data = Db::name('branch')
             ->alias('a')
-            ->join('auth_group_access b','b.uid=a.id','left')
             ->join('region d','a.province = d.region_code','LEFT')
             ->join('region e','a.city = e.region_code','LEFT')
             ->join('region f','a.city = f.region_code','LEFT')
-            ->field('a.*,b.group_id,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
+            ->field('a.*,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
             ->where('id', $id)
             ->find();
-        $auth_group = Db::name('auth_group')
-        ->field('id,title')
-        ->order('id desc')
-        ->select();
         $province = _getRegion();
         $city = _getRegion($data['province']);
         $county = _getRegion($data['city']);
-        $this->assign('auth_group', $auth_group);
         $this->assign('data', $data);
         $this->assign('province', $province);
         $this->assign('city', $city);
         $this->assign('county', $county);
-        return $this->fetch();
+        return $this->fetch('edit');
     }
-    //编辑提交
-    public function editUser()
-    {
-        $post     = $this->request->post();
-        if($post['id']==1){
-            $this->error('系统管理员无法修改');
-        }
-        $group_id = $post['group_id'];
-        unset($post['group_id']);
-        $validate = validate('User');
-        if (empty($post['password']) && empty($post['check_password'])) {
-            $res = $validate->scene('edit')->check($post);
-            if ($res !== true) {
-                $this->error($validate->getError());
-            } else {
-                unset($post['password']);
-                unset($post['check_password']);
-                $db = Db::name('user')
-                    ->where('id', $post['id'])
-                    ->update(
-                        [
-                            'username' => $post['username'],
-                            'province' => $post['province'],
-                            'city' => $post['city'],
-                            'county' => $post['county'],
-                        ]);
-                Db::name('auth_group_access')->where('uid',$post['id'])->update(['group_id'=>$group_id]);
-                $this->success('编辑成功');
-            }
-        } else {
-            $res = $validate->scene('editPassword')->check($post);
-            if ($res !== true) {
-                $this->error($validate->getError());
-            } else {
-                unset($post['check_password']);
-                $post['password'] = md5($post['password']);
-                $db = Db::name('user')->where('id', $post['id'])->update($post);
-                $this->success('编辑成功');
-            }
-        }
-    }
-    //删除用户
-    public function deleteUser()
-    {
-        $id = $this->request->post('id');
-        $username =  Db::name('user')
-            ->where('id',$id)
-            ->value('username');
-        if ((int) $id !== 1) {
-            if($username!==session('username')){
-                 $db = Db::name('user')
-                ->where('id', $id)
-                ->delete();
-                $this->success('删除成功');
-            }else{
-                 $this->error('无法删除当前登录用户');
-            }
-        } else {
-            $this->error('超级管理员无法删除');
-        }
-    }
-
 }

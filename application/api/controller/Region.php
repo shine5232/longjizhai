@@ -8,7 +8,7 @@ use think\Validate;
 
 class Region extends Controller
 {
-
+    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     public function index(){
         $post = $this->request->post();
         if($post['type'] == '1'){
@@ -16,7 +16,8 @@ class Region extends Controller
         }else{
             $data = _getRegion($post['code']);
         }
-        return json(200,'success',$data);
+        $this->ret['data'] = $data;
+        return json($this->ret);
     }
 
 }

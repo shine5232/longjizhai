@@ -161,7 +161,22 @@ function x_admin_show(title,url,w,h,offset){
         content: url
     });
 }
-
+/**
+ * 弹出层DOM
+ */
+function x_admin_open(title,id,w,h){
+    layer.open({
+        offset:100 +'px', //右下角弹出
+        type: 1,
+        area: [w+'px', h +'px'],
+        fix: false, //不固定
+        maxmin: true,
+        shadeClose: true,
+        shade:0.4,
+        title: title,
+        content: $('#'+id)
+    });
+}
 /*关闭弹出框口*/
 function x_admin_close(){
     var index = parent.layer.getFrameIndex(window.name);

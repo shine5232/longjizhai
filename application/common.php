@@ -184,12 +184,7 @@ function _getRegion($parent_code=false){
 /**
  * api返回json数据
  */
-function json($code,$msg="",$data=array()){  
-    $result=array(  
-      'code'=>$code,  
-      'msg'=>$msg, 
-      'data'=>$data
-    );  
+function json($data=array('code'=>0,'msg'=>'error','data'=>'')){
     //输出json  
-    echo json_encode($result);
+    echo json_encode($data);
 }

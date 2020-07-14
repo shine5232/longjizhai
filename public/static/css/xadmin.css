@@ -414,6 +414,9 @@ xblock{
 	height: 100%;
 
 }
+.layui-btn-sm i{
+	font-size: 12px !important;
+}
 .layui-tab-title li{
 	font-size: 12px;
 }
