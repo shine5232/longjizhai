@@ -1,0 +1,121 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">区县名称</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="region_name" lay-verify="required|region_name" autocomplete="off"
+						placeholder="请输入区县名称" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
+				<div class="layui-input-inline">
+					<select name="province" lay-filter="province" id="province" lay-verify="required">
+						<option value="">请选择省</option>
+						{volist name='regin' id='vo'}
+						<option value="{$vo.region_code}">{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="city" lay-filter="city" id="city" lay-verify="required">
+						<option value="">请选择市</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+  	form.verify({
+		/* name: function (value) {
+			if (value.length < 5) {
+				return '用户名至少得5个字符啊';
+			}
+		} */
+	});
+	/**
+	 * 监听省份选择
+	*/
+	form.on('select(province)',function(data){
+        $.post('/api/region/index', { 
+            code: data.value,
+            type:2 
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择市</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#city').html(option);
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听城市选择
+	*/
+	form.on('select(city)',function(data){
+        $.post('/api/region/index', { 
+            code: data.value,
+            type:2 
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择区/县</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#county').html(option);
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){
+		var params = {
+				region_name: data.field.region_name,
+				city: data.field.city
+			};
+		$.post('/api/branch/addCounty', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+                x_admin_close();
+				parent.location.reload();
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>

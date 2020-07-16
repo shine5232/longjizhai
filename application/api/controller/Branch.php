@@ -118,4 +118,68 @@ class Branch extends Controller
         }
         return json($this->ret);
     }
+    public function region(){
+        $res = Db::name('region')
+        ->field('region_id,region_name,region_short_name,region_code')
+        ->where('region_level','1')
+        ->select(); 
+        $count = Db::name('region')
+        ->where('region_level','1')
+        ->count(); 
+        $this->ret['count'] = $count;
+        $this->ret['data'] = $res;
+        return json($this->ret);
+    }
+    public function city_list(){
+        $region_id = $this->request->param('region_id');
+        $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+        $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+         $data = Db::query($sql);
+        $count = Db::query($sql2);
+        $this->ret['count'] = $count;
+        $this->ret['data'] = $data;
+        return json($this->ret);
+
+    }
+    public function country_list(){
+        $region_id = $this->request->param('region_id');
+        $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+        $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+         $data = Db::query($sql);
+        $count = Db::query($sql2);
+        $this->ret['count'] = $count;
+        $this->ret['data'] = $data;
+        return json($this->ret);
+
+    }
+    public function addCounty(){
+        $post     = $this->request->post();
+        $validate = validate('Region');
+        if (!$validate->check($post)) {
+            $this->ret['msg'] = $validate->getError();
+        } else {
+            $sql ="SELECT MAX(region_id) FROM lg_region WHERE region_superior_code = ".$post['city']." AND region_name = '".$post['region_name']."'";
+            // var_dump($sql);die;
+            $region_name = Db::query($sql);
+            if($region_name){
+                $this->ret['code'] = -1;
+                $this->ret['msg'] = '区县已存在';
+                return json($this->ret);
+            }
+            $region_code = Db::name('region')
+            ->where('region_superior_code',$post['city'])
+            ->max('region_id');
+            $res['region_name'] = $post['region_name'];
+            $res['region_create_time'] = date('Y-m-d h:i:s');
+            $res['region_code'] = $region_code+1;
+            $res['region_short_name'] = $post['region_name'];
+            $res['region_superior_code'] = $post['city'];
+            $db = Db::name('region')->insert($res);
+            if($db){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = 'success';
+            }
+        }
+        return json($this->ret);
+    }
 }

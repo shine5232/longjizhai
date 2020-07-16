@@ -5,7 +5,7 @@ use think\Controller;
 use think\Db;
 use think\Session;
 use think\Validate;
-
+header('Access-Control-Allow-Origin: *');
 class Branch extends Controller
 {
     /**
@@ -52,5 +52,22 @@ class Branch extends Controller
         $this->assign('city', $city);
         $this->assign('county', $county);
         return $this->fetch('edit');
+    }
+    public function region(){
+        return $this->fetch('region_list');
+    }
+    public function city_list($region_id){
+        $this->assign('region_id', $region_id);
+        return $this->fetch();
+    }
+    public function county_list($region_id){
+        $this->assign('region_id', $region_id);
+        return $this->fetch();
+    }
+    
+    public function countyAdd(){
+        $region = _getRegion();
+        $this->assign('regin',$region);
+        return $this->fetch('county_add');
     }
 }
