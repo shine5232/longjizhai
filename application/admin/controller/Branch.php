@@ -13,8 +13,6 @@ class Branch extends Controller
      * 分站列表页面
      */
     public function index(){
-        $this->assign('branch_name','');
-        $this->assign('status','');
         return $this->fetch();
     }
     /**
@@ -118,6 +116,8 @@ class Branch extends Controller
             $post['create_time']   = date('Y-m-d h:i:s');
             $db = Db::name('branch')->insert($post);
             if($db){
+                //锁定城市
+                Db::name('region')->where('region_code',$post['county'])->update(array('is_open'=>1));
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = 'success';
             }
@@ -156,8 +156,11 @@ class Branch extends Controller
                 'deleted' =>  1,
                 'update_time'   =>  date('Y-m-d H:i:s')
             ];
+            $branch = Db::name('branch')->where('id',$branch_id)->find();
             $result = Db::name('branch')->where('id',$branch_id)->update($upd);
             if($result){
+                //释放城市
+                Db::name('region')->where('region_code',$branch['county'])->update(array('is_open'=>0));
                 $this->ret['code'] = 200;
             }
         }
