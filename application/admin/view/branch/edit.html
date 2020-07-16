@@ -134,7 +134,7 @@ layui.use(['form','layer'], function(){
 				county: data.field.county,
 				status: data.field.status
 			};
-		$.post('/api/branch/editBranch', params, function(data){
+		$.post('/admin/branch/editBranch', params, function(data){
             var res = data.data;
             if(data.code == 200){
                 x_admin_close();
