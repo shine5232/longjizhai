@@ -36,7 +36,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/api/branch/index' //数据接口
+            , url: '/admin/branch/index_ajax' //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
@@ -79,7 +79,7 @@
         form.on('switch(cc)', function (data) {
             var t = data.elem;
             var branch_id = $(t).attr('data-user-id');
-            $.post('/api/branch/updateStatus', { branch_id: branch_id }, function (j) {
+            $.post('/admin/branch/updateStatus', { branch_id: branch_id }, function (j) {
                 if (j.code == '200') {
                     layer.msg('设置成功');
                 }
@@ -99,7 +99,7 @@
     }
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/api/branch/deleteBranch', { branch_id: id }, function (j) {
+            $.post('/admin/branch/deleteBranch', { branch_id: id }, function (j) {
                 if(j.code == 200){
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();
