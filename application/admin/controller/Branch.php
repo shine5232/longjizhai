@@ -68,6 +68,7 @@ class Branch extends Controller
         $region = _getRegion();
         $this->assign('regin',$region);
         return $this->fetch('county_add');
+    }
     /**
      * 分站列表数据
      */
