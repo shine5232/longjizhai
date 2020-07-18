@@ -9,15 +9,15 @@
                 <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
                 <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
                 
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加','countyAdd.html',800,480)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加城市','countyAdd.html',800,480)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加城市
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                <!-- <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索分站','search.html',800,480)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索城市','search.html',800,480)">
                     <i class="layui-icon layui-icon-search"></i>搜索
-                </button>
+                </button> -->
             </div>
         </script>
     </div>
@@ -36,7 +36,7 @@
             elem: '#demo',
             toolbar: '#toolbarDemo',
             defaultToolbar: [],
-            url: '/api/branch/region' //数据接口
+            url: '/admin/branch/region_list_ajax' //数据接口
             ,page: true //开启分页
             ,limit: 20,
             id: 'test',
@@ -72,10 +72,6 @@
                 ]
             ]
         });
-       
-    });
-
-   
+    });   
 </script>
-
 </html>

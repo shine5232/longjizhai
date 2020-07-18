@@ -8,12 +8,12 @@
                 <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
                 <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
                 <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
-                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                <!-- <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索分站','search.html',800,480)">
                     <i class="layui-icon layui-icon-search"></i>搜索
-                </button>
+                </button> -->
             </div>
         </script>
         <input type="hidden" value="{{$region_id}}" id="region_id">
@@ -32,9 +32,7 @@
          */
         tableIns = table.render({
             elem: '#demo',
-            toolbar: '#toolbarDemo',
-            defaultToolbar: [],
-            url: '/api/branch/city_list?region_id='+region_id //数据接口
+            url: '/admin/branch/city_list_ajax?region_id='+region_id //数据接口
             ,page: true //开启分页
             ,limit: 20,
             id: 'test',

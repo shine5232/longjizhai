@@ -10,13 +10,13 @@ class Branch extends Controller
 {
     protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
-     * 分站列表页面
+     * 分站管理-分站列表页面
      */
     public function index(){
         return $this->fetch();
     }
     /**
-     * 新增分站页面
+     * 分站管理-新增分站页面
      */
     public function branchAdd()
     {
@@ -25,14 +25,16 @@ class Branch extends Controller
         return $this->fetch('add');
     }
     /**
-     * 搜索分站页面
+     * 分站管理-搜索分站页面
      */
     public function search(){
         $region = _getRegion();
         $this->assign('regin',$region);
         return $this->fetch();
     }
-    //编辑页面
+    /**
+     * 分站管理-编辑分站页面
+     */
     public function branchEdit($id)
     {
         $data = Db::name('branch')
@@ -52,25 +54,36 @@ class Branch extends Controller
         $this->assign('county', $county);
         return $this->fetch('edit');
     }
+    /**
+     * 城市管理-省份列表页
+     */
     public function region(){
         return $this->fetch('region_list');
     }
+    /**
+     * 城市管理-城市列表页
+     */
     public function city_list($region_id){
         $this->assign('region_id', $region_id);
         return $this->fetch();
     }
+    /**
+     * 城市管理-区县列表页
+     */
     public function county_list($region_id){
         $this->assign('region_id', $region_id);
         return $this->fetch();
     }
-    
+    /**
+     * 城市管理-添加区县页
+     */
     public function countyAdd(){
         $region = _getRegion();
         $this->assign('regin',$region);
         return $this->fetch('county_add');
     }
     /**
-     * 分站列表数据
+     * 分站管理-分站列表数据
      */
     public function index_ajax(){
         $page = $this->request->param('page',1,'intval');
@@ -120,7 +133,7 @@ class Branch extends Controller
         return json($this->ret);
     }
     /**
-     * 增加分站数据
+     * 分站管理-增加分站数据
      */
     public function addBranch()
     {
@@ -142,7 +155,7 @@ class Branch extends Controller
         return json($this->ret);
     }
     /**
-     * 更新分站状态
+     * 分站管理-更新分站状态
      */
     public function updateStatus(){
         $branch_id = $this->request->param('branch_id');
@@ -162,7 +175,7 @@ class Branch extends Controller
         return json($this->ret);
     }
     /**
-     * 删除分站
+     * 分站管理-删除分站
      */
     public function deleteBranch(){
         $branch_id = $this->request->param('branch_id');
@@ -179,6 +192,92 @@ class Branch extends Controller
                 //释放城市
                 Db::name('region')->where('region_code',$branch['county'])->update(array('is_open'=>0));
                 $this->ret['code'] = 200;
+            }
+        }
+        return json($this->ret);
+    }
+    /**
+     * 城市管理-省份列表数据
+     */
+    public function region_list_ajax(){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $res = Db::name('region')
+        ->field('region_id,region_name,region_short_name,region_code')
+        ->where('region_level','1')
+        ->limit($page_start,$limit)
+        ->select(); 
+        $count = Db::name('region')
+        ->where('region_level','1')
+        ->count(); 
+        $this->ret['count'] = $count;
+        $this->ret['data'] = $res;
+        return json($this->ret);
+    }
+    /**
+     * 城市管理-城市列表数据
+     */
+    public function city_list_ajax(){
+        $region_id = $this->request->param('region_id');
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id." LIMIT ".$page_start.",".$limit;
+        $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+        $data = Db::query($sql);
+        $count = Db::query($sql2);
+        $this->ret['count'] = $count[0]['count(1)'];
+        $this->ret['data'] = $data;
+        return json($this->ret);
+
+    }
+    /**
+     * 城市管理-区县列表数据
+     */
+    public function country_list_ajax(){
+        $region_id = $this->request->param('region_id');
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id." LIMIT ".$page_start.",".$limit;
+        $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = ".$region_id;
+        $data = Db::query($sql);
+        $count = Db::query($sql2);
+        $this->ret['count'] = $count[0]['count(1)'];
+        $this->ret['data'] = $data;
+        return json($this->ret);
+
+    }
+    /**
+     * 城市管理-添加区县数据
+     */
+    public function addCounty(){
+        $post     = $this->request->post();
+        $validate = validate('Region');
+        if (!$validate->check($post)) {
+            $this->ret['msg'] = $validate->getError();
+        } else {
+            $sql ="SELECT MAX(region_id) FROM lg_region WHERE region_superior_code = ".$post['city']." AND region_name = '".$post['region_name']."'";
+            // var_dump($sql);die;
+            $region_name = Db::query($sql);
+            if($region_name){
+                $this->ret['code'] = -1;
+                $this->ret['msg'] = '区县已存在';
+                return json($this->ret);
+            }
+            $region_code = Db::name('region')
+            ->where('region_superior_code',$post['city'])
+            ->max('region_id');
+            $res['region_name'] = $post['region_name'];
+            $res['region_create_time'] = date('Y-m-d h:i:s');
+            $res['region_code'] = $region_code+1;
+            $res['region_short_name'] = $post['region_name'];
+            $res['region_superior_code'] = $post['city'];
+            $db = Db::name('region')->insert($res);
+            if($db){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = 'success';
             }
         }
         return json($this->ret);
