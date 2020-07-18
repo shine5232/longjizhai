@@ -2,55 +2,41 @@
 <body>
     <style media="screen" type="text/css">
         header {
-    color: black;
-}
+            color: black;
+        }
     </style>
     <div class="x-body">
-        <form action="add" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
-            
-
+        <form action="editCate" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
+            <input type="hidden" name='id' value="{$data.id}">
             <div class="layui-form-item">
                 <label class="layui-form-label">
-                    角色名称
+                    上级栏目
                 </label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" id="title" lay-verify="required" name="title" placeholder="请输入菜单名称" type="text">
-                    </input>
+                    <select lay-filter="aihao" name="pid" id='pid' disabled="disabled">
+                        <option value="">{$p_title}</option>
+                    </select>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">
-                    控制器
+                    栏目名称
                 </label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" id="name" lay-verify="required" name="name" placeholder="请输入控制器" type="text">
+                    <input autocomplete="off" value="{$data.title}" class="layui-input" id="title" lay-verify="required" name="title" placeholder="请输入栏目名称" type="text">
                     </input>
                 </div>
             </div>
-
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">
-                    图标icon
-                </label>
-                <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" id="icon"  name="icon" placeholder="请输入图标类，不熟悉font-some请留空" type="text">
-                    </input>
-                </div>
-            </div>
-
-
             <div class="layui-form-item">
                 <label class="layui-form-label">
                     状态
                 </label>
                 <div class="layui-input-block">
-                     <select name="status" id='status' lay-filter="aihao" name="interest">
-                        <option value="1" >显示
-                        </option>
-                          <option value="0" >隐藏
-                        </option>
+                  
+                     <select name="status" id='status' value="{$data.status}" lay-filter="aihao" name="interest">
+                        <option value="1" {php} if($data['status']==1){echo 'selected';} {/php}>显示</option>
+                        <option value="0" {php} if($data['status']==0){echo 'selected';} {/php}>隐藏</option>
                     </select>
                 </div>
             </div>
@@ -60,7 +46,7 @@
                     排序
                 </label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" id="sort"  lay-verify="required" name="sort" placeholder="排序数值越大排列越靠前" type="text" value="0">
+                    <input autocomplete="off" value="{$data.sort}" class="layui-input" id="sort"  lay-verify="required" name="sort" placeholder="排序数值越大排列越靠前" type="text" value="0">
                     </input>
                 </div>
             </div>
@@ -70,7 +56,7 @@
                     <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
                         提交
                     </button>
-                    <button style="display: none;" class="layui-btn layui-btn-primary" id="reset" type="reset">
+                     <button style="display: none;" class="layui-btn layui-btn-primary" id="reset" type="reset">
                         重置
                     </button>
                 </div>
@@ -81,23 +67,24 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
+    // $("#status").val(0);
 	var form = layui.form;
 	var layer = layui.layer;
-		  //自定义验证规则
-		  form.verify({
-		    title: function(value){
-		      if(value.length < 3){
-		        return '标题至少得2个字符啊';
-		      }
-		    }
-		  });
+			  //自定义验证规则
+			  form.verify({
+			    title: function(value){
+			      if(value.length < 3){
+			        return '标题至少得2个字符啊';
+			      }
+			    }
+			  });
 		//监听提交
 		form.on('submit(demo1)', function(data){
 		      layer.alert(JSON.stringify(data.field), {
 		      title: '最终的提交信息'
 		    })
 		    return false;
-		  });
+		});
 	$(document).ready(function(){ 
 	     var options = {
 		      type:'post',           //post提交
@@ -113,7 +100,7 @@
     		      	if(data.code==0){
     		      		layer.msg(data.msg);
     		      	}else{
-    		      		layer.msg(data.msg,{icon:1},function(){
+    		      		layer.msg(data.msg,{icon:1,time:1000},function(){
     		      			$("#reset").click();
     		      			x_admin_close();
     		      			parent.location.reload();

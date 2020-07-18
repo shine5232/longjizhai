@@ -14,20 +14,20 @@ class article extends Main
 	        ->select();
         $cate = array2Level($cate);
         $count = count($cate);
-        return $this->fetch('cate',['cate'=>$cate,'count'=>$count]);
+        return $this->fetch('cate_index',['cate'=>$cate,'count'=>$count]);
     }
     /**
      * 文章管理-文章栏目添加页面
      */
-    function showAdd(){
+    function cateAdd(){
     	$auth = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
         $auth = array2Level($auth);
-    	return  $this->fetch('add',['auth'=>$auth]);
+    	return  $this->fetch('cate_add',['auth'=>$auth]);
     }
     /**
      * 文章管理-文章栏目添加处理
      */
-    function add(){
+    function addCate(){
     	$post = $this->request->post();
     	$validate = validate('cate');
     	$res = $validate->check($post);
@@ -42,7 +42,7 @@ class article extends Main
     /**
      * 文章管理-文章栏目编辑页面
      */
-    function showEdit(){
+    function cateEdit(){
         $id  = $this->request->get('id');
         $pid = Db::name('article_cate')
             ->where('id',$id)
@@ -58,12 +58,12 @@ class article extends Main
         $data  =   Db::name('article_cate')
             ->where('id',$id)
             ->find();
-        return  $this->fetch('edit',['data'=>$data]);
+        return  $this->fetch('cate_edit',['data'=>$data]);
     }
     /**
      * 文章管理-文章栏目编辑处理
      */
-    function edit(){
+    function editCate(){
         $post =  $this->request->post();
         $id = $post['id'];
         $validate = validate('auth');
@@ -82,7 +82,7 @@ class article extends Main
     /**
      * 文章管理-文章栏目删除处理
      */
-    function delete(){
+    function deleteCate(){
         $id = $this->request->post('id');
         $juge = Db::name('article_cate')->where('pid',$id)->find();
         if(!empty($juge)){
