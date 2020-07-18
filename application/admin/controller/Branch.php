@@ -230,7 +230,6 @@ class Branch extends Controller
         $this->ret['count'] = $count[0]['count(1)'];
         $this->ret['data'] = $data;
         return json($this->ret);
-
     }
     /**
      * 城市管理-区县列表数据
@@ -259,16 +258,13 @@ class Branch extends Controller
             $this->ret['msg'] = $validate->getError();
         } else {
             $sql ="SELECT MAX(region_id) FROM lg_region WHERE region_superior_code = ".$post['city']." AND region_name = '".$post['region_name']."'";
-            // var_dump($sql);die;
             $region_name = Db::query($sql);
-            if($region_name){
+            if($region_name[0]['MAX(region_id)']){
                 $this->ret['code'] = -1;
                 $this->ret['msg'] = '区县已存在';
                 return json($this->ret);
             }
-            $region_code = Db::name('region')
-            ->where('region_superior_code',$post['city'])
-            ->max('region_id');
+            $region_code = Db::name('region')->max('region_id');
             $res['region_name'] = $post['region_name'];
             $res['region_create_time'] = date('Y-m-d h:i:s');
             $res['region_code'] = $region_code+1;
