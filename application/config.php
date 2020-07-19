@@ -141,6 +141,7 @@ return [
 
     // 视图输出字符串内容替换
     'view_replace_str'       => [
+        '__public__'=>'/public',
         '__static__'=>'/public/static',
         '__module__'=>'/public/static/module',
         '__js__'=>'/public/static/js',

@@ -173,9 +173,16 @@ function getCity($ip = '')
 /**
  * 获取地区数据
  */
-function _getRegion($parent_code=false){
+function _getRegion($parent_code=false,$is_open = false){
     if($parent_code){
-        $data = Db::name('region')->where('region_superior_code',$parent_code)->field('region_id,region_code,region_name,region_short_name')->select();
+        $where['region_superior_code'] = $parent_code;
+        if($is_open){
+            $where['is_open'] = 1;
+            $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->select();
+        }else{
+            $where['is_open'] = 0;
+            $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->select();
+        }
     }else{
         $data = Db::name('region')->where('region_level',1)->field('region_id,region_code,region_name,region_short_name')->select();
     }

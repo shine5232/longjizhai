@@ -1,0 +1,185 @@
+{include file='public/head'}
+
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+		/* .logo{
+			display: flex;
+			flex-direction: column;
+			width: 10rem;
+
+		} */
+		.layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">网站名称</label>
+				<div class="layui-input-block">
+					<input type="text" id="web_name" name="web_name" lay-verify="required|branch_name"
+						autocomplete="off" placeholder="请输入分站名称" value="{$data.web_name}" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">网站网址</label>
+				<div class="layui-input-block">
+					<input type="text" id="web" name="web" value="{$data.web}" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">网站秘钥</label>
+				<div class="layui-input-block">
+					<input type="text" id="secret" name="secret" value="{$data.secret}"
+						lay-verify="required|branch_pinyin" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)"
+						class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">联系邮箱</label>
+				<div class="layui-input-block">
+					<input type="text" id="email" name="email" value="{$data.email}" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">客服QQ</label>
+				<div class="layui-input-block">
+					<input type="text" id="qq" name="qq" value="{$data.qq}" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">联系电话</label>
+				<div class="layui-input-block">
+					<input type="text" id="phone" name="phone" value="{$data.phone}" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item logo">
+				<label class="layui-form-label">网站logo</label>
+				<div class="layui-input-block" style="display: flex;">
+					<button type="button" class="layui-btn upload-img" id="logo" lay-data="{id:'logo_img'}">
+						<i class="layui-icon">&#xe67c;</i>网站&nbsp;&nbsp;logo
+					</button>
+					<img class="layui-upload-img" id="logo_img" src="__public__{$data.logo}">
+						<p id="demoText"></p>
+				</div>
+			</div>
+			
+			<div class="layui-form-item logo">
+				<label class="layui-form-label">微信二维码</label>
+				<div class="layui-input-block" style="display: flex;">
+					<button type="button" class="layui-btn upload-img" id="wechat"  lay-data="{id:'wechat_img'}">
+						<i class="layui-icon">&#xe67c;</i>微信二维码
+					</button>
+					<img class="layui-upload-img" id="wechat_img" src="__public__{$data.wechat}">
+						<p id="demoText"></p>
+				</div>
+				
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">备案信息</label>
+				<div class="layui-input-block">
+					<input type="text" id="info" name="info" value="{$data.info}" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+				</div>
+			</div>
+			<input type="hidden" value="{$data.id}" name="id">
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+	layui.use(['form', 'layer'], function () {
+		var form = layui.form;
+		var layer = layui.layer;
+		var logo_img = {$logo};
+		var wechat_img = {$wechat};
+		/**
+		 * 监听表单提交
+		 */
+		 
+		form.on('submit(toSubmit)', function (data) {
+			var params = {
+				web_name: data.field.web_name,
+				web: data.field.web,
+				secret: data.field.secret,
+				qq: data.field.qq,
+				email: data.field.email,
+				phone: data.field.phone,
+				info: data.field.info,
+				id: data.field.id,
+				logo:logo_img,
+				wechat:wechat_img
+			};
+			$.post('/admin/system/set_upd', params, function (data) {
+				// debugger;
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('修改成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('修改失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+			return false;
+		});
+		layui.use('upload', function () {
+			var upload = layui.upload;
+			var uploadInst = upload.render({
+				elem: '.upload-img',
+				url: '/admin/system/imgUpload',
+				accept: 'file', // 允许上传的文件类型
+				auto: true, // 自动上传
+				before: function (obj) {
+					var id = this.id;
+					obj.preview(function (index, file, result) {
+						$('#'+id).attr('src', result); //图片链接 base64
+					});
+				},
+				done: function (res) {
+					if (res.code == 0) {
+						layer.msg(res.msg);
+						var id = this.id;
+						if(id == 'logo_img'){
+							logo_img = res.url;
+						}else if(id == 'wechat_img'){
+							wechat_img = res.url;
+						}
+					} else {
+						layer.msg(res.msg);
+					}
+				},
+				error: function (index, upload) {
+					// 上传失败
+				}
+			});
+		});
+	});
+</script>
+
+</html>
