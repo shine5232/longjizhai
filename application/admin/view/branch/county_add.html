@@ -105,11 +105,16 @@ layui.use(['form','layer'], function(){
 				region_name: data.field.region_name,
 				city: data.field.city
 			};
-		$.post('/api/branch/addCounty', params, function(data){
+		$.post('/admin/branch/addCounty', params, function(data){
             var res = data.data;
             if(data.code == 200){
-                x_admin_close();
-				parent.location.reload();
+                layer.msg('添加成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
             }else{
                 layer.msg(data.msg);
             }
