@@ -47,7 +47,7 @@ class Branch extends Controller
             ->find();
         $province = _getRegion();
         $city = _getRegion($data['province']);
-        $county = _getRegion($data['city']);
+        $county = _getRegion($data['city'],false,true);
         $this->assign('data', $data);
         $this->assign('province', $province);
         $this->assign('city', $city);
