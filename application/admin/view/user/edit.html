@@ -57,7 +57,7 @@
 				<div class="layui-input-inline">
 					<select name="county" lay-filter="county" id="county" lay-verify="required">
 						<option value="">请选择区/县</option>
-						{volist name='city' id='vo'}
+						{volist name='county' id='vo'}
 						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.county"}selected{/if}>{$vo.region_name}</option>
 						{/volist}
 					</select>

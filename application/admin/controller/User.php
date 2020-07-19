@@ -121,7 +121,7 @@ class User extends Controller
         ->select();
         $province = _getRegion();
         $city = _getRegion($data['province']);
-        $county = _getRegion($data['city']);
+        $county = _getRegion($data['city'],false,true);
         $this->assign('auth_group', $auth_group);
         $this->assign('data', $data);
         $this->assign('province', $province);
