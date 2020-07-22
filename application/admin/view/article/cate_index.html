@@ -1,65 +1,71 @@
 {include file="public/head"}
-    <body>
-    <div class="x-body" >
+
+<body>
+    <div class="x-body">
         <button class="layui-btn layui-btn-sm " onclick="x_admin_show('添加栏目','cateAdd.html',500,460)"></i>添加栏目</button>
         <button onclick="javascript:location.reload()" class="layui-btn layui-btn-sm">刷新</button>
         <span class="x-right" style="line-height:40px">共有数据:<i class="i_count">{$count}</i>条</span>
 
-    <table class="layui-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>栏目名称</th>
-            <th>状态</th>
-            <th>操作</th>
-        </thead>
-        <tbody>
-                          {volist name='cate' id='vo'}
-                            <tr>
-                                <td>{$vo.id}</td>
-                                <td class="text-left">&nbsp;{$vo.level-1|str_repeat='&nbsp;丨---',###}{$vo.title}</td>
-                                <td>{eq name='vo.status' value='1'}显示{else/}<font color="red">隐藏</font>{/eq}
-                                </td>
-                                <td> <!--<button type="button" class="btn btn-success">添加子栏目</button> <button type="button" class="btn btn-primary">编辑</button> <button type="button" class="btn btn-danger" onClick="delcfm('{:url(\'admin/menu/del\',[\'id\' => $vo[\'id\']])}','{$vo.title}')">删除</button>-->
-                                    <button type="button" onclick="x_admin_show('编辑栏目',
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>栏目名称</th>
+                    <th>状态</th>
+                    <th>排序</th>
+                    <th>操作</th>
+            </thead>
+            <tbody>
+                {volist name='cate' id='vo'}
+                <tr>
+                    <td>{$vo.id}</td>
+                    <td class="text-left">&nbsp;{$vo.level-1|str_repeat='&nbsp;丨---',###}{$vo.title}</td>
+                    <td>{eq name='vo.status' value='1'}显示{else/}<font color="red">隐藏</font>{/eq}
+                    </td>
+                    <td>{$vo.sort}</td>
+                    <td>
+                        <!--<button type="button" class="btn btn-success">添加子栏目</button> <button type="button" class="btn btn-primary">编辑</button> <button type="button" class="btn btn-danger" onClick="delcfm('{:url(\'admin/menu/del\',[\'id\' => $vo[\'id\']])}','{$vo.title}')">删除</button>-->
+                        <button type="button" onclick="x_admin_show('编辑栏目',
                                     'cateEdit.html?id={$vo.id}',500,460)" class="layui-btn layui-btn-xs">编辑
-                                    </button>
-                                    <button type="button" onClick="deleteAuthRule({$vo.id})" class="layui-btn layui-btn-xs layui-btn-danger">删除</button>
-                                </td>
-                            </tr>
-                            {/volist}
-        </tbody>
-      </table>
-	      <div class="page">
-	        <div>
-	        
-	        </div>
-	      </div>
+                        </button>
+                        <button type="button" onClick="deleteAuthRule({$vo.id})"
+                            class="layui-btn layui-btn-xs layui-btn-danger">删除</button>
+                    </td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+        <div class="page">
+            <div>
+
+            </div>
+        </div>
     </div>
 </body>
 {include file="public/foot"}
 <script>
-function deleteAuthRule(id){
-    layer.confirm('确定要删除吗?',{
-          btn: ['确定','取消'] //按钮
-        }, function(){
+    function deleteAuthRule(id) {
+        layer.confirm('确定要删除吗?', {
+            btn: ['确定', '取消'] //按钮
+        }, function () {
             $.ajax({
                 url: 'deleteCate',
                 type: 'post',
                 dataType: 'json',
-                data: {id:id},
+                data: { id: id },
             })
-            .done(function(data){
-                console.log(data);
-                if(data.code==0){
-                    layer.msg(data.msg,{icon:5,time:500});
-                }else{
-                    layer.msg(data.msg,{icon:1,time:500},function(){
-                        window.location.reload();
-                    })
-                }
-            })
+                .done(function (data) {
+                    console.log(data);
+                    if (data.code == 0) {
+                        layer.msg(data.msg, { icon: 5, time: 500 });
+                    } else {
+                        layer.msg(data.msg, { icon: 1, time: 500 }, function () {
+                            window.location.reload();
+                        })
+                    }
+                })
         });
-}
+    }
 </script>
+
 </html>

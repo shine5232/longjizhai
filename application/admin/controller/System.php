@@ -40,16 +40,12 @@ class System extends Controller
         $data = Db::name('settings')
             ->where('id', $id)
             ->find();
-        $data = preg_replace_callback('#s:(\d+):"(.*?)";#s', function ($match) {
+        /* $data = preg_replace_callback('#s:(\d+):"(.*?)";#s', function ($match) {
             return 's:' . strlen($match[2]) . ':"' . $match[2] . '";';
-        }, $data['val']);
-        $data = unserialize($data);
+        }, $data['val']); */
+        $data = unserialize($data['val']);
         $data['id'] = $id;
-        $logo = "'".$data['logo']."'";
-        $wechat = "'".$data['wechat']."'";
         $this->assign('data', $data);
-        $this->assign('logo', $logo);
-        $this->assign('wechat', $wechat);
         return $this->fetch('set_edit');
     }
     public function set_upd()
@@ -71,19 +67,5 @@ class System extends Controller
             $this->ret['code'] = 200;
             return json($this->ret);
         }
-    }
-    public function imgUpload()
-    {
-        $file = request()->file('file');
-        if ($file) {
-            $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH .  'public/' . 'uploads/'.'logo');
-            if ($info) {
-                $this->ret['url'] = "/uploads/logo/".date("Ymd")."/".$info->getFilename();
-                $this->ret['msg'] = '上传成功';
-            }else{
-                $this->ret['msg'] = '上传失败';
-            }
-        }
-        return json($this->ret);
     }
 }

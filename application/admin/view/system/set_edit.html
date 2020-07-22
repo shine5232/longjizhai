@@ -5,12 +5,6 @@
 		header {
 			color: black;
 		}
-		/* .logo{
-			display: flex;
-			flex-direction: column;
-			width: 10rem;
-
-		} */
 		.layui-upload-img{
 			width: auto;
 			height: 60px;
@@ -55,8 +49,7 @@
 					<button type="button" class="layui-btn upload-img" id="logo" lay-data="{id:'logo_img'}">
 						<i class="layui-icon">&#xe67c;</i>网站&nbsp;&nbsp;logo
 					</button>
-					<img class="layui-upload-img" id="logo_img" src="__public__{$data.logo}">
-						<p id="demoText"></p>
+					<img class="layui-upload-img" id="logo_img" src="{$data.logo}" />
 				</div>
 			</div>
 			
@@ -66,8 +59,7 @@
 					<button type="button" class="layui-btn upload-img" id="wechat"  lay-data="{id:'wechat_img'}">
 						<i class="layui-icon">&#xe67c;</i>微信二维码
 					</button>
-					<img class="layui-upload-img" id="wechat_img" src="__public__{$data.wechat}">
-						<p id="demoText"></p>
+					<img class="layui-upload-img" id="wechat_img" src="{$data.wechat}" />
 				</div>
 				
 			</div>
@@ -77,7 +69,9 @@
 					<input type="text" id="info" name="info" value="{$data.info}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
 				</div>
 			</div>
-			<input type="hidden" value="{$data.id}" name="id">
+			<input type="hidden" value="{$data.id}" name="id" />
+			<input type="hidden" value="{$data.logo}" name="logo" />
+			<input type="hidden" value="{$data.wechat}" name="wechat" />
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
@@ -92,12 +86,9 @@
 	layui.use(['form', 'layer'], function () {
 		var form = layui.form;
 		var layer = layui.layer;
-		var logo_img = {$logo};
-		var wechat_img = {$wechat};
 		/**
 		 * 监听表单提交
 		 */
-		 
 		form.on('submit(toSubmit)', function (data) {
 			var params = {
 				web_name: data.field.web_name,
@@ -108,11 +99,10 @@
 				phone: data.field.phone,
 				info: data.field.info,
 				id: data.field.id,
-				logo:logo_img,
-				wechat:wechat_img
+				logo:data.field.logo,
+				wechat:data.field.wechat
 			};
 			$.post('/admin/system/set_upd', params, function (data) {
-				// debugger;
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('修改成功', {
@@ -138,8 +128,9 @@
 			var upload = layui.upload;
 			var uploadInst = upload.render({
 				elem: '.upload-img',
-				url: '/admin/system/imgUpload',
+				url: '/api/file/upload?type=logo',
 				accept: 'file', // 允许上传的文件类型
+				field: 'imgFile',
 				auto: true, // 自动上传
 				before: function (obj) {
 					var id = this.id;
@@ -148,16 +139,14 @@
 					});
 				},
 				done: function (res) {
-					if (res.code == 0) {
-						layer.msg(res.msg);
+					layer.msg(res.msg);
+					if (res.error == 0) {
 						var id = this.id;
 						if(id == 'logo_img'){
-							logo_img = res.url;
+							$("input[name='logo']").val(res.url);
 						}else if(id == 'wechat_img'){
-							wechat_img = res.url;
+							$("input[name='wechat']").val(res.url);
 						}
-					} else {
-						layer.msg(res.msg);
 					}
 				},
 				error: function (index, upload) {

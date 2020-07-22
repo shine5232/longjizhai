@@ -1,0 +1,115 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加文章','articleAdd.html',800,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加文章
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索文章','search.html',800,480)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/article/index_ajax' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'branch_name', title: '文章标题', width: '15%' }
+                    , { field: 'branch_pinyin', title: '所属栏目', width: '15%' }
+                    , {
+                        field: 'area', title: '所属区域', width: '20%',
+                        templet: function (d) {
+                            return '<span>' + d.province_name + '--' + d.city_name + '--' + d.county_name + '</span>';
+                        }
+                    }
+                    , {
+                        field: 'order_price', title: '文章状态', width: '10%',
+                        templet: function (d) {
+                            var can_used = '<div class="layui-input-inline">' +
+                                '<input type="checkbox" name="switch" value="1" lay-skin="switch" lay-text="开启|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 0 ? '' : 'checked') + ' />' +
+                                '</div>';
+                            return can_used;
+                        }
+                    }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑文章\',\'/admin/article/articleEdit?id=' + d.id + '\',800,480);">编辑</button>' +
+                                '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听状态改变
+        */
+        form.on('switch(cc)', function (data) {
+            var t = data.elem;
+            var branch_id = $(t).attr('data-user-id');
+            $.post('/admin/article/updateStatus', { branch_id: branch_id }, function (j) {
+                if (j.code == '200') {
+                    layer.msg('设置成功');
+                }
+                if (j.code == '0') {
+                    layer.msg('设置失败');
+                }
+            },'json');
+        });
+    });
+    function delAll(argument) {
+        var data = tableCheck.getData();
+        layer.confirm('确认要全部删除吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', { icon: 1 });
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+    }
+    function delUser(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/article/deleteArticle', { branch_id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+</script>
+
+</html>
