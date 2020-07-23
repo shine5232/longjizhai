@@ -1,0 +1,186 @@
+{include file='public/head'}
+
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+		.layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">会员签到</label>
+				<div class="layui-input-block">
+					<input type="text" id="score" name="score" autocomplete="off" placeholder="请输入签到积分数" value="{$data.score}" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">身份验证</label>
+				<div class="layui-input-block">
+					<input type="text" id="card" name="card" value="{$data.card}" autocomplete="off" placeholder="请输入身份验证" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">手机验证</label>
+				<div class="layui-input-block">
+					<input type="text" id="phone" name="phone" value="{$data.phone}" autocomplete="off" placeholder="" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">预约查看信息</label>
+				<div class="layui-input-block">
+					<input type="text" id="look" name="look" value="{$data.look}" autocomplete="off" placeholder="" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">一级会员</label>
+				<div class="layui-input-block">
+					<input type="text" id="vip1" name="vip1" value="{$data.vip1}" autocomplete="off" placeholder="请输入会员注册返还积分" class="layui-input">
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+				<label class="layui-form-label">二级会员</label>
+				<div class="layui-input-block">
+					<input type="text" id="vip2" name="vip2" value="{$data.vip2}" autocomplete="off" placeholder="请输入会员注册返还积分" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">三级会员</label>
+				<div class="layui-input-block">
+					<input type="text" id="vip3" name="vip3" value="{$data.vip3}" autocomplete="off" placeholder="请输入会员注册返还积分" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">分站购买积分的换算比列</label>
+				<div class="layui-input-block">
+					<input type="text" id="buy_proportion" name="buy_proportion" value="{$data.buy_proportion}" autocomplete="off" placeholder="" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">分站返还公司的资金比例%</label>
+				<div class="layui-input-block">
+					<input type="text" id="com_proportion" name="com_proportion" value="{$data.com_proportion}" autocomplete="off" placeholder="次数据单位为%" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">分站返还商铺的资金比例%</label>
+				<div class="layui-input-block">
+					<input type="text" id="shops_proportion" name="shops_proportion" value="{$data.shops_proportion}" autocomplete="off" placeholder="次数据单位为%" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">积分汇率</label>
+				<div class="layui-input-block">
+					<input type="text" id="rate" name="rate" value="{$data.rate}" autocomplete="off" placeholder="请输入1RMB兑换多少积分" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">最小充值</label>
+				<div class="layui-input-block">
+					<input type="text" id="zong_min" name="zong_min" value="{$data.zong_min}" autocomplete="off" placeholder="会员最小充值金额RMB" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">分站最小充值</label>
+				<div class="layui-input-block">
+					<input type="text" id="fen_min" name="fen_min" value="{$data.fen_min}" autocomplete="off" placeholder="分站会员最小充值金额RMB" class="layui-input">
+				</div>
+			</div>
+			<input type="hidden" value="{$data.id}" name="id" />
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+	layui.use(['form', 'layer'], function () {
+		var form = layui.form;
+		var layer = layui.layer;
+		/**
+		 * 监听表单提交
+		 */
+		form.on('submit(toSubmit)', function (data) {
+			var params = {
+				id: data.field.id,
+				score: data.field.score,
+				card: data.field.card,
+				phone: data.field.phone,
+				look: data.field.look,
+				vip1: data.field.vip1,
+				vip2: data.field.vip2,
+				vip3: data.field.vip3,
+				buy_proportion: data.field.buy_proportion,
+				com_proportion:data.field.com_proportion,
+				shops_proportion:data.field.shops_proportion,
+				rate:data.field.rate,
+				zong_min:data.field.zong_min,
+				fen_min:data.field.fen_min
+			};
+			$.post('/admin/system/set_upd', params, function (data) {
+			console.log(params);
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('修改成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('修改失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+			return false;
+		});
+		layui.use('upload', function () {
+			var upload = layui.upload;
+			var uploadInst = upload.render({
+				elem: '.upload-img',
+				url: '/api/file/upload?type=logo',
+				accept: 'file', // 允许上传的文件类型
+				field: 'imgFile',
+				auto: true, // 自动上传
+				before: function (obj) {
+					var id = this.id;
+					obj.preview(function (index, file, result) {
+						$('#'+id).attr('src', result); //图片链接 base64
+					});
+				},
+				done: function (res) {
+					layer.msg(res.msg);
+					if (res.error == 0) {
+						var id = this.id;
+						if(id == 'logo_img'){
+							$("input[name='logo']").val(res.url);
+						}else if(id == 'wechat_img'){
+							$("input[name='wechat']").val(res.url);
+						}
+					}
+				},
+				error: function (index, upload) {
+					// 上传失败
+				}
+			});
+		});
+	});
+</script>
+
+</html>

@@ -36,6 +36,21 @@ class System extends Controller
     }
     public function setEdit()
     {
+        // $data['score'] = '1';
+        // $data['card'] = '1';
+        // $data['phone'] = '1';
+        // $data['look'] = '1';
+        // $data['vip1'] = '1';
+        // $data['vip2'] = '1';
+        // $data['vip3'] = '1';
+        // $data['buy_proportion'] = '1';
+        // $data['com_proportion'] = '1';
+        // $data['shops_proportion'] = '1';
+        // $data['rate'] = '1';
+        // $data['zong_min'] = '1';
+        // $data['fen_min'] = '1';
+        // $data = serialize($data);
+        // var_dump($data);die;
         $id = $this->request->param('id');
         $data = Db::name('settings')
             ->where('id', $id)
@@ -46,10 +61,17 @@ class System extends Controller
         $data = unserialize($data['val']);
         $data['id'] = $id;
         $this->assign('data', $data);
-        return $this->fetch('set_edit');
+        if($id == 1){
+            return $this->fetch('set_edit');
+        }elseif($id == 2){
+            return $this->fetch('score_edit');
+        }elseif($id == 3){
+            return $this->fetch('wechat_edit');
+        }
     }
     public function set_upd()
     {
+        // var_dump('111');die;
         $post = $this->request->param();
         $res = Db::name('settings')
             ->where('id', $post['id'])
