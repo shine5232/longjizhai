@@ -1,0 +1,103 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加类别','typeAdd.html',600,200)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加类别
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/member/type_ajax' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'type_title', title: '类别名称' }
+                    , {
+                        field: 'status', title: '类别状态', width: '15%', 
+                        templet: function (d) {
+                            if(d.status == 0){
+                                var can_used = '正常';
+                            }else{
+                                var can_used = '<font color="red">已删</font>';
+                            }
+                            return can_used;
+                        }
+                    }
+                    , { field: 'create_time', title: '创建时间', width: '15%' }
+                    , {
+                        field: 'handle', title: '操作',width: '10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听状态改变
+        */
+        form.on('switch(cc)', function (data) {
+            var t = data.elem;
+            var branch_id = $(t).attr('data-user-id');
+            $.post('/admin/type/updateStatus', { id: branch_id }, function (j) {
+                if (j.code == '200') {
+                    layer.msg('设置成功');
+                }
+                if (j.code == '0') {
+                    layer.msg('设置失败');
+                }
+            },'json');
+        });
+    });
+    function delAll(argument) {
+        var data = tableCheck.getData();
+        layer.confirm('确认要全部删除吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', { icon: 1 });
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+    }
+    function delUser(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/type/deleteType', { id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 5, time: 1000 });
+                }
+            },'json');
+        });
+    }
+</script>
+
+</html>
