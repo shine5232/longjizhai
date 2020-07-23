@@ -8,7 +8,7 @@
                 <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
                 <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
                 <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
-                <button class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加文章','articleAdd.html',800,500)">
@@ -44,24 +44,34 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'branch_name', title: '文章标题', width: '15%' }
-                    , { field: 'branch_pinyin', title: '所属栏目', width: '15%' }
+                    , { field: 'title', title: '文章标题', width: '15%' }
+                    , { field: 'cate_title', title: '所属栏目', width: '15%' }
                     , {
-                        field: 'area', title: '所属区域', width: '20%',
+                        field: 'area', title: '所属平台', width: '15%',
                         templet: function (d) {
-                            return '<span>' + d.province_name + '--' + d.city_name + '--' + d.county_name + '</span>';
+                            if(d.county_name){
+                                return d.county_name;
+                            }else{
+                                return '总站';
+                            }
                         }
                     }
                     , {
-                        field: 'order_price', title: '文章状态', width: '10%',
+                        field: 'status', title: '文章状态', width: '10%',
                         templet: function (d) {
-                            var can_used = '<div class="layui-input-inline">' +
-                                '<input type="checkbox" name="switch" value="1" lay-skin="switch" lay-text="开启|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 0 ? '' : 'checked') + ' />' +
-                                '</div>';
+                            /* var can_used = '<div class="layui-input-inline">' +
+                                '<input type="checkbox" name="switch" value="1" lay-skin="switch" lay-text="正常|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 0 ? 'checked' : '') + ' />' +
+                                '</div>'; */
+                                if(d.status == 0){
+                                    var can_used = '正常';
+                                }else{
+                                    var can_used = '<font color="red">已删</font>';
+                                }
                             return can_used;
                         }
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , { field: 'update_time', title: '更改时间', width: '15%', }
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
@@ -79,7 +89,7 @@
         form.on('switch(cc)', function (data) {
             var t = data.elem;
             var branch_id = $(t).attr('data-user-id');
-            $.post('/admin/article/updateStatus', { branch_id: branch_id }, function (j) {
+            $.post('/admin/article/updateStatus', { id: branch_id }, function (j) {
                 if (j.code == '200') {
                     layer.msg('设置成功');
                 }
@@ -99,7 +109,7 @@
     }
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/article/deleteArticle', { branch_id: id }, function (j) {
+            $.post('/admin/article/deleteArticle', { id: id }, function (j) {
                 if(j.code == 200){
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();

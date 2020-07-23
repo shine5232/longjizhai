@@ -3,7 +3,6 @@ namespace app\admin\controller;
 
 use \think\Db;
 use \think\Reuquest;
-use org\net\Uploadsa;
 
 class article extends Main
 {
@@ -101,29 +100,30 @@ class article extends Main
         $page = $this->request->param('page',1,'intval');
         $limit = $this->request->param('limit',20,'intval');
         $title = $this->request->param('title','');
-        $status = $this->request->param('status',0);
+        $keywords = $this->request->param('keywords','');
+        $cate_id = $this->request->param('cate_id','');
         $page_start = ($page - 1) * $limit;
-        $where = array('deleted'=>0);
+        $where = array();
         if($title){
-            $where['title'] = ['like',"%$title%"];
+            $where['a.title'] = ['like',"%$title%"];
         }
-        if($status){
-            $where['status'] = $status;
+        if($keywords){
+            $where['a.keywords'] = ['like',"%$keywords%"];
         }
-        $data = Db::name('branch')->alias('a')
-            ->join('region d','a.province = d.region_code','LEFT')
-            ->join('region e','a.city = e.region_code','LEFT')
-            ->join('region f','a.county = f.region_code','LEFT')
+        if($cate_id){
+            $where['a.cate_id'] = $cate_id;
+        }
+        $data = Db::name('article')->alias('a')
+            ->join('region d','a.county = d.region_code','LEFT')
+            ->join('article_cate g','a.cate_id = g.id','INNER')
             ->where($where)
-            ->field('a.*,d.region_name as province_name,e.region_name as city_name,f.region_name as county_name')
-            ->order('a.id asc')
+            ->field('a.*,d.region_name as county_name,g.title as cate_title')
+            ->order('a.id DESC')
             ->limit($page_start,$limit)
             ->select();
-        $count = Db::name('branch')
+        $count = Db::name('article')
             ->alias('a')
-            ->join('region d','a.province = d.region_code','LEFT')
-            ->join('region e','a.city = e.region_code','LEFT')
-            ->join('region f','a.county = f.region_code','LEFT')
+            ->join('region d','a.county = d.region_code','LEFT')
             ->where($where)
             ->count();
         if($data){
@@ -136,8 +136,6 @@ class article extends Main
      * 文章管理-添加文章页面
      */
     public function articleAdd(){
-        /* $s = new Uploadsa();
-        var_dump($s->index());die; */
         $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
         $cate = array2Level($cate);
         $this->assign('cate',$cate);
@@ -148,9 +146,69 @@ class article extends Main
      */
     public function addArticle(){
         $post     = $this->request->post();
-        $post['create_time']   = date('Y-m-d h:i:s');
+        $admin_user = session('user');
+        if($admin_user['county'] != null){
+            $post['county'] = $admin_user['county'];
+        }
+        $post['create_time']   = date('Y-m-d H:i:s');
         $db = Db::name('article')->insert($post);
         if($db){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 文章管理-编辑文章页面
+     */
+    public function articleEdit(){
+        $id  = $this->request->get('id');
+        $article = Db::name('article')->where('id',$id)->find();
+        $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+        $cate = array2Level($cate);
+        $this->assign('cate',$cate);
+        $this->assign('article',$article);
+        return $this->fetch('article_edit');
+    }
+    /**
+     * 文章管理-编辑文章数据
+     */
+    public function editArticle(){
+        $post     = $this->request->post();
+        $id = $post['id'];
+        $post['update_time']  = date('Y-m-d H:i:s');
+        unset($post['id']);
+        $admin_user = session('user');
+        if($admin_user['county'] != null){
+            $post['county'] = $admin_user['county'];
+        }
+        $db = Db::name('article')->where('id',$id)->update($post);
+        if($db){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 文章管理-文章搜索页面
+     */
+    public function search(){
+        $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+        $cate = array2Level($cate);
+        $this->assign('cate',$cate);
+        return $this->fetch();
+    }
+    /**
+     * 文章管理-文章删除
+     */
+    public function deleteArticle(){
+        $id = $this->request->post('id');
+        $upd = [
+            'status'    =>  1,
+            'delete_time'   =>  date('Y-m-d H:i:s')
+        ];
+        $res = Db::name('article')->where('id',$id)->update($upd);
+        if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';
         }
