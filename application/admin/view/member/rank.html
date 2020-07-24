@@ -11,14 +11,8 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加文章','articleAdd.html',800,500)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加文章
-                </button>
-                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
-                    <i class="layui-icon layui-icon-refresh"></i>刷新
-                </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索文章','search.html',800,480)">
-                    <i class="layui-icon layui-icon-search"></i>搜索
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加等级','rankAdd.html',800,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加等级
                 </button>
             </div>
         </script>
@@ -36,7 +30,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/article/index_ajax' //数据接口
+            , url: '/admin/member/rank_ajax' //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
@@ -44,29 +38,16 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'title', title: '文章标题', width: '15%' }
-                    , { field: 'cate_title', title: '所属栏目', width: '15%' }
+                    , { field: 'title', title: '等级标题', width: '15%' }
+                    , { field: 'cate_title', title: '所属分类', width: '15%' }
                     , {
-                        field: 'area', title: '所属平台', width: '15%',
+                        field: 'status', title: '等级状态', width: '10%',
                         templet: function (d) {
-                            if(d.county_name){
-                                return d.county_name;
+                            if(d.status == 0){
+                                var can_used = '正常';
                             }else{
-                                return '总站';
+                                var can_used = '<font color="red">已删</font>';
                             }
-                        }
-                    }
-                    , {
-                        field: 'status', title: '文章状态', width: '10%',
-                        templet: function (d) {
-                            /* var can_used = '<div class="layui-input-inline">' +
-                                '<input type="checkbox" name="switch" value="1" lay-skin="switch" lay-text="正常|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 0 ? 'checked' : '') + ' />' +
-                                '</div>'; */
-                                if(d.status == 0){
-                                    var can_used = '正常';
-                                }else{
-                                    var can_used = '<font color="red">已删</font>';
-                                }
                             return can_used;
                         }
                     }
@@ -75,28 +56,13 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑文章\',\'/admin/article/articleEdit?id=' + d.id + '\',800,480);">编辑</button>' +
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑等级\',\'/admin/rank/rankEdit?id=' + d.id + '\',800,480);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
                 ]
             ]
-        });
-        /**
-         * 监听状态改变
-        */
-        form.on('switch(cc)', function (data) {
-            var t = data.elem;
-            var branch_id = $(t).attr('data-user-id');
-            $.post('/admin/article/updateStatus', { id: branch_id }, function (j) {
-                if (j.code == '200') {
-                    layer.msg('设置成功');
-                }
-                if (j.code == '0') {
-                    layer.msg('设置失败');
-                }
-            },'json');
         });
     });
     function delAll(argument) {
@@ -109,7 +75,7 @@
     }
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/article/deleteArticle', { id: id }, function (j) {
+            $.post('/admin/rank/deleteRank', { id: id }, function (j) {
                 if(j.code == 200){
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();

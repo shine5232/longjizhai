@@ -4,28 +4,116 @@ namespace app\admin\controller;
 use \think\Db;
 use \think\Reuquest;
 
-class article extends Main
+class Member extends Main
 {
     protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
-     * 文章管理-文章栏目列表页面
+     * 会员管理-会员分类列表页面
      */
-    public function cate(){
-        $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $count = count($cate);
-        return $this->fetch('cate_index',['cate'=>$cate,'count'=>$count]);
+    public function type(){
+        return $this->fetch();
     }
     /**
-     * 文章管理-文章栏目添加页面
+     * 会员管理-会员分类列表数据
      */
-    public function cateAdd(){
-    	$auth = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $auth = array2Level($auth);
-    	return  $this->fetch('cate_add',['auth'=>$auth]);
+    public function type_ajax(){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $where = array('status'=>0);
+        $data = Db::name('member_type')
+            ->where($where)
+            ->order('id DESC')
+            ->limit($page_start,$limit)
+            ->select();
+        $count = Db::name('member_type')
+            ->where($where)
+            ->count();
+        if($data){
+            $this->ret['count'] = $count;
+            $this->ret['data'] = $data;
+        }
+        return json($this->ret);
     }
     /**
-     * 文章管理-文章栏目添加处理
+     * 会员管理-会员分类添加页面
+     */
+    public function typeAdd(){
+        return $this->fetch('type_add');
+    }
+    /**
+     * 会员管理-会员分类添加数据
+     */
+    public function addType(){
+        $post = $this->request->post();
+    	$validate = validate('MemberType');
+    	$res = $validate->check($post);
+		if($res!==true){
+			$this->ret['msg'] = $validate->getError();
+		}else{
+            $post['create_time'] = date('Y-m-d H:i:s');
+			$db = Db::name('member_type')->insert($post);
+			if($db){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = 'success';
+            }
+        }
+        return json($this->ret);
+    }
+    /**
+     * 会员管理-会员分类删除数据
+     */
+    public function deleteType(){
+        $id = $this->request->post('id');
+        $data = [
+            'status'    =>  1,
+            'delete_time'   =>  date('Y-m-d H:i:s')
+        ];
+        $res = Db::name('member_type')->where('id',$id)->update($data);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 会员管理-会员等级列表页面
+     */
+    public function rank(){
+        return $this->fetch();
+    }
+    /**
+     * 会员管理-会员等级列表数据
+     */
+    public function rank_ajax(){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $where = array();
+        $data = Db::name('member_rank')
+            ->where($where)
+            ->order('id DESC')
+            ->limit($page_start,$limit)
+            ->select();
+        $count = Db::name('member_rank')
+            ->where($where)
+            ->count();
+        if($data){
+            $this->ret['count'] = $count;
+            $this->ret['data'] = $data;
+        }
+        return json($this->ret);
+    }
+    /**
+     * 会员管理-会员等级添加页面
+     */
+    public function rankAdd(){
+        $type = Db::name('member_type')->where('status',0)->select();
+        $this->assign('type',$type);
+    	return $this->fetch('rank_add');
+    }
+    /**
+     * 会员管理-会员等级添加处理
      */
     public function addCate(){
     	$post = $this->request->post();
@@ -43,7 +131,7 @@ class article extends Main
 		}
     }
     /**
-     * 文章管理-文章栏目编辑页面
+     * 会员管理-会员等级编辑页面
      */
     public function cateEdit(){
         $id  = $this->request->get('id');
@@ -51,14 +139,14 @@ class article extends Main
         if($pid!==0){
             $p_title = Db::name('article_cate')->where('id',$pid)->value('title');
         }else{
-            $p_title = '顶级栏目';
+            $p_title = '顶级等级';
         }
         $this->assign('p_title',$p_title);
         $data  =   Db::name('article_cate')->where('id',$id)->find();
         return  $this->fetch('cate_edit',['data'=>$data]);
     }
     /**
-     * 文章管理-文章栏目编辑处理
+     * 会员管理-会员等级编辑处理
      */
     public function editCate(){
         $post =  $this->request->post();
@@ -75,26 +163,26 @@ class article extends Main
         }
     }
     /**
-     * 文章管理-文章栏目删除处理
+     * 会员管理-会员等级删除处理
      */
     public function deleteCate(){
         $id = $this->request->post('id');
         $juge = Db::name('article_cate')->where('pid',$id)->find();
         if(!empty($juge)){
-            $this->error('请先删除子栏目');
+            $this->error('请先删除子等级');
         }else{
             Db::name('article_cate')->delete($id);
             $this->success('删除成功');
         }
     }
     /**
-     * 文章管理-文章列表页
+     * 会员管理-会员列表页
      */
     public function index(){
         return $this->fetch();
     }
     /**
-     * 文章管理-文章列表数据
+     * 会员管理-会员列表数据
      */
     public function index_ajax(){
         $page = $this->request->param('page',1,'intval');
@@ -118,7 +206,7 @@ class article extends Main
             ->join('article_cate g','a.cate_id = g.id','INNER')
             ->where($where)
             ->field('a.*,d.region_name as county_name,g.title as cate_title')
-            ->order('a.sort DESC,a.id DESC')
+            ->order('a.id DESC')
             ->limit($page_start,$limit)
             ->select();
         $count = Db::name('article')
@@ -133,7 +221,7 @@ class article extends Main
         return json($this->ret);
     }
     /**
-     * 文章管理-添加文章页面
+     * 会员管理-添加会员页面
      */
     public function articleAdd(){
         $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
@@ -142,7 +230,7 @@ class article extends Main
         return $this->fetch('article_add');
     }
     /**
-     * 文章管理-添加文章数据
+     * 会员管理-添加会员数据
      */
     public function addArticle(){
         $post     = $this->request->post();
@@ -159,7 +247,7 @@ class article extends Main
         return json($this->ret);
     }
     /**
-     * 文章管理-编辑文章页面
+     * 会员管理-编辑会员页面
      */
     public function articleEdit(){
         $id  = $this->request->get('id');
@@ -171,7 +259,7 @@ class article extends Main
         return $this->fetch('article_edit');
     }
     /**
-     * 文章管理-编辑文章数据
+     * 会员管理-编辑会员数据
      */
     public function editArticle(){
         $post     = $this->request->post();
@@ -190,7 +278,7 @@ class article extends Main
         return json($this->ret);
     }
     /**
-     * 文章管理-文章搜索页面
+     * 会员管理-会员搜索页面
      */
     public function search(){
         $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
@@ -199,7 +287,7 @@ class article extends Main
         return $this->fetch();
     }
     /**
-     * 文章管理-文章删除
+     * 会员管理-会员删除
      */
     public function deleteArticle(){
         $id = $this->request->post('id');
