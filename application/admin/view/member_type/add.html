@@ -1,0 +1,75 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id="mainForm" style="margin-right: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">上级分组</label>
+                <div class="layui-input-block">
+                    <select lay-filter="aihao" name="pid" id='pid'>
+                        <option value="0">顶级分组
+                        </option>
+                         {volist name='auth' id='vo'}
+                                <option value="{$vo.id}">{$vo.level-1|str_repeat='丨--',###}{$vo.type_title}</option>
+                         {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分组名称</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="type_title"
+                        placeholder="请输入分组名称" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" id="sort"  lay-verify="required" name="type_sort" placeholder="排序数值越大排列越靠前" type="text" value="0">
+                    </input>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form.on('submit(toSubmit)', function (data) {
+            var params = {
+				type_title: data.field.type_title,
+                pid:data.field.pid,
+                type_sort:data.field.type_sort
+			};
+			$.post('/admin/member_type/addType', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('添加成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg(data.msg, {
+						icon: 5,
+						time: 1000
+					});
+				}
+			}, 'json');
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,104 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id="mainForm" style="margin-right: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">等级标题</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="rank_name"
+                        placeholder="请输入等级标题" type="text" value="{$data.rank_name}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图&nbsp;&nbsp;&nbsp;&nbsp;标</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img">
+                        <i class="layui-icon">&#xe67c;</i>图标
+                    </button>
+                    <img class="layui-upload-img" id="thumb" src="{$data.thumb}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="rank_sort"
+                        placeholder="排序数值越大排列越靠前" type="text" value="{$data.rank_sort}" />
+                </div>
+            </div>
+            <input type="hidden" name="thumb" value="{$data.thumb}" />
+            <input type="hidden" name="id" value="{$data.id}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form.on('submit(toSubmit)', function (data) {
+            var params = {
+				rank_name: data.field.rank_name,
+				thumb: data.field.thumb,
+                rank_type:data.field.rank_type,
+				rank_sort: data.field.rank_sort,
+                id:data.field.id
+			};
+			$.post('/admin/member_rank/editRank', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('添加成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg(data.msg, {
+						icon: 5,
+						time: 1000
+					});
+				}
+			}, 'json');
+        });
+        var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=logo',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#thumb').attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    $("input[name='thumb']").val(res.url);
+                    $('#thumb').show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    });
+</script>
+
+</html>

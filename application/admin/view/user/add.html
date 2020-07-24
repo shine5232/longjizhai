@@ -118,7 +118,7 @@ layui.use(['form','layer'], function(){
 			dataType:"json",
 			success:function(data){
 				var res = data.data;
-				if(data.code == 200){
+				if(data.code == 0){
 					if(res.length > 0){
 						var option = '<option value="">请选择市</option>';
 						res.forEach(function(v,i){

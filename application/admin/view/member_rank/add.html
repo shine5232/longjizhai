@@ -20,19 +20,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">等级标题</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="title"
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="rank_name"
                         placeholder="请输入等级标题" type="text" />
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属分类</label>
-                <div class="layui-input-block">
-                    <select lay-filter="aihao" name="rank_type" id='rank_type' lay-verify="required">
-                        <option value="">请选择分类</option>
-                        {volist name='type' id='vo'}
-                        <option value="{$vo.id}">{$vo.type_title}</option>
-                        {/volist}
-                    </select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -47,7 +36,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort"
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="rank_sort"
                         placeholder="排序数值越大排列越靠前" type="text" value="0" />
                 </div>
             </div>
@@ -66,12 +55,12 @@
         var form = layui.form,layer = layui.layer,upload = layui.upload;
         form.on('submit(toSubmit)', function (data) {
             var params = {
-				title: data.field.title,
+				rank_name: data.field.rank_name,
 				thumb: data.field.thumb,
                 rank_type:data.field.rank_type,
-				sort: data.field.sort,
+				rank_sort: data.field.rank_sort,
 			};
-			$.post('/admin/member/addRank', params, function (data) {
+			$.post('/admin/member_rank/addRank', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {
