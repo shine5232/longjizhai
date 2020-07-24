@@ -69,7 +69,7 @@ class System extends Controller
             return $this->fetch('wechat_edit');
         }
     }
-    public function set_upd()
+    public function set_upd() 
     {
         // var_dump('111');die;
         $post = $this->request->param();
