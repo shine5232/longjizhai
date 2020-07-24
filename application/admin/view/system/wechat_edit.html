@@ -14,64 +14,58 @@
 	<div class="x-body">
 		<div class="layui-form">
 			<div class="layui-form-item">
-				<label class="layui-form-label">网站名称</label>
+				<label class="layui-form-label">微信token</label>
 				<div class="layui-input-block">
-					<input type="text" id="web_name" name="web_name" autocomplete="off" placeholder="请输入分站名称" value="{$data.web_name}" class="layui-input">
+					<input type="text" id="token" name="token" autocomplete="off" placeholder="请输入分站名称" value="{$data.token}" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">网站网址</label>
+				<label class="layui-form-label">公众号名称</label>
 				<div class="layui-input-block">
-					<input type="text" id="web" name="web" value="{$data.web}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+					<input type="text" id="name" name="name" value="{$data.name}" autocomplete="off" placeholder="请输入公众号名称" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">联系邮箱</label>
+				<label class="layui-form-label">微信原始ID</label>
 				<div class="layui-input-block">
-					<input type="text" id="email" name="email" value="{$data.email}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+					<input type="text" id="original_id" name="original_id" value="{$data.original_id}" autocomplete="off" placeholder="请输入微信原始ID" class="layui-input">
 				</div>
 			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">客服QQ</label>
-				<div class="layui-input-block">
-					<input type="text" id="qq" name="qq" value="{$data.qq}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">联系电话</label>
-				<div class="layui-input-block">
-					<input type="text" id="phone" name="phone" value="{$data.phone}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item logo">
-				<label class="layui-form-label">网站logo</label>
+			<!-- <div class="layui-form-item QR">
+				<label class="layui-form-label">微信二维码</label>
 				<div class="layui-input-block" style="display: flex;">
-					<button type="button" class="layui-btn upload-img" id="logo" lay-data="{id:'logo_img'}">
-						<i class="layui-icon">&#xe67c;</i>网站&nbsp;&nbsp;logo
+					<button type="button" class="layui-btn upload-img" id="QR"  lay-data="{id:'QR_img'}">
+						<i class="layui-icon">&#xe67c;</i>微信二维码
 					</button>
-					<img class="layui-upload-img" id="logo_img" src="{$data.logo}" />
+					<img class="layui-upload-img" id="QR" src="{$data.QR}" />
 				</div>
-			</div>
-			
+				
+			</div> -->
+
 			<div class="layui-form-item logo">
 				<label class="layui-form-label">微信二维码</label>
 				<div class="layui-input-block" style="display: flex;">
-					<button type="button" class="layui-btn upload-img" id="wechat"  lay-data="{id:'wechat_img'}">
+					<button type="button" class="layui-btn upload-img" id="QR"  lay-data="{id:'QR_img'}">
 						<i class="layui-icon">&#xe67c;</i>微信二维码
 					</button>
-					<img class="layui-upload-img" id="wechat_img" src="{$data.wechat}" />
+					<img class="layui-upload-img" id="QR_img" src="{$data.QR}" />
 				</div>
 				
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">备案信息</label>
+				<label class="layui-form-label">APPID</label>
 				<div class="layui-input-block">
-					<input type="text" id="info" name="info" value="{$data.info}" autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+					<input type="text" id="app_id" name="app_id" value="{$data.app_id}" autocomplete="off" placeholder="请输入微信的AppID" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">AppSecret</label>
+				<div class="layui-input-block">
+					<input type="text" id="AppSecret" name="AppSecret" value="{$data.AppSecret}" autocomplete="off" placeholder="请输入AppSecret" class="layui-input">
 				</div>
 			</div>
 			<input type="hidden" value="{$data.id}" name="id" />
-			<input type="hidden" value="{$data.logo}" name="logo" />
-			<input type="hidden" value="{$data.wechat}" name="wechat" />
+			<input type="hidden" value="{$data.QR}" name="QR" />
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
@@ -91,17 +85,15 @@
 		 */
 		form.on('submit(toSubmit)', function (data) {
 			var params = {
-				web_name: data.field.web_name,
-				web: data.field.web,
-				secret: data.field.secret,
-				qq: data.field.qq,
-				email: data.field.email,
-				phone: data.field.phone,
-				info: data.field.info,
-				id: data.field.id,
-				logo:data.field.logo,
-				wechat:data.field.wechat
+				token: data.field.token,
+				name: data.field.name,
+				original_id: data.field.original_id,
+				QR: data.field.QR,
+				app_id: data.field.app_id,
+				AppSecret: data.field.AppSecret,
+				id: data.field.id
 			};
+			// console.log(params);return false;
 			$.post('/admin/system/set_upd', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
@@ -142,11 +134,7 @@
 					layer.msg(res.msg);
 					if (res.error == 0) {
 						var id = this.id;
-						if(id == 'logo_img'){
-							$("input[name='logo']").val(res.url);
-						}else if(id == 'wechat_img'){
-							$("input[name='wechat']").val(res.url);
-						}
+						$("input[name='QR']").val(res.url);
 					}
 				},
 				error: function (index, upload) {

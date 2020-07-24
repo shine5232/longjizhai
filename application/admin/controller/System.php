@@ -36,12 +36,12 @@ class System extends Controller
     }
     public function setEdit()
     {
-        // $data['score'] = '1';
-        // $data['card'] = '1';
-        // $data['phone'] = '1';
-        // $data['look'] = '1';
-        // $data['vip1'] = '1';
-        // $data['vip2'] = '1';
+        // $data['token'] = '111111';
+        // $data['name'] = '1';
+        // $data['original_id'] = '1';
+        // $data['QR'] = '/public/uploads/logo/20200722/0cbc92fed67669faa2051c58f8fa7cfd.png';
+        // $data['app_id'] = '1';
+        // $data['AppSecret'] = '1';
         // $data['vip3'] = '1';
         // $data['buy_proportion'] = '1';
         // $data['com_proportion'] = '1';
@@ -78,6 +78,7 @@ class System extends Controller
             ->field('val')
             ->find();
         $data = serialize($post);
+        // var_dump($data);die;
         if ($res['val'] == $data) {
             $this->ret['code'] = 200;
             return json($this->ret);
