@@ -11,7 +11,7 @@ class MemberType extends Main
      * 会员管理-会员分类列表页面
      */
     public function index(){
-        $data = Db::name('member_type')->order(['type_sort' => 'DESC', 'id' => 'ASC'])->select();
+        $data = Db::name('member_type')->where('status',0)->order(['type_sort' => 'DESC', 'id' => 'ASC'])->select();
         $data = array2Level($data);
         $count = count($data);
         return $this->fetch('index',['data'=>$data,'count'=>$count]);

@@ -112,8 +112,8 @@ layui.use(['form','layer'], function(){
 	*/
 	form.on('select(province)',function(data){
 		$.ajax({
-			url:"http://www.longjizhai1.com/api/region/index",
-			data:{'code':data.value,'type':'2'},
+			url:"/api/region/index",
+			data:{'code':data.value,'type':2},
 			type:"post",
 			dataType:"json",
 			success:function(data){
@@ -142,13 +142,13 @@ layui.use(['form','layer'], function(){
 	*/
 	form.on('select(city)',function(data){
 		$.ajax({
-			url:"http://www.longjizhai1.com/api/region/index",
-			data:{'code':data.value,'type':'2'},
+			url:"/api/region/index",
+			data:{'code':data.value,'type':2,'is_open':'2'},
 			type:"post",
 			dataType:"json",
 			success:function(data){
 				var res = data.data;
-				if(data.code == 200){
+				if(data.code == 0){
 					if(res.length > 0){
 						var option = '<option value="">请选择区/县</option>';
 						res.forEach(function(v,i){

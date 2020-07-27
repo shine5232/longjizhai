@@ -53,12 +53,12 @@
             })
                 .done(function (data) {
                     console.log(data);
-                    if (data.code == 0) {
-                        layer.msg(data.msg, { icon: 5, time: 500 });
-                    } else {
-                        layer.msg(data.msg, { icon: 1, time: 500 }, function () {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, { icon: 1, time: 500 },function () {
                             window.location.reload();
-                        })
+                        });
+                    } else {
+                        layer.msg(data.msg, { icon: 5, time: 500 })
                     }
                 })
         });

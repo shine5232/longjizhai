@@ -33,17 +33,20 @@ class Member extends Main
         if($cate_id){
             $where['a.cate_id'] = $cate_id;
         }
-        $data = Db::name('article')->alias('a')
-            ->join('region d','a.county = d.region_code','LEFT')
-            ->join('article_cate g','a.cate_id = g.id','INNER')
+        $data = Db::name('member')->alias('a')
+            ->join('region b','a.county = b.region_code','LEFT')
+            ->join('region c','a.city = c.region_code','LEFT')
+            ->join('region d','a.province = d.region_code','LEFT')
             ->where($where)
-            ->field('a.*,d.region_name as county_name,g.title as cate_title')
+            ->field('a.*,b.region_name as county_name,c.region_name as city_name,d.region_name as province_name')
             ->order('a.id DESC')
             ->limit($page_start,$limit)
             ->select();
-        $count = Db::name('article')
+        $count = Db::name('member')
             ->alias('a')
-            ->join('region d','a.county = d.region_code','LEFT')
+            ->join('region b','a.county = b.region_code','LEFT')
+            ->join('region c','a.city = c.region_code','LEFT')
+            ->join('region d','a.province = d.region_code','LEFT')
             ->where($where)
             ->count();
         if($data){
