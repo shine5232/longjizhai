@@ -51,11 +51,11 @@ class Community extends Main
                 limit $page_start,$limit";
         // var_dump($sql);die;
         $data = Db::query($sql);
-        $count = Db::name('village')
-            ->where('village_type = 1')
-            ->count();
+        $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 1 AND A.status = 0".$where.$where1.$where2.$where3;
+        $count = Db::query($sql1);
+        // var_dump($count);die;
         if($data){
-            $this->ret['count'] = $count;
+            $this->ret['count'] = $count[0]['count'];
             $this->ret['data'] = $data;
         }
         return json($this->ret);
