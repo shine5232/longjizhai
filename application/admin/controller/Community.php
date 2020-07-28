@@ -64,7 +64,7 @@ class Community extends Main
      * 小区管理-添加小区页面
      */
     // addCommunity
-    public function communityAdd(){
+    public function meAdd($type){
         $region = _getRegion();
         $this->assign('regin',$region);
         return $this->fetch('community_add');
@@ -74,7 +74,7 @@ class Community extends Main
      */
     public function addCommunity(){
         $post     = $this->request->post();
-        $post['create_time'] = date('Ymd H:i:S');
+        $post['create_time'] = date('Y-m-d H:i:S');
         $post['village_type'] = 1;
         $row = Db::name('village')
         ->where('village_name',$post['village_name'])

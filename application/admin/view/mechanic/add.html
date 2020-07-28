@@ -1,0 +1,173 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;名</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="name" lay-verify="required|name" autocomplete="off"
+						placeholder="请输入姓名" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">用户名</label>
+				<div class="layui-input-block">
+					<input type="text" id="nickName" name="nickName" lay-verify="required|nickName" autocomplete="off"
+						placeholder="请输入用户名" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">手&nbsp;&nbsp;&nbsp;机</label>
+				<div class="layui-input-block">
+					<input type="text" id="phone" name="phone" lay-verify="required|phone" autocomplete="off"
+						placeholder="请输入手机号" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item zc_hide">
+				<label class="layui-form-label">装修公司</label>
+				<div class="layui-input-block">
+					<input type="text" id="company" name="company"  autocomplete="off"
+						placeholder="请输入所在装修公司名称" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item zc_hide">
+				<label class="layui-form-label">毕业院校</label>
+				<div class="layui-input-block">
+					<input type="text" id="university" name="university"  autocomplete="off"
+						placeholder="请输入所在装修公司名称" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
+				<div class="layui-input-inline">
+					<select name="province" lay-filter="province" id="province" lay-verify="required">
+						<option value="">请选择省</option>
+						{volist name='regin' id='vo'}
+						<option value="{$vo.region_code}">{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="city" lay-filter="city" id="city" lay-verify="required">
+						<option value="">请选择市</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="county" lay-filter="county" id="county" lay-verify="required">
+						<option value="">请选择区/县</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+	$(".zc_hide").hide();
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+	var type = {$type};
+	console.log(type);
+	if(type == 1){
+		$(".zc_hide").show();
+	}
+  	form.verify({
+		/* name: function (value) {
+			if (value.length < 5) {
+				return '用户名至少得5个字符啊';
+			}
+		} */
+	});
+	/**
+	 * 监听省份选择
+	*/
+	form.on('select(province)',function(data){
+        $.post('/api/region/index', { 
+            code: data.value,
+            type:2 
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择市</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#city').html(option);
+                    $('#county').html('<option value="">请选择区/县</option>');
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听城市选择
+	*/
+	form.on('select(city)',function(data){
+        $.post('/api/region/index', { 
+			code: data.value,
+            type:2 
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择区/县</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#county').html(option);
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){
+		var params = {
+                name: data.field.name,
+				nickName: data.field.nickName,
+				phone: data.field.phone,
+				company: data.field.company,
+				university: data.field.university,
+				type: type,
+				province: data.field.province,
+				city: data.field.city,
+				county: data.field.county
+			};
+		$.post('/admin/mechanic/addMechanic', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+				layer.msg('添加成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>
