@@ -150,7 +150,7 @@ class Community extends Main
             $this->ret['msg'] = 'success';
             return json($this->ret);
         }
-        $db = Db::name('village')->where('id',$id)->update($post);
+        $db = Db::name('village')->where('id',$id)->update($post); 
         // var_dump($db);die;
         if($db){
             $this->ret['code'] = 200;

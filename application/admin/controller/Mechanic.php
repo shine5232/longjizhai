@@ -7,7 +7,7 @@ use \think\Reuquest;
 
 class Mechanic extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
+    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]]; 
    
     /**
      * 小区管理-业主小区列表
