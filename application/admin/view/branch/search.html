@@ -102,6 +102,7 @@
         form.on('select(city)',function(data){
             $.post('/api/region/index', { 
                 code: data.value,
+                is_open:2,
                 type:2 
             }, function(data){
                 var res = data.data;

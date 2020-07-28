@@ -100,7 +100,8 @@ layui.use(['form','layer'], function(){
 	form.on('select(city)',function(data){
         $.post('/api/region/index', { 
             code: data.value,
-            type:2 
+            type:2 ,
+			is_open:2
         }, function(data){
             var res = data.data;
             if(data.code == 0){
