@@ -49,9 +49,9 @@
                     , {
                         field: 'area', title: '所属平台', width: '15%',
                         templet: function (d) {
-                            if(d.county_name){
+                            if (d.county_name) {
                                 return d.county_name;
-                            }else{
+                            } else {
                                 return '总站';
                             }
                         }
@@ -62,11 +62,11 @@
                             /* var can_used = '<div class="layui-input-inline">' +
                                 '<input type="checkbox" name="switch" value="1" lay-skin="switch" lay-text="正常|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 0 ? 'checked' : '') + ' />' +
                                 '</div>'; */
-                                if(d.status == 0){
-                                    var can_used = '正常';
-                                }else{
-                                    var can_used = '<font color="red">已删</font>';
-                                }
+                            if (d.status == 0) {
+                                var can_used = '正常';
+                            } else {
+                                var can_used = '<font color="red">已删</font>';
+                            }
                             return can_used;
                         }
                     }
@@ -84,6 +84,22 @@
             ]
         });
         /**
+         * 监听批量删除 
+        */
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var ids = [];
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    data.forEach(function (v, i) {
+                        ids.push(v.id);
+                    });
+                    delAll(ids);
+                    break;
+            };
+        });
+        /**
          * 监听状态改变
         */
         form.on('switch(cc)', function (data) {
@@ -96,28 +112,44 @@
                 if (j.code == '0') {
                     layer.msg('设置失败');
                 }
-            },'json');
+            }, 'json');
         });
     });
+    /**
+     * 批量删除
+    */
     function delAll(argument) {
-        var data = tableCheck.getData();
-        layer.confirm('确认要全部删除吗？', function (index) {
-            //捉到所有被选中的，发异步进行删除
-            layer.msg('删除成功', { icon: 1 });
-            $(".layui-form-checked").not('.header').parents('tr').remove();
-        });
+        if (argument == '') {
+            layer.msg('没有选中的数据', { icon: 5 });
+        } else {
+            argument = argument.toString();
+            layer.confirm('确认要全部删除吗？', function (index) {
+                $.post('/admin/article/deleteArticle', { id: argument }, function (j) {
+                    if (j.code == 200) {
+                        layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg('删除失败', { icon: 5, time: 1000 });
+                    }
+                }, 'json');
+            });
+        }
     }
+    /**
+     * 单个删除
+    */
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
             $.post('/admin/article/deleteArticle', { id: id }, function (j) {
-                if(j.code == 200){
+                if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();
                     });
-                }else{
-                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                } else {
+                    layer.msg('删除失败', { icon: 5, time: 1000 });
                 }
-            },'json');
+            }, 'json');
         });
     }
 </script>

@@ -103,7 +103,7 @@ class article extends Main
         $keywords = $this->request->param('keywords','');
         $cate_id = $this->request->param('cate_id','');
         $page_start = ($page - 1) * $limit;
-        $where = array();
+        $where = ['a.status'=>0];
         if($title){
             $where['a.title'] = ['like',"%$title%"];
         }
@@ -203,11 +203,16 @@ class article extends Main
      */
     public function deleteArticle(){
         $id = $this->request->post('id');
+        $ids = explode(',',$id);
         $upd = [
             'status'    =>  1,
             'delete_time'   =>  date('Y-m-d H:i:s')
         ];
-        $res = Db::name('article')->where('id',$id)->update($upd);
+        if(count($ids) > 1){
+            $res = Db::name('article')->where('id','in',$id)->update($upd);
+        }else{
+            $res = Db::name('article')->where('id',$ids[0])->update($upd);
+        }
         if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';

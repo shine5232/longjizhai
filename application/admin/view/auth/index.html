@@ -13,6 +13,7 @@
             <th>控制器方法</th>
             <th>图标</th>
             <th>状态</th>
+            <th>排序</th>
             <th>操作</th>
         </thead>
         <tbody>
@@ -34,6 +35,7 @@
                                 </td>
                                 <td>{eq name='vo.status' value='1'}显示{else/}<font color="red">隐藏</font>{/eq}
                                 </td>
+                                <td>{$vo.sort}</td>
                                 <td> <!--<button type="button" class="btn btn-success">添加子菜单</button> <button type="button" class="btn btn-primary">编辑</button> <button type="button" class="btn btn-danger" onClick="delcfm('{:url(\'admin/menu/del\',[\'id\' => $vo[\'id\']])}','{$vo.title}')">删除</button>-->
                                     <button type="button" onclick="x_admin_show('编辑菜单',
                                     'showEdit.html?id={$vo.id}',500,460)" class="layui-btn layui-btn-xs">编辑
