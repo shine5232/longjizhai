@@ -1,0 +1,187 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
+				<div class="layui-input-inline">
+					<select name="province" lay-filter="province" id="province" lay-verify="required">
+						<option value="">请选择省</option>
+						{volist name='regin' id='vo'}
+						<option value="{$vo.region_code}">{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="city" lay-filter="city" id="city" lay-verify="required">
+						<option value="">请选择市</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="county" lay-filter="county" id="county" lay-verify="required">
+						<option value="">请选择区/县</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">装饰公司</label>
+				<div class="layui-input-inline">
+					<select name="company" lay-filter="company" id="company" lay-verify="required">
+						<option value="">请选择</option>
+						{volist name='company' id='vo'}
+						<option value="{$vo.id}">{$vo.name}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">工地名称</label>
+				<div class="layui-input-block">
+					<input type="text" id="village_name" name="village_name" lay-verify="required|village_name" autocomplete="off"
+						placeholder="请输入工地名称" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">建筑面积</label>
+				<div class="layui-input-block">
+					<input type="text" id="" name="@appear-cancelled="""  autocomplete="off"
+						placeholder="请输入建筑面积" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">房屋均价</label>
+				<div class="layui-input-block">
+					<input type="text" id="price" name="price"  autocomplete="off"
+						placeholder="请输入房屋均价" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">经度位置</label>
+				<div class="layui-input-block">
+					<input type="text" id="longitude" name="longitude"  autocomplete="off"
+						placeholder="请输入经度位置" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">维度位置</label>
+				<div class="layui-input-block">
+					<input type="text" id="latitude" name="latitude"  autocomplete="off"
+						placeholder="请输入纬度位置" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;址</label>
+				<div class="layui-input-block">
+					<input type="text" id="village_addr" name="village_addr" lay-verify="required|village_addr" autocomplete="off"
+						placeholder="请输入小区地址" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+  	form.verify({
+		/* name: function (value) {
+			if (value.length < 5) {
+				return '用户名至少得5个字符啊';
+			}
+		} */
+	});
+	/**
+	 * 监听省份选择
+	*/
+	form.on('select(province)',function(data){
+        $.post('/api/region/index', { 
+            code: data.value,
+            type:2 
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择市</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#city').html(option);
+                    $('#county').html('<option value="">请选择区/县</option>');
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听城市选择
+	*/
+	form.on('select(city)',function(data){
+        $.post('/api/region/index', { 
+			code: data.value,
+            type:2 ,
+			is_open:2
+        }, function(data){
+            var res = data.data;
+            if(data.code == 0){
+                if(res.length > 0){
+                    var option = '<option value="">请选择区/县</option>';
+                    res.forEach(function(v,i){
+                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                    });
+                    $('#county').html(option);
+                    form.render('select');
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        },'json');
+	});
+	/**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){ 
+		var params = {
+                village_name: data.field.village_name,
+				village_addr: data.field.village_addr,
+				company_id: data.field.company,
+				area: data.field.area,
+				price: data.field.price,
+				longitude: data.field.longitude,
+				latitude: data.field.latitude,
+				province: data.field.province,
+				city: data.field.city,
+				county: data.field.county
+			};
+		$.post('/admin/building/addBuilding', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+				layer.msg('添加成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>

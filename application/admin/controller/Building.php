@@ -2,20 +2,20 @@
 namespace app\admin\controller;
 
 use \think\Db;
-use \think\Reuquest;
+use app\admin\model\Village as VillageModel;
 
-class Community extends Main
+class Building extends Main
 {
     protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
    
     /**
-     * 小区管理-业主小区列表
+     * 在建工地管理-在建工地列表
      */
     public function index(){
         return $this->fetch();
     }
     /**
-     * 小区管理-业主小区列表数据
+     * 在建工地管理-业主在建工地列表数据
      */
     public function index_list(){
         $page = $this->request->param('page',1,'intval');
@@ -41,17 +41,18 @@ class Community extends Main
             $where3 = " AND (A.country =".$country;
         }
         $page_start = ($page - 1) * $limit;
-        $sql = "SELECT A.id,A.village_addr,A.village_name,concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city
+        $sql = "SELECT A.id,A.village_addr,A.village_name,concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,area,price,E.name AS speed_name
                 FROM lg_village A 
                 INNER JOIN lg_region B ON A.province = B.region_code
                 INNER JOIN lg_region C ON A.city = C.region_code
                 INNER JOIN lg_region D ON A.county = D.region_code
-                WHERE A.village_type = 1 AND A.status = 0".$where.$where1.$where2.$where3."
+                INNER JOIN lg_speed E ON A.speed_id = E.id
+                WHERE A.village_type = 2 AND A.status = 0".$where.$where1.$where2.$where3."
                 ORDER BY id DESC
                 limit $page_start,$limit";
         // var_dump($sql);die;
         $data = Db::query($sql);
-        $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 1 AND A.status = 0".$where.$where1.$where2.$where3;
+        $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 2 AND A.status = 0".$where.$where1.$where2.$where3;
         $count = Db::query($sql1);
         // var_dump($count);die;
         if($data){
@@ -61,21 +62,25 @@ class Community extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-添加小区页面
+     * 在建工地管理-添加在建工地页面
      */
-    // addCommunity
-    public function communityAdd(){
+    // addBuilding
+    public function buildingAdd(){
+        $company = Db::name('company')
+                ->where('status = 0')
+                ->select();
         $region = _getRegion();
         $this->assign('regin',$region);
-        return $this->fetch('community_add');
+        $this->assign('company',$company);
+        return $this->fetch('add');
     }
     /**
-     * 业主小区管理-添加小区数据
+     * 业主在建工地管理-添加在建工地数据
      */
-    public function addCommunity(){
+    public function addBuilding(){
         $post     = $this->request->post();
         $post['create_time'] = date('Y-m-d H:i:S');
-        $post['village_type'] = 1;
+        $post['village_type'] = 2;
         $row = Db::name('village')
         ->where('village_name',$post['village_name'])
         ->where('village_addr',$post['village_addr'])
@@ -87,7 +92,7 @@ class Community extends Main
         // var_dump($row);die;
         if($row){
             $this->ret['code'] = -1;
-            $this->ret['msg'] = '小区已存在';
+            $this->ret['msg'] = '在建工地已存在';
             return json($this->ret);
         }
         $db = Db::name('village')->insert($post);
@@ -101,9 +106,12 @@ class Community extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-编辑小区页面
+     * 在建工地管理-编辑在建工地页面
      */
-    public function communityEdit(){
+    public function buildingEdit(){
+        $company = Db::name('company')
+                ->where('status = 0')
+                ->select();
         $id  = $this->request->get('id');
         $data = Db::name('village')->where('id',$id)->find();
         $province = _getRegion();
@@ -113,12 +121,13 @@ class Community extends Main
         $this->assign('city', $city);
         $this->assign('county', $county);
         $this->assign('data',$data);
-        return $this->fetch('community_edit');
+        $this->assign('company', $company);
+        return $this->fetch('edit');
     }
     /**
-     * 小区管理-编辑小区数据
+     * 在建工地管理-编辑在建工地数据
      */
-    public function editCommunity(){
+    public function editBuilding(){
         $post     = $this->request->post();
         $id = $post['id'];
         $row = Db::name('village')
@@ -133,26 +142,14 @@ class Community extends Main
         // var_dump($row);die;
         if($row){
             $this->ret['code'] = -1;
-            $this->ret['msg'] = '小区已存在';
+            $this->ret['msg'] = '在建工地已存在';
             return json($this->ret);
         }
-        $row1 = Db::name('village')
-        ->where('village_name',$post['village_name'])
-        ->where('village_addr',$post['village_addr'])
-        ->where('province',$post['province'])
-        ->where('city',$post['city'])
-        ->where('county',$post['county'])
-        ->where('id',$id)
-        ->find();
-        // var_dump($row1);die;
-        if($row1){
-            $this->ret['code'] = 200;
-            $this->ret['msg'] = 'success';
-            return json($this->ret);
-        }
-        $db = Db::name('village')->where('id',$id)->update($post); 
+        $NoticeModel = new VillageModel;
+        // save方法第二个参数为更新条件
+        $res = $NoticeModel->save($post,['id',$id]);
         // var_dump($db);die;
-        if($db){
+        if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';
         }else{
@@ -162,7 +159,7 @@ class Community extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-小区搜索页面
+     * 在建工地管理-在建工地搜索页面
      */
     public function search(){
         $region = _getRegion();
@@ -170,9 +167,9 @@ class Community extends Main
         return $this->fetch();
     }
     /**
-     * 小区管理-小区删除
+     * 在建工地管理-在建工地删除
      */
-    public function delCommunity(){
+    public function delBuilding(){
         $id = $this->request->post('id');
         $upd = [
             'status'    =>  1,

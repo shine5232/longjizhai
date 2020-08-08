@@ -1,0 +1,85 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加工地','buildingAdd.html',800,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加工地
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索小区','search.html',800,480)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/building/index_list' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'city', title: '城市', width: '15%' }
+                    , { field: 'village_name', title: '小区名称', width: '15%' }
+                    , { field: 'area', title: '面积', width: '15%', }
+                    , { field: 'price', title: '价格', width: '15%', }
+                    , { field: 'speed_name', title: '进度', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'工地日记\',\'/admin/building/communityEdit?id=' + d.id + '\',800,480);">工地日记</button>' +'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑工地\',\'/admin/building/buildingEdit?id=' + d.id + '\',800,480);">编辑</button>' +
+                                '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delBuilding(' + d.id + ');">删除</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+       
+    });
+    function delAll(argument) {
+        var data = tableCheck.getData();
+        layer.confirm('确认要全部删除吗？', function (index) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', { icon: 1 });
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+    }
+    function delBuilding(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/building/delBuilding', { id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+</script>
+
+</html>
