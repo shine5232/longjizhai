@@ -46,7 +46,7 @@ class Building extends Main
                 INNER JOIN lg_region B ON A.province = B.region_code
                 INNER JOIN lg_region C ON A.city = C.region_code
                 INNER JOIN lg_region D ON A.county = D.region_code
-                INNER JOIN lg_speed E ON A.speed_id = E.id
+                LEFT JOIN lg_speed E ON A.speed_id = E.id
                 WHERE A.village_type = 2 AND A.status = 0".$where.$where1.$where2.$where3."
                 ORDER BY id DESC
                 limit $page_start,$limit";
@@ -176,6 +176,29 @@ class Building extends Main
             'del_time'   =>  date('Y-m-d H:i:s')
         ];
         $res = Db::name('village')->where('id',$id)->update($upd);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+
+    
+    /**
+     * 在建工地管理-在建工地批量删除
+     */
+    public function delAll(){
+        $delList = $this->request->post('delList');
+        $delList = json_decode($delList,true);
+        $arr = [];
+        foreach ($delList as $k => $v) {
+            $data['id'] = $v;
+            $data['status'] = 1;
+            $arr[] = $data;
+        }
+        $user = new VillageModel;
+        $res = $user->saveAll($arr);
+        // var_dump(Db::name('mechanic')->getLastSql());die;
         if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';

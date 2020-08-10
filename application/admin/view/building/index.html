@@ -8,6 +8,9 @@
                 <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
                 <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
                 <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加工地','buildingAdd.html',800,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加工地
                 </button>
@@ -59,12 +62,27 @@
         });
        
     });
-    function delAll(argument) {
-        var data = tableCheck.getData();
-        layer.confirm('确认要全部删除吗？', function (index) {
+    function delAll() {
+        var data = [];
+        data = layui.table.checkStatus('test').data;  
+        layer.confirm('确认要进行操作吗？', function (index) {
+            var delList=[];
+            data.forEach(function(n,i){
+                delList.push(n.id);             
+            });
+            // console.log(delList);
+            // return false;
             //捉到所有被选中的，发异步进行删除
-            layer.msg('删除成功', { icon: 1 });
-            $(".layui-form-checked").not('.header').parents('tr').remove();
+            delList = JSON.stringify( delList )
+            $.post('/admin/building/delAll', { delList: delList }, function (j) {
+                    if(j.code == 200){
+                        layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                    }else{
+                        layer.msg('操作失败', { icon: 2, time: 1000 });
+                    }
+                },'json');
         });
     }
     function delBuilding(id) {

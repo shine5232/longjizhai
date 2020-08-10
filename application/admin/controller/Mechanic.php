@@ -10,7 +10,7 @@ class Mechanic extends Main
     protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]]; 
    
     /**
-     * 小区管理-业主小区列表
+     * 技工管理-业主小区列表
      */
     public function index($type){
         $this->assign('type',$type);
@@ -75,7 +75,7 @@ class Mechanic extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-添加小区页面
+     * 技工管理-添加技工页面
      */
     // addCommunity
     public function add($type){
@@ -86,7 +86,7 @@ class Mechanic extends Main
         return $this->fetch('add');
     }
     /**
-     * 业主小区管理-添加小区数据
+     * 技工管理-添加技工数据
      */
     public function addMechanic(){
         $post     = $this->request->post();
@@ -129,7 +129,7 @@ class Mechanic extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-编辑小区页面
+     * 技工管理-编辑技工页面
      */
     public function edit(){
         $id  = $this->request->get('id');
@@ -146,7 +146,7 @@ class Mechanic extends Main
         return $this->fetch('edit');
     }
     /**
-     * 小区管理-编辑小区数据
+     * 技工管理-编辑技工数据
      */
     public function editMechanic(){
         $post     = $this->request->post();
@@ -190,7 +190,7 @@ class Mechanic extends Main
         return json($this->ret);
     }
     /**
-     * 小区管理-小区搜索页面
+     * 技工管理-技工搜索页面
      */
     public function search(){
         $region = _getRegion();
@@ -198,7 +198,7 @@ class Mechanic extends Main
         return $this->fetch();
     }
     /**
-     * 小区管理-小区删除
+     * 技工管理-技工删除
      */
     public function delMechanic(){
         $id = $this->request->post('id');
@@ -213,6 +213,10 @@ class Mechanic extends Main
         }
         return json($this->ret);
     }
+
+     /**
+     * 技工管理-批量管理
+     */
     public function update($method){
         // var_dump($method);die;
         $delList = $this->request->post('delList');

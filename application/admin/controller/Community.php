@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 use \think\Db;
-use \think\Reuquest;
+use app\admin\model\Village as VillageModel;
 
 class Community extends Main
 {
@@ -179,6 +179,28 @@ class Community extends Main
             'del_time'   =>  date('Y-m-d H:i:s')
         ];
         $res = Db::name('village')->where('id',$id)->update($upd);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+
+    /**
+     * 小区管理-小区批量删除
+     */
+    public function delAll(){
+        $delList = $this->request->post('delList');
+        $delList = json_decode($delList,true);
+        $arr = [];
+        foreach ($delList as $k => $v) {
+            $data['id'] = $v;
+            $data['status'] = 1;
+            $arr[] = $data;
+        }
+        $user = new VillageModel;
+        $res = $user->saveAll($arr);
+        // var_dump(Db::name('mechanic')->getLastSql());die;
         if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';
