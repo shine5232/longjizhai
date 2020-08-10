@@ -1,0 +1,98 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">标题</label>
+				<div class="layui-input-block">
+					<input type="text" id="title" name="title"  lay-verify="required|title" autocomplete="off"
+						placeholder="请输入标题" value="{$data.title}" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" id="region">
+				<label class="layui-form-label">进度</label>
+				<div class="layui-input-inline">
+					<select name="speed" lay-filter="speed" id="speed" lay-verify="required">
+						<option value="">请选择</option>
+						{volist name='speed' id='vo'}
+						<option value="{$vo.id}" {if condition="$vo.id == $data.speed_id"}selected{/if}>{$vo.name}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入内容" id="content" name="content"
+                        style="width: 100%;height: 400px;" lay-verify="required|content">{$data.content}</textarea>
+                </div>
+			</div>
+			<input type="hidden" value="{$data.id}" name="id" />
+			<input type="hidden" value="{$village_id}" name="village_id" />
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript"> 
+KindEditor.ready(function (K) {
+	notice = K.create('#content', {
+		uploadJson: '/api/file/upload?type=article',
+		afterBlur: function(){
+			this.sync();
+		}
+	});
+});
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+  	form.verify({
+		/* name: function (value) {
+			if (value.length < 5) {
+				return '用户名至少得5个字符啊';
+			}
+		} */
+	});
+
+    /**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){ 
+		var params = {
+                title: data.field.title,
+				content: data.field.content,
+				speed_id: data.field.speed,
+				id: data.field.id,
+				village_id:data.field.village_id
+			};
+		$.post('/admin/building/editLog', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+                layer.msg('修改成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>

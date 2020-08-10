@@ -3,6 +3,7 @@ namespace app\admin\controller;
 
 use \think\Db;
 use app\admin\model\Village as VillageModel;
+use app\admin\model\Building_log as BuildLogModel;
 
 class Building extends Main
 {
@@ -205,4 +206,107 @@ class Building extends Main
         }
         return json($this->ret);
     }
+    public function buildingLog(){
+        $id = $this->request->get('id');
+        $this->assign('id',$id);
+        return $this->fetch('log');
+    }
+    public function buildingLogList($id){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $page_start = ($page - 1) * $limit;
+        $data = Db::name('building_log')
+        ->field('a.*,b.name as speed_name')
+        ->alias('a')
+        ->join('speed b','a.speed_id = b.id','LEFT')
+        ->where('building_id',$id)
+        ->order('id DESC')
+        ->limit($page_start,$limit)
+        ->select();
+        // var_dump(Db::name('building_log')->getLastSql());die;
+       
+        $count = Db::name('building_log')
+        ->where('building_id',$id)
+        ->count();
+        // var_dump($count);die;
+        if($data){
+            $this->ret['count'] = $count;
+            $this->ret['data'] = $data;
+        }
+        return json($this->ret);
+    }
+    public function logAdd(){
+        $id = $this->request->get('id');
+        $this->assign('id',$id);
+        $speed = Db::name('speed')
+                ->select();
+        $this->assign('speed',$speed);
+        return $this->fetch('log_add');
+    }
+    public function addLog(){
+        $post     = $this->request->post();
+        $post['create_time'] = date('Y-m-d H:i:S');
+        $db = Db::name('building_log')->insert($post);
+        Db::name('village')->where('id',$post['building_id'])->update(['speed_id'=>$post['speed_id']]);
+        if($db){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }else{
+            $this->ret['code'] = -1;
+            $this->ret['msg'] = '添加失败';
+        }
+        return json($this->ret);
+    }
+    public function logEdit($id,$village_id){
+        $speed = Db::name('speed')
+                ->select();
+        $data = Db::name('building_log')->where('id',$id)->find();
+        $this->assign('speed',$speed);
+        $this->assign('data',$data);
+        $this->assign('village_id',$village_id);
+        return $this->fetch('log_edit');
+    } 
+    /**
+    * 在建工地管理-编辑在建工地数据
+    */
+   public function editLog(){
+       $post     = $this->request->post();
+       $id = $post['id'];
+       $NoticeModel = new BuildLogModel;
+       // save方法第二个参数为更新条件
+       $res = $NoticeModel->save($post,['id',$id]);
+       Db::name('village')->where('id',$post['village_id'])->update(['speed_id'=>$post['speed_id']]);
+    //    var_dump(Db::name('building_log')->getLastSql());die;
+       if($res){
+           $this->ret['code'] = 200;
+           $this->ret['msg'] = 'success';
+       }else{
+           $this->ret['code'] = -1;
+           $this->ret['msg'] = '修改失败';
+       }
+       return json($this->ret);
+   }
+   public function delLog(){
+    $id = $this->request->post('id');
+    $res = Db::name('building_log')->where('id',$id)->delete();
+    if($res){
+        $this->ret['code'] = 200;
+        $this->ret['msg'] = 'success';
+    }
+    return json($this->ret);
+   }
+
+   public function delLogAll(){
+    $delList = $this->request->post('delList');
+    $delList = json_decode($delList,true);
+    foreach ($delList as $k => $v) {
+        $res = Db::name('building_log')->delete($v);
+    }
+    // var_dump(Db::name('mechanic')->getLastSql());die;
+    if($res){
+        $this->ret['code'] = 200;
+        $this->ret['msg'] = 'success';
+    }
+    return json($this->ret);
+}
 }
