@@ -193,6 +193,17 @@ function _getRegion($parent_code=false,$is_open = false,$all=false){
     return $data; 
 }
 /**
+ * 获取商品分类信息
+ */
+function _getGoodsCate($pid=false){
+    if($pid){
+        $data = Db::name('goods_cate')->where('pid',$pid)->select();
+    }else{
+        $data = Db::name('goods_cate')->where('level',1)->select();
+    }
+    return $data;
+}
+/**
  * api返回json数据
  */
 function json($data=array('code'=>0,'msg'=>'error','data'=>'')){
