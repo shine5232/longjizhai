@@ -34,27 +34,6 @@
                         placeholder="请输入品牌名称" type="text" />
                 </div>
             </div>
-            <div class="layui-form-item type type1">
-                <label class="layui-form-label">所属分类</label>
-                <div class="layui-input-inline">
-                    <select lay-filter="one" class="select one1" lay-verify="required" data-id='1'>
-                        <option value="0">请选择</option>
-                    </select>
-                </div>
-                <div class="layui-input-inline">
-                    <select lay-filter="two" class="select two1" lay-verify="required" data-id="1">
-                        <option value="0">请选择</option>
-                    </select>
-                </div>
-                <div class="layui-input-inline">
-                    <select name="cate[]" class="select three1" lay-filter="three" lay-verify="required">
-                        <option value="0">请选择</option>
-                    </select>
-                </div>
-                <button type="button" class="layui-btn layui-btn-xs" onclick="addCate(this)">
-                    <i class="layui-icon">&#xe608;</i>
-                </button>
-            </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">品牌logo</label>
                 <div class="layui-input-block" style="display: flex;">
@@ -100,69 +79,8 @@
         });
     });
     var form = '', layer = '', upload = '';
-    getTypeTop(1);//初始化顶级分类属性
     layui.use(['form', 'layer', 'upload'], function () {
         form = layui.form, layer = layui.layer, upload = layui.upload;
-        /**
-         * 监听分类一选择
-        */
-        form.on('select(one)', function (data) {
-            var id = data.elem.dataset.id;
-            if (data.value == 0 || data.value == '') {
-                $('.two' + id).html('<option value="0">请选择</option>');
-                $('.three' + id).html('<option value="0">请选择</option>');
-                form.render('select');
-                return false;
-            }
-            $.post('/api/goods_cate/index', {
-                pid: data.value,
-                type: 2,
-            }, function (data) {
-                var res = data.data;
-                if (data.code == 200) {
-                    if (res.length > 0) {
-                        var option = '<option value="0">请选择</option>';
-                        res.forEach(function (v, i) {
-                            option += '<option value="' + v.id + '">' + v.title + '</option>';
-                        });
-                        $('.two' + id).html(option);
-                        $('.three' + id).html('<option value="0">请选择</option>');
-                        form.render('select');
-                    }
-                } else {
-                    layer.msg(data.msg);
-                }
-            }, 'json');
-        });
-        /**
-         * 监听分类二选择
-        */
-        form.on('select(two)', function (data) {
-            var id = data.elem.dataset.id;
-            if (data.value == 0 || data.value == '') {
-                $('.three' + id).html('<option value="0">请选择</option>');
-                form.render('select');
-                return false;
-            }
-            $.post('/api/goods_cate/index', {
-                pid: data.value,
-                type: 2,
-            }, function (data) {
-                var res = data.data;
-                if (data.code == 200) {
-                    if (res.length > 0) {
-                        var option = '<option value="0">请选择</option>';
-                        res.forEach(function (v, i) {
-                            option += '<option value="' + v.id + '">' + v.title + '</option>';
-                        });
-                        $('.three' + id).html(option);
-                        form.render('select');
-                    }
-                } else {
-                    layer.msg(data.msg);
-                }
-            }, 'json');
-        });
         /**
          * 图片上传
         */
@@ -189,85 +107,6 @@
             }
         });
     });
-    /**
-     * 添加分类属性
-    */
-    function addCate(obj) {
-        var num = $('.type').length;
-        var id = parseInt(num) + 1;
-        var cate = '<div class="layui-form-item type type' + id + '">' +
-            '<label class="layui-form-label">所属分类</label>' +
-            '<div class="layui-input-inline">' +
-            '<select lay-filter="one" class="select one' + id + '" lay-verify="required" data-id="' + id + '">' +
-            '<option value="0">请选择</option>' +
-            '</select>' +
-            '</div>' +
-            '<div class="layui-input-inline">' +
-            '<select lay-filter="two" class="select two' + id + '" lay-verify="required" data-id="' + id + '">' +
-            '<option value="0">请选择</option>' +
-            '</select>' +
-            '</div>' +
-            '<div class="layui-input-inline">' +
-            '<select name="cate[]" class="select three' + id + '" lay-filter="three" lay-verify="required">' +
-            '<option value="0">请选择</option>' +
-            '</select>' +
-            '</div>' +
-            '<button type="button" class="layui-btn layui-btn-xs" onclick="addCate(this)">' +
-            '<i class="layui-icon">&#xe608;</i></i>' +
-            '</button>' +
-            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs delete" data-id="' + id + '" onclick="delCate(this)">' +
-            '<i class="layui-icon">&#xe640;</i></i>' +
-            '</button>' +
-            '</div>';
-        $('.type' + num).after(cate);
-        getTypeTop(id);
-        form.render('select');
-    }
-    /**
-     * 删除分类属性
-    */
-    function delCate(obj) {
-        var id = $(obj).data('id');
-        $('.type' + id).remove();
-        var num = $('.type').length;
-        $('.type').each(function (i, v) {
-            var s = i + 1;
-            $(v).removeClass();
-            $(v).attr('class', 'layui-form-item type type' + s);
-            $(v).find('.select').each(function (m, n) {
-                $(n).removeClass();
-                if (m == '0') {
-                    $(n).attr({ 'class': 'select one' + s, 'data-id': s });
-                }
-                if (m == '1') {
-                    $(n).attr({ 'class': 'select two' + s, 'data-id': s });
-                }
-                if (m == '2') {
-                    $(n).attr({ 'class': 'select three' + s, 'data-id': s });
-                }
-            });
-            $(v).find('.delete').attr({ 'data-id': s });
-        });
-    }
-    /**
-     * 获取顶级分类
-    */
-    function getTypeTop(id) {
-        var params = { type: 1 };
-        $.post('/api/goods_cate/index', params, function (data) {
-            var res = data.data;
-            if (data.code == 200) {
-                var option = "<option value='0'>请选择</option>";
-                data.data.forEach(function (v, i) {
-                    option += "<option value=" + v.id + ">" + v.title + "</option>";
-                });
-                $('.one' + id).html(option);
-                form.render('select');
-            } else {
-                layer.msg(data.msg);
-            }
-        }, 'json');
-    }
     $(document).ready(function () {
         var options = {
             type: 'post',           //post提交

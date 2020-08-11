@@ -12,9 +12,23 @@ class GoodsCate extends Main
      */
     public function index(){
         $cate = Db::name('goods_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $count = count($cate);
-        return $this->fetch('cate_index',['cate'=>$cate,'count'=>$count]);
+        $cates = [];
+        if($cate){
+            foreach($cate as $key=>$vo){
+                $cates[$key] = $vo;
+                $cates[$key]['brands'] = '';
+                if($vo['brands']){
+                    $brands = explode(',',$vo['brands']);
+                    foreach($brands as $k=>$v){
+                        $brands_name = Db::name('brands')->where('id',$v)->value('name');
+                        $cates[$key]['brands'] .= '【'.$brands_name.'】';
+                    }
+                }
+            }
+        }
+        $cates = array2Level($cates);
+        $count = count($cates);
+        return $this->fetch('cate_index',['cate'=>$cates,'count'=>$count]);
     }
     /**
      * 商品分类管理-添加页面
@@ -120,7 +134,7 @@ class GoodsCate extends Main
      */
     public function addBrands(){
         $id  = $this->request->get('id');
-        $cate = Db::name('goods_cate')->where('id',$id)->where('status',1)->field('id,title,pid')->find();
+        $cate = Db::name('goods_cate')->where('id',$id)->where('status',1)->field('id,title,pid,brands')->find();
         $pid = $cate['pid'];
         $title = '【'.$cate['title'].'】';
         while($pid != 0){
@@ -132,6 +146,7 @@ class GoodsCate extends Main
         $this->assign('cate',$cate);
         $this->assign('title',$title);
         $this->assign('brands',$brands);
+        $this->assign('brand',explode(',',$cate['brands']));
         return $this->fetch('add_brands');
     }
     /**
