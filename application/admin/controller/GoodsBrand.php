@@ -20,24 +20,17 @@ class GoodsBrand extends Main
         $page = $this->request->param('page',1,'intval');
         $limit = $this->request->param('limit',20,'intval');
         $name = $this->request->param('name','');
-        $goods_cate = $this->request->param('goods_cate','');
         $page_start = ($page - 1) * $limit;
-        $where = ['a.status'=>0];
+        $where = ['status'=>0];
         if($name){
-            $where['a.name'] = ['like',"%$name%"];
+            $where['name'] = ['like',"%$name%"];
         }
-        if($goods_cate){
-            $where['a.goods_cate'] = $goods_cate;
-        }
-        $data = Db::name('brands')->alias('a')
-            ->join('goods_cate g','a.goods_cate = g.id','INNER')
+        $data = Db::name('brands')
             ->where($where)
-            ->field('a.*,g.title as cate_title')
-            ->order('a.sort DESC,a.id DESC')
+            ->order('sort DESC,id DESC')
             ->limit($page_start,$limit)
             ->select();
         $count = Db::name('brands')
-            ->alias('a')
             ->where($where)
             ->count();
         if($data){
@@ -50,8 +43,6 @@ class GoodsBrand extends Main
      * 品牌管理-添加品牌页面
      */
     public function brandsAdd(){
-        $cate = _getGoodsCate();
-        $this->assign('cate',$cate);
         return $this->fetch('brands_add');
     }
     /**
@@ -59,12 +50,17 @@ class GoodsBrand extends Main
      */
     public function addBrands(){
         $post     = $this->request->post();
-        echo '<pre>';var_dump($post);die;
-        $post['create_time']   = date('Y-m-d H:i:s');
-        $db = Db::name('brands')->insert($post);
+        $insert = [
+            'name'=>$post['name'],
+            'sort'=>$post['sort'],
+            'logo'=>$post['logo'],
+            'content'=>$post['content'],
+            'create_time'=>date('Y-m-d H:i:s')
+        ];
+        $db = Db::name('brands')->insert($insert);
         if($db){
             $this->ret['code'] = 200;
-            $this->ret['msg'] = 'success';
+            $this->ret['msg'] = '添加成功';
         }
         return json($this->ret);
     }
@@ -74,9 +70,6 @@ class GoodsBrand extends Main
     public function brandsEdit(){
         $id  = $this->request->get('id');
         $brands = Db::name('brands')->where('id',$id)->find();
-        $cate = Db::name('goods_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $this->assign('cate',$cate);
         $this->assign('brands',$brands);
         return $this->fetch('brands_edit');
     }
@@ -86,16 +79,17 @@ class GoodsBrand extends Main
     public function editBrands(){
         $post     = $this->request->post();
         $id = $post['id'];
-        $post['update_time']  = date('Y-m-d H:i:s');
-        unset($post['id']);
-        $admin_user = session('user');
-        if($admin_user['county'] != null){
-            $post['county'] = $admin_user['county'];
-        }
-        $db = Db::name('brands')->where('id',$id)->update($post);
+        $update = [
+            'name'=>$post['name'],
+            'sort'=>$post['sort'],
+            'logo'=>$post['logo'],
+            'content'=>$post['content'],
+            'update_time'=>date('Y-m-d H:i:s')
+        ];
+        $db = Db::name('brands')->where('id',$id)->update($update);
         if($db){
             $this->ret['code'] = 200;
-            $this->ret['msg'] = 'success';
+            $this->ret['msg'] = '修改成功';
         }
         return json($this->ret);
     }
@@ -103,9 +97,6 @@ class GoodsBrand extends Main
      * 品牌管理-品牌搜索页面
      */
     public function search(){
-        $cate = Db::name('goods_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $this->assign('cate',$cate);
         return $this->fetch();
     }
     /**

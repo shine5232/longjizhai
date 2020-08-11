@@ -33,8 +33,14 @@ class GoodsCate extends Main
         if($cate){
             $post['level'] = (int)$cate['level'] + 1;
         }
-        Db::name('goods_cate')->insert($post);
-        $this->success('添加成功');
+        $res = Db::name('goods_cate')->insert($post);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '添加成功';
+        }else{
+            $this->ret['msg'] = '添加失败';
+        }
+        return json($this->ret);
     }
     /**
      * 商品分类管理-添加子分类
@@ -59,8 +65,14 @@ class GoodsCate extends Main
         if($cate){
             $post['level'] = (int)$cate['level'] + 1;
         }
-        Db::name('goods_cate')->insert($post);
-        $this->success('添加成功');
+        $res = Db::name('goods_cate')->insert($post);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '添加成功';
+        }else{
+            $this->ret['msg'] = '添加失败';
+        }
+        return json($this->ret);
     }
     /**
      * 商品分类管理-编辑页面
@@ -84,7 +96,9 @@ class GoodsCate extends Main
         $post =  $this->request->post();
         $id = $post['id'];unset($post['id']);
         Db::name('goods_cate')->where('id',$id)->update($post);
-        $this->success('修改成功');
+        $this->ret['code'] = 200;
+        $this->ret['msg'] = '修改成功';
+        return json($this->ret);
     }
     /**
      * 商品分类管理-删除处理
@@ -93,10 +107,46 @@ class GoodsCate extends Main
         $id = $this->request->post('id');
         $juge = Db::name('goods_cate')->where('pid',$id)->find();
         if(!empty($juge)){
-            $this->error('请先删除子栏目');
+            $this->ret['msg'] = '请先删除子栏目';
         }else{
             Db::name('goods_cate')->delete($id);
-            $this->success('删除成功');
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '删除成功';
         }
+        return json($this->ret);
+    }
+    /**
+     * 绑定品牌
+     */
+    public function addBrands(){
+        $id  = $this->request->get('id');
+        $cate = Db::name('goods_cate')->where('id',$id)->where('status',1)->field('id,title,pid')->find();
+        $pid = $cate['pid'];
+        $title = '【'.$cate['title'].'】';
+        while($pid != 0){
+            $cate_p = Db::name('goods_cate')->where('id',$pid)->where('status',1)->field('id,title,pid')->find();
+            $title = '【'.$cate_p['title'].'】'.$title;
+            $pid = $cate_p['pid'];
+        }
+        $brands = Db::name('brands')->where('status',0)->field('id,name')->select();
+        $this->assign('cate',$cate);
+        $this->assign('title',$title);
+        $this->assign('brands',$brands);
+        return $this->fetch('add_brands');
+    }
+    /**
+     * 绑定品牌-数据处理
+     */
+    public function brandsAdd(){
+        $post = $this->request->post();
+        $brands = implode(',',$post['brands']);
+        $res = Db::name('goods_cate')->where('id',$post['cate_id'])->update(['brands'=>$brands]);
+        if($res){
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '绑定成功';
+        }else{
+            $this->ret['msg'] = '绑定失败';
+        }
+        return json($this->ret);
     }
 }

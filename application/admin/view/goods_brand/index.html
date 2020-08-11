@@ -1,5 +1,9 @@
 {include file="public/head"}
-
+<style>
+    .logo-img{
+        width: 50px;
+    }
+</style>
 <body>
     <div class="x-body">
         <table id="demo" lay-filter="test"></table>
@@ -44,21 +48,21 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'title', title: '品牌名称', width: '15%' }
-                    , { field: 'cate_title', title: '所属分类', width: '15%' }
+                    , { field: 'name', title: '品牌名称', width: '15%' }
+                    , { field: 'goods_cate', title: '所属分类' }
                     , {
                         field: 'area', title: '品牌logo', width: '15%',
                         templet: function (d) {
-                            if (d.county_name) {
-                                return d.county_name;
+                            if (d.logo) {
+                                return '<img class="logo-img" src="'+d.logo+'" />';
                             } else {
-                                return '总站';
+                                return '暂无logo';
                             }
                         }
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',
+                        field: 'handle', title: '操作',width: '10%',
                         templet: function (d) {
                             var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑品牌\',\'/admin/goods_brand/brandsEdit?id=' + d.id + '\',800,480);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
@@ -83,21 +87,6 @@
                     delAll(ids);
                     break;
             };
-        });
-        /**
-         * 监听状态改变
-        */
-        form.on('switch(cc)', function (data) {
-            var t = data.elem;
-            var branch_id = $(t).attr('data-user-id');
-            $.post('/admin/goods_brand/updateStatus', { id: branch_id }, function (j) {
-                if (j.code == '200') {
-                    layer.msg('设置成功');
-                }
-                if (j.code == '0') {
-                    layer.msg('设置失败');
-                }
-            }, 'json');
         });
     });
     /**

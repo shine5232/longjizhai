@@ -158,7 +158,11 @@ function x_admin_show(title,url,w,h,offset){
         shadeClose: true,
         shade:0.4,
         title: title,
-        content: url
+        content: url,
+        success: function(layero, index){
+            var iframeWindow = layero.find('iframe')[0].contentWindow;
+            iframeWindow.layui.form.render();
+        }
     });
 }
 /**

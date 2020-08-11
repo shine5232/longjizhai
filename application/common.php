@@ -195,11 +195,17 @@ function _getRegion($parent_code=false,$is_open = false,$all=false){
 /**
  * 获取商品分类信息
  */
-function _getGoodsCate($pid=false){
-    if($pid){
-        $data = Db::name('goods_cate')->where('pid',$pid)->select();
-    }else{
-        $data = Db::name('goods_cate')->where('level',1)->select();
+function _getGoodsCate($pid=false,$parents=false){
+    if($parents){//获取当前分类的父分类
+        $where = ['id'=>$pid,'status'=>1];
+        $data = Db::name('goods_cate')->where($where)->value('pid');
+    }else{//获取当前分类的子分类
+        if($pid){
+            $where = ['pid'=>$pid,'status'=>1];
+        }else{
+            $where = ['level'=>1,'status'=>1];
+        }
+        $data = Db::name('goods_cate')->where($where)->field('id,title')->select();
     }
     return $data;
 }

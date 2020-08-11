@@ -6,10 +6,6 @@
             color: black;
         }
 
-        #thumb {
-            display: none;
-        }
-
         .layui-upload-img {
             width: auto;
             height: 60px;
@@ -26,59 +22,76 @@
         }
     </style>
     <div class="x-body">
-        <form action="addBrands" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
+        <form action="editBrands" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
             <div class="layui-form-item">
                 <label class="layui-form-label">品牌名称</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" lay-verify="required" name="name"
-                        placeholder="请输入品牌名称" type="text" />
+                        placeholder="请输入品牌名称" type="text" value="{$brands['name']}" />
                 </div>
             </div>
-            <div class="layui-form-item type type1">
+            {foreach $brands['goods_cate'] as $key=>$v}
+            <div class="layui-form-item type type{$key+1}">
                 <label class="layui-form-label">所属分类</label>
                 <div class="layui-input-inline">
-                    <select lay-filter="one" class="select one1" lay-verify="required" data-id='1'>
+                    <select lay-filter="one" class="select one{$key+1}" lay-verify="required" data-id='{$key+1}'>
                         <option value="0">请选择</option>
+                        {foreach $v['select_1'] as $s1 => $vs1}
+                        <option value="{$vs1['id']}" {if condition="$vs1.id == $v.level_1"}selected{/if}>{$vs1['title']}</option>
+                        {/foreach}
                     </select>
                 </div>
                 <div class="layui-input-inline">
-                    <select lay-filter="two" class="select two1" lay-verify="required" data-id="1">
+                    <select lay-filter="two" class="select two{$key+1}" lay-verify="required" data-id="{$key+1}">
                         <option value="0">请选择</option>
+                        {foreach $v['select_2'] as $s2 => $vs2}
+                        <option value="{$vs2['id']}" {if condition="$vs2.id == $v.level_2"}selected{/if}>{$vs2['title']}</option>
+                        {/foreach}
                     </select>
                 </div>
                 <div class="layui-input-inline">
-                    <select name="cate[]" class="select three1" lay-filter="three" lay-verify="required">
+                    <select lay-filter="three" name="cate[]" class="select three{$key+1}" lay-verify="required">
                         <option value="0">请选择</option>
+                        {foreach $v['select_3'] as $s3 => $vs3}
+                        <option value="{$vs3['id']}" {if condition="$vs3.id == $v.level_3"}selected{/if}>{$vs3['title']}</option>
+                        {/foreach}
                     </select>
                 </div>
                 <button type="button" class="layui-btn layui-btn-xs" onclick="addCate(this)">
                     <i class="layui-icon">&#xe608;</i>
                 </button>
+                {if $key != 0}
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs delete" data-id="{$key+1}" onclick="delCate(this)">
+                    <i class="layui-icon">&#xe640;</i></i>
+                </button>
+                {/if}
             </div>
+            {/foreach}
             <div class="layui-form-item">
                 <label class="layui-form-label">品牌logo</label>
                 <div class="layui-input-block" style="display: flex;">
                     <button type="button" class="layui-btn upload-img">
                         <i class="layui-icon">&#xe67c;</i>选择图片</i>
                     </button>
-                    <img class="layui-upload-img" id="thumb" src="">
+                    <img class="layui-upload-img" id="thumb" src="{$brands['logo']}">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">品牌介绍</label>
                 <div class="layui-input-block">
                     <textarea class="layui-textarea" placeholder="请输入品牌介绍" id="notice" name="content"
-                        style="width: 100%;height: 400px;"></textarea>
+                        style="width: 100%;height: 400px;">{$brands['content']}</textarea>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" lay-verify="required" name="sort"
-                        placeholder="排序数值越大排列越靠前" type="text" value="0" />
+                        placeholder="排序数值越大排列越靠前" type="text" value="{$brands['sort']}" />
                 </div>
             </div>
-            <input type="hidden" name="logo" value="" />
+            <input type="hidden" name="logo" value="{$brands['logo']}" />
+            <input type="hidden" name="id" value="{$brands['id']}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
@@ -100,7 +113,6 @@
         });
     });
     var form = '', layer = '', upload = '';
-    getTypeTop(1);//初始化顶级分类属性
     layui.use(['form', 'layer', 'upload'], function () {
         form = layui.form, layer = layui.layer, upload = layui.upload;
         /**
