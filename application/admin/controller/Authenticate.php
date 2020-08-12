@@ -38,7 +38,7 @@ class Authenticate extends Main
         }
         $where3 = '';
         if($country){
-            $where3 = " AND (B.country =".$country;
+            $where3 = " AND (B.country =".$country; 
         }
         $page_start = ($page - 1) * $limit;
         $sql = "SELECT A.*,B.uname,B.mobile,
