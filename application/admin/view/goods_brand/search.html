@@ -1,0 +1,136 @@
+{include file='public/head'}
+
+<body>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id='searchForm'>
+            <div class="layui-form-item">
+                <label class="layui-form-label">品牌名称</label>
+                <div class="layui-input-block">
+                    <input type="text" id="name" name="name" autocomplete="off"
+                        placeholder="请输入品牌名称" class="layui-input" value="" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="searchSubmit">提交</button>
+                    <button type="reset" id="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    var form = '';
+    getTypeTop(1);//初始化顶级分类属性
+    layui.use(['form', 'layer'], function () {
+        form = layui.form;
+        var layer = layui.layer;
+        form.on('submit(searchSubmit)', function (data) {
+            var index = layer.msg('查询中，请稍后...', {
+                icon: 16,
+                time: false,
+                shade: 0
+            });
+            setTimeout(function () {
+                x_admin_close();
+                parent.tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        name: data.field.name,
+                    }
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+            }, 1000);
+            return false;
+        });
+        /**
+         * 监听分类一选择
+        */
+        form.on('select(one)', function (data) {
+            var id = data.elem.dataset.id;
+            if (data.value == 0 || data.value == '') {
+                $('.two' + id).html('<option value="0">请选择</option>');
+                $('.three' + id).html('<option value="0">请选择</option>');
+                form.render('select');
+                return false;
+            }
+            $.post('/api/goods_cate/index', {
+                pid: data.value,
+                type: 2,
+            }, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    if (res.length > 0) {
+                        var option = '<option value="0">请选择</option>';
+                        res.forEach(function (v, i) {
+                            option += '<option value="' + v.id + '">' + v.title + '</option>';
+                        });
+                        $('.two' + id).html(option);
+                        $('.three' + id).html('<option value="0">请选择</option>');
+                        form.render('select');
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+        });
+        /**
+         * 监听分类二选择
+        */
+        form.on('select(two)', function (data) {
+            var id = data.elem.dataset.id;
+            if (data.value == 0 || data.value == '') {
+                $('.three' + id).html('<option value="0">请选择</option>');
+                form.render('select');
+                return false;
+            }
+            $.post('/api/goods_cate/index', {
+                pid: data.value,
+                type: 2,
+            }, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    if (res.length > 0) {
+                        var option = '<option value="0">请选择</option>';
+                        res.forEach(function (v, i) {
+                            option += '<option value="' + v.id + '">' + v.title + '</option>';
+                        });
+                        $('.three' + id).html(option);
+                        form.render('select');
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+        });
+    });
+    $("#reset").on("click",function(){ window.location.reload();});
+    /**
+     * 获取顶级分类
+    */
+    function getTypeTop(id) {
+        var params = { type: 1 };
+        $.post('/api/goods_cate/index', params, function (data) {
+            var res = data.data;
+            if (data.code == 200) {
+                var option = "<option value='0'>请选择</option>";
+                data.data.forEach(function (v, i) {
+                    option += "<option value=" + v.id + ">" + v.title + "</option>";
+                });
+                $('.one' + id).html(option);
+                form.render('select');
+            } else {
+                layer.msg(data.msg);
+            }
+        }, 'json');
+    }
+</script>
+
+</html>

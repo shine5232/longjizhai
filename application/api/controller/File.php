@@ -20,6 +20,10 @@ class File extends Controller
                 //logo上传
                 $src = '/uploads/logo';
                 $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
+            }else if($type == 'brands'){
+                //品牌上传
+                $src = '/uploads/brands';
+                $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
             }else if($type == 'thumb'){
                 //缩略图上传
                 $src = '/uploads/thumb';

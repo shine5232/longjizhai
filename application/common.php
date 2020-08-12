@@ -193,6 +193,23 @@ function _getRegion($parent_code=false,$is_open = false,$all=false){
     return $data; 
 }
 /**
+ * 获取商品分类信息
+ */
+function _getGoodsCate($pid=false,$parents=false){
+    if($parents){//获取当前分类的父分类
+        $where = ['id'=>$pid,'status'=>1];
+        $data = Db::name('goods_cate')->where($where)->value('pid');
+    }else{//获取当前分类的子分类
+        if($pid){
+            $where = ['pid'=>$pid,'status'=>1];
+        }else{
+            $where = ['level'=>1,'status'=>1];
+        }
+        $data = Db::name('goods_cate')->where($where)->field('id,title')->select();
+    }
+    return $data;
+}
+/**
  * api返回json数据
  */
 function json($data=array('code'=>0,'msg'=>'error','data'=>'')){
