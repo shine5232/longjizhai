@@ -24,6 +24,10 @@ class File extends Controller
                 //品牌上传
                 $src = '/uploads/brands';
                 $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
+            }else if($type == 'goods'){
+                //商品上传
+                $src = '/uploads/goods';
+                $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
             }else if($type == 'thumb'){
                 //缩略图上传
                 $src = '/uploads/thumb';

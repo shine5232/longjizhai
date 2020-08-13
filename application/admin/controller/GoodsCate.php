@@ -137,11 +137,7 @@ class GoodsCate extends Main
         $cate = Db::name('goods_cate')->where('id',$id)->where('status',1)->field('id,title,pid,brands')->find();
         $pid = $cate['pid'];
         $title = '【'.$cate['title'].'】';
-        while($pid != 0){
-            $cate_p = Db::name('goods_cate')->where('id',$pid)->where('status',1)->field('id,title,pid')->find();
-            $title = '【'.$cate_p['title'].'】'.$title;
-            $pid = $cate_p['pid'];
-        }
+        $title = _getAllCateTitle($pid,$title);
         $brands = Db::name('brands')->where('status',0)->field('id,name')->select();
         $this->assign('cate',$cate);
         $this->assign('title',$title);

@@ -1,0 +1,172 @@
+{include file='public/head'}
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+        #thumb {
+            display: none;
+        }
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+        .pay{
+            display: none;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form" style="margin-right: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">属性名称</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入属性名称" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">市场价</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="price" placeholder="请输入市场价" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">平台价</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="shop_price" placeholder="请输入平台价" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">属性规格</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="specs" placeholder="请输入属性规格" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">缩&nbsp;略&nbsp;&nbsp;图</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img">
+                        <i class="layui-icon">&#xe67c;</i>缩略图
+                    </button>
+                    <img class="layui-upload-img" id="thumb" src="">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分批付款</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" lay-filter="paytype" name="paytype" lay-skin="switch" lay-text="是|否" value="1">
+                </div>
+            </div>
+            <div class="pay">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">首批占比(%)</label></label>
+                    <div class="layui-input-block">
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_one" placeholder="请输入首批占比" type="number" value="" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">二批占比(%)</label></label>
+                    <div class="layui-input-block">
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_two" placeholder="请输入二批占比" type="number" value="" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">三批占比(%)</label></label>
+                    <div class="layui-input-block">
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_three" placeholder="请输入三批占比" type="number" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否上架</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" checked>
+                </div>
+            </div>
+            <input type="hidden" name="thumb" value="" />
+            <input type="hidden" name="goods_id" value="{$goods_id}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
+                        提交
+                    </button>
+                    <button class="layui-btn layui-btn-primary" id="reset" type="reset" onclick="reset()">
+                        重置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form','layer','upload'], function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+        /**
+        * 监听表单提交
+        */
+        form.on('submit(toSubmit)',function(data){
+            var params = data.field;
+            $.post('/admin/goods/addAttr', params, function(data){
+                var res = data.data;
+                if(data.code == 200){
+                    layer.msg('添加成功',{
+                        icon:1,
+                        time:1000
+                    },function(){
+                        x_admin_close();
+                        parent.location.reload();
+                    });
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+            return false;
+        });
+        /**
+         * 监听付款方式
+        */
+        form.on('switch(paytype)', function(data){
+            $('.pay_type').val('');
+            if(data.elem.checked){
+                $('.pay').show();
+            }else{
+                $('.pay').hide();
+            }
+        });
+        /**
+         * 文件上传
+        */
+        var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=thumb',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#thumb').attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    $("input[name='thumb']").val(res.url);
+                    $('#thumb').show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    });
+    /**
+     * 重置 
+    */
+    function reset(){
+        location.reload();
+    }
+</script>
+</html>

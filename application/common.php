@@ -210,6 +210,29 @@ function _getGoodsCate($pid=false,$parents=false){
     return $data;
 }
 /**
+ * 获取所有上级分类的名称 【xxx】【xxx】
+ */
+function _getAllCateTitle($pid,$title=''){
+    while($pid != 0){
+        $cate_p = Db::name('goods_cate')->where('id',$pid)->where('status',1)->field('id,title,pid')->find();
+        $title = '【'.$cate_p['title'].'】'.$title;
+        $pid = $cate_p['pid'];
+    }
+    return $title;
+}
+/**
+ * 根据分类获取品牌列表
+ */
+function _getBrandsByCate($cate_id){
+    $brands = Db::name('goods_cate')->where('id',$cate_id)->value('brands');
+    $where = [
+        'status'=>0,
+        'id'=>['in',$brands]
+    ];
+    $brandlis = Db::name('brands')->where($where)->field('id,name')->select();
+    return $brandlis;
+}
+/**
  * api返回json数据
  */
 function json($data=array('code'=>0,'msg'=>'error','data'=>'')){
