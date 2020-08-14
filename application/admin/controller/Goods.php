@@ -23,7 +23,7 @@ class Goods extends Main
         $brand_id = $this->request->param('brand_id','');
         $cate_id = $this->request->param('cate_id','');
         $page_start = ($page - 1) * $limit;
-        $where = [];
+        $where['a.status'] = ['eq',0];
         if($name){
             $where['a.name'] = ['like',"%$name%"];
         }
@@ -67,8 +67,6 @@ class Goods extends Main
      */
     public function addGoods(){
         $post     = $this->request->post();
-        $post['cate'] = array_filter($post['cate']);
-        $cate_id =  end($post['cate']);
         $insert = [
             'name'=>$post['name'],
             'keywords'=>$post['keywords'],
@@ -76,7 +74,7 @@ class Goods extends Main
             'title'=>$post['title'],
             'unit'=>$post['unit'],
             'brand_id'=>$post['brand_id']>0?$post['brand_id']:'',
-            'cate_id'=>$cate_id,
+            'cate_id'=>$post['cate_id'],
             'content'=>$post['content'],
             'create_time'=>date('Y-m-d H:i:s')
         ];
@@ -128,8 +126,6 @@ class Goods extends Main
     public function editGoods(){
         $post     = $this->request->post();
         $id = $post['id'];
-        $post['cate'] = array_filter($post['cate']);
-        $cate_id = end($post['cate']);
         $update = [
             'name'=>$post['name'],
             'keywords'=>$post['keywords'],
@@ -137,7 +133,7 @@ class Goods extends Main
             'title'=>$post['title'],
             'unit'=>$post['unit'],
             'brand_id'=>$post['brand_id']>0?$post['brand_id']:'',
-            'cate_id'=>$cate_id,
+            'cate_id'=>$post['cate_id'],
             'content'=>$post['content'],
             'update_time'=>date('Y-m-d H:i:s')
         ];

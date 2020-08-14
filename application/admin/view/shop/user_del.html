@@ -1,0 +1,82 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+    </style>
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>解绑用户</legend>
+            <div class="layui-field-box">
+                <div class="layui-form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户昵称</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" disabled value="{$shop['nickname']}" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">真实姓名</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" disabled value="{$shop['realname']}" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系电话</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" disabled value="{$shop['mobile']}" />
+                        </div>
+                    </div>
+                    <input type="hidden" name="uid" value="{$shop['uid']}" />
+                    <input type="hidden" name="id" value="{$shop['id']}" />
+                    <input type="hidden" name="type" value="2" />
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">解除绑定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </fieldset>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form.on('submit(toSubmit)', function (data) {
+            layer.confirm('确认要解绑该会员吗？', function (index) {
+                var params = data.field;
+                $.post('/admin/shop/addUser', params, function (data) {
+                    var res = data.data;
+                    if (data.code == 200) {
+                        layer.msg('解绑成功', {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            x_admin_close();
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.msg('解绑失败', {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            x_admin_close();
+                            parent.location.reload();
+                        });
+                    }
+                }, 'json');
+            });
+        });
+    });
+</script>
+
+</html>

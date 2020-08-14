@@ -233,6 +233,13 @@ function _getBrandsByCate($cate_id){
     return $brandlis;
 }
 /**
+ * 根据当前人员分组获取子类
+ */
+function _getLevel($pid){
+    $data = Db::name('member_type')->where('pid',$pid)->field('id,type_title')->select();
+    return $data;
+}
+/**
  * api返回json数据
  */
 function json($data=array('code'=>0,'msg'=>'error','data'=>'')){

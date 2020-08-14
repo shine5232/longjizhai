@@ -81,6 +81,7 @@
             </div>
             <input type="hidden" name="id" value="{$goods_info['id']}" />
             <input type="hidden" name="thumb" value="{$goods_info['thumb']}" />
+            <input type="hidden" name="cate_id" value="{$goods_info['cate_id']}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
@@ -99,6 +100,8 @@
 <script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
 <script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
 <script type="text/javascript">
+    var cate_id = '';
+    var form = {};
     KindEditor.ready(function (K) {
         notice = K.create('#notice', {
             uploadJson: '/api/file/upload?type=article',
@@ -108,7 +111,8 @@
         });
     });
 	layui.use(['form', 'layer', 'upload'], function () {
-        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form = layui.form;
+        var layer = layui.layer,upload = layui.upload;
         /**
         * 图片上传
         */
@@ -148,6 +152,8 @@
                 });
                 return false;
             }
+            cate_id = data.value;
+            $('input[name="cate_id"]').val(cate_id);
             getBrands(data.value);
             $.post('/api/goods_cate/index', {
                 pid: data.value,
@@ -210,7 +216,6 @@
 		      cache:false,          
 		      async:false,          //同步返回
 		      success:function(data){
-		      	    console.log(data);
     		      	if(data.code==0){
     		      		layer.msg(data.msg);
     		      	}else{
