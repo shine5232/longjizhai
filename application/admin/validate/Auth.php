@@ -7,7 +7,7 @@ class Auth extends Validate
 {
     protected $rule = [
         'pid'       => 'require',
-        'title'     => 'require|min:2|max:15|unique:auth_rule',
+        'title'     => 'require|min:2|max:15',
         'name'      => 'require|unique:auth_rule',
         'sort'      =>'require|number',
     ];
@@ -15,7 +15,6 @@ class Auth extends Validate
     	'title.require' =>'菜单名称不能为空',
     	'title.min'		=>'菜单名称太短',
     	'title.max'		=>'菜单名称太长',
-    	'title.unique'	=>'系统中已经存在该菜单名称',
     	'name.require'	=>'控制器不能为空',
     	'name.unique'	=>'控制器必须唯一',
         'sort.require'  =>'排序不能为空',
