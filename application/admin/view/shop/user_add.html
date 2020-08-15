@@ -1,0 +1,122 @@
+{include file="public/head"}
+<style>
+    .avatar{
+        display: flex;
+        align-items: center;
+    }
+    .logo-img{
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+    }
+    .logo-img img{
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="getCheckData">绑定用户</button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索会员','searchUser.html',600,360)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns,shop_id = {$id},county = {$county};
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/shop/user_ajax' //数据接口
+            , page: true //开启分页
+            , limit: 10
+            , county:county
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'radio',fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'nickname', title: '用户昵称', width: '25%', 
+                        templet:function(d){
+                            if(d.avatar){
+                                var avatar = '<div class="avatar">'+
+                                                '<div class="logo-img">'+
+                                                    '<img src="'+d.avatar+'" />'+
+                                                '</div>'+
+                                                '<div>'+d.nickname+'</div>'+
+                                            '</div>';
+                            }else{
+                                var avatar = d.nickname;
+                            }
+                            return avatar;
+                        }
+                    }
+                    , { field: 'realname', title: '用户姓名', width: '20%' }
+                    , { field: 'mobile', title: '联系电话', width: '20%'}
+                    , { field: 'area', title: '所属地区', width: '20%',
+                        templet:function(d){
+                            return d.province_name+'-'+d.city_name+'-'+d.county_name;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听提交数据
+        */
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    if(data.length){
+                        bindUser(data[0].id);
+                    }else{
+                        layer.msg('没有选中的数据', { icon: 5 });
+                    }
+                    break;
+            };
+        });
+    });
+    /**
+     * 绑定会员
+    */
+    function bindUser(argument) {
+        layer.confirm('确认要绑定该会员吗？', function (index) {
+            var params = {
+                uid:argument,
+                id:shop_id,
+                type:1
+            };
+            $.post('/admin/shop/addUser', params, function (j) {
+                if (j.code == 200) {
+                    layer.msg('绑定成功', { icon: 1, time: 1000 }, function () {
+                        x_admin_close();
+						parent.location.reload();
+                    });
+                } else {
+                    layer.msg('绑定失败', { icon: 5, time: 1000 });
+                }
+            }, 'json');
+        });
+    }
+</script>
+
+</html>
