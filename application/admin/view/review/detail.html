@@ -1,0 +1,81 @@
+{include file='public/head'}
+
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+
+		.layui-upload-img {
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<div class="layui-form-item">
+					<label class="layui-form-label">评论人</label>
+					<div class="layui-input-block">
+						<input id="reviewer" name="reviewer" autocomplete="off" value="{$data.reviewer}"
+							class="layui-input" disabled="disabled" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">评论内容</label>
+					<div class="layui-input-block">
+						<div class="layui-textarea" id="content" name="content" style="width: 100%;height: 200px;"
+							disabled="disabled">{$data.content}</div>
+					</div>
+				</div>
+				<div class="layui-form-item logo">
+					<label class="layui-form-label">评论图片</label>
+					{volist name='img' id='vo'}
+					<div class="layui-input-block" style="display: flex;">
+						<img class="layui-upload-img" id="logo_img" src="{$vo}" />
+					</div>
+					{/volist}
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">设计得分</label>
+					<div class="layui-input-block">
+						<input id="design_code" name="design_code" autocomplete="off" value="{$data.design_code}"
+							class="layui-input" disabled="disabled" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">服务得分</label>
+					<div class="layui-input-block">
+						<input id="service_code" name="service_code" autocomplete="off" value="{$data.service_code}"
+							class="layui-input" disabled="disabled" />
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">贴心得分</label>
+					<div class="layui-input-block">
+						<input id="intimate_code" name="intimate_code" autocomplete="off" value="{$data.intimate_code}"
+							class="layui-input" disabled="disabled" />
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">回复内容</label>
+					<div class="layui-input-block">
+						<div class="layui-textarea" id="reply" name="reply" style="width: 100%;height: 200px;"
+							disabled="disabled">{$data.content}</div>
+					</div>
+				</div>
+				<input type="hidden" value="{$data.id}" name="id" />
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+						<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+{include file='public/foot'}
+
+</html>

@@ -1,0 +1,135 @@
+{include file='public/head'}
+
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+		.layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">技工</label>
+				<div class="layui-input-block">
+					<input id="uname" name="uname" autocomplete="off" value="{$data.uname}"
+						class="layui-input" disabled="disabled" />
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">评论内容</label>
+				<div class="layui-input-block">
+					<div class="layui-textarea" id="content" name="content" 
+						style="width: 100%;height: 200px;" disabled="disabled">{$data.content}</div>
+				</div>
+			</div>
+			<div class="layui-form-item logo">
+				<label class="layui-form-label">评论图片</label>
+				{volist name='img' id='vo'}
+					<div class="layui-input-block" style="display: flex;">
+						<img class="layui-upload-img" id="logo_img" src="{$vo}" />
+					</div>
+				{/volist}
+			</div>
+			<div class="layui-form-item">
+                <label class="layui-form-label">回复内容</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入公告内容" id="reply" name="reply"
+                        style="width: 100%;height: 400px;"></textarea>
+                </div>
+            </div>	
+			<input type="hidden" value="{$data.id}" name="id" />
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript"> 
+
+KindEditor.ready(function (K) {
+	notice = K.create('#reply', {
+		uploadJson: '/api/file/upload?type=article',
+		afterBlur: function(){
+			this.sync();
+		}
+	});
+});
+	layui.use(['form', 'layer'], function () {
+		var form = layui.form;
+		var layer = layui.layer;
+		/**
+		 * 监听表单提交
+		 */
+		form.on('submit(toSubmit)', function (data) {
+			var params = {
+				id: data.field.id,
+				reply:data.field.reply
+			};
+			$.post('/admin/review/replyDetail', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('修改成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('修改失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+			return false;
+		});
+		layui.use('upload', function () {
+			var upload = layui.upload;
+			var uploadInst = upload.render({
+				elem: '.upload-img',
+				url: '/api/file/upload?type=logo',
+				accept: 'file', // 允许上传的文件类型
+				field: 'imgFile',
+				auto: true, // 自动上传
+				before: function (obj) {
+					var id = this.id;
+					obj.preview(function (index, file, result) {
+						$('#'+id).attr('src', result); //图片链接 base64
+					});
+				},
+				done: function (res) {
+					layer.msg(res.msg);
+					if (res.error == 0) {
+						var id = this.id;
+						if(id == 'logo_img'){
+							$("input[name='logo']").val(res.url);
+						}else if(id == 'wechat_img'){
+							$("input[name='wechat']").val(res.url);
+						}
+					}
+				},
+				error: function (index, upload) {
+					// 上传失败
+				}
+			});
+		});
+	});
+</script>
+
+</html>

@@ -129,12 +129,16 @@ class notice extends Main
      */
     public function deleteNotice(){
         $id = $this->request->post('id');
-        $res = Db::name('notice')->delete($id);
+        $res = Db::name('notice')
+        ->where('id',$id)
+        ->delete();
+        // var_dump($res);die;
+        // var_dump(Db::name('notice')->getLastSql());die;
         if($res){
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';
         }
-        
+        return json($this->ret);
     }
 
     /**

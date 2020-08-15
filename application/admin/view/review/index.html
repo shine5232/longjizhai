@@ -1,0 +1,73 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container"> 
+                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索认证','/admin/authenticate/search?type='+type,800,480)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    var type = {$type};
+    var is_reply = {$is_reply};
+    if(is_reply == 1){
+        reply = '详情' 
+    }else{
+        reply = '回复' 
+    }
+    if(type == 1){
+        name = '技工'
+    }else if(type == 2){
+        name = '工长'
+    }else if(type == 3){
+        name = '设计师'
+    }else if(type == 4){
+        name = '装饰公司'
+    }
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/review/indexList?type='+type+'&is_reply='+is_reply //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'uname', title: name, width: '15%' }
+                    , { field: 'content', title: '评论内容', width: '15%' }
+                    , { field: 'create_time', title: '评论时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'回复\',\'/admin/review/reply?id=' + d.id + '\',800,480);">'+reply+'</button>' ;
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+    });
+</script>
+
+</html>
