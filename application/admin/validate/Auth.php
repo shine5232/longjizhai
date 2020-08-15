@@ -3,7 +3,7 @@ namespace app\admin\validate;
 
 use think\Validate;
 
-class Auth extends Validate
+class Auth extends Validate 
 {
     protected $rule = [
         'pid'       => 'require',
