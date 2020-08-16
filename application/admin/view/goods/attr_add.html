@@ -109,7 +109,7 @@
         */
         form.on('submit(toSubmit)',function(data){
             var params = data.field;
-            $.post('/admin/goods/addAttr', params, function(data){
+            $.post('/admin/goods/attrAdd', params, function(data){
                 var res = data.data;
                 if(data.code == 200){
                     layer.msg('添加成功',{

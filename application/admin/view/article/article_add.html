@@ -105,7 +105,7 @@
 				sort: data.field.sort,
 				content: data.field.content,
 			};
-			$.post('/admin/article/addArticle', params, function (data) {
+			$.post('/admin/article/articleAdd', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {

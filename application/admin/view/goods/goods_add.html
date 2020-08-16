@@ -18,7 +18,7 @@
         }
     </style>
     <div class="x-body">
-        <form action="addGoods" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
+        <form action="" class="layui-form" id="mainForm" method="post" style="margin-right: 20px;">
             <div class="layui-form-item">
                 <label class="layui-form-label">商品名称</label>
                 <div class="layui-input-block">
@@ -40,7 +40,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">所属分类</label>
                 <div class="layui-input-inline select select1">
-                    <select lay-filter="cate" name="cate[]" data-id="1">
+                    <select lay-filter="cate" data-id="1">
                         <option value="">请选择</option>
                         {volist name='cate' id='vo'}
                             <option value="{$vo.id}">{$vo.title}</option>
@@ -162,7 +162,7 @@
                     if (res.length > 0) {
                         var ids = parseInt(id) + 1;
                         var html_t = '<div class="layui-input-inline select select'+ids+'">'+
-                                        '<select lay-filter="cate" name="cate[]" data-id="'+ids+'">';
+                                        '<select lay-filter="cate" data-id="'+ids+'">';
                         var option = '<option value="">请选择</option>';
                         res.forEach(function (v, i) {
                             option += '<option value="' + v.id + '">' + v.title + '</option>';

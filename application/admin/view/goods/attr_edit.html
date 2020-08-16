@@ -105,7 +105,7 @@
         */
         form.on('submit(toSubmit)',function(data){
             var params = data.field;
-            $.post('/admin/goods/editAttr', params, function(data){
+            $.post('/admin/goods/attrEdit', params, function(data){
                 var res = data.data;
                 if(data.code == 200){
                     layer.msg('修改成功',{

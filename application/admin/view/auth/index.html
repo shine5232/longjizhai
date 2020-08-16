@@ -1,4 +1,9 @@
 {include file="public/head"}
+<style>
+    .layui-icon font{
+        font-size: 12px !important;
+    }
+</style>
     <body>
     <div class="x-body" >
         <button class="layui-btn layui-btn-sm " onclick="x_admin_show('添加菜单','showAdd.html',500,460)"></i>添加菜单</button>
@@ -24,7 +29,7 @@
                                     <i class="layui-icon">
                                     <?php 
                                         if(empty($vo['icon'])){
-                                        echo '未设置'; 
+                                        echo '<font>未设置</font>'; 
                                     }else{
                                          echo '&#'.$vo['icon'].';';   
                                     }   
