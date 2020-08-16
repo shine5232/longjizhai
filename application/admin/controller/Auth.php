@@ -33,6 +33,36 @@ class auth extends Main
 			$this->success('添加成功');
 		}
     }
+    /**
+     * 添加子菜单
+     */
+    function addChild(){
+        $id  = $this->request->get('id');
+        if($id!==0){
+            $p_title = Db::name('auth_rule')->where('id',$id)->value('title');
+        }else{
+            $p_title = '顶级菜单';
+        }
+        $this->assign('p_title',$p_title);
+        $this->assign('id',$id);
+        return  $this->fetch('child');
+    }
+    /**
+     * 添加子菜单数据处理
+     */
+    function childAdd(){
+        $post = $this->request->post();
+    	$validate = validate('auth');
+    	$res = $validate->check($post);
+
+		if($res!==true){
+			$this->error($validate->getError());
+		}else{
+			Db::name('auth_rule')
+			->insert($post);
+			$this->success('添加成功');
+		}
+    }
     function showEdit(){
         $id  = $this->request->get('id');
         $pid = Db::name('auth_rule')

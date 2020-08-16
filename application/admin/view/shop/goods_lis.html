@@ -22,7 +22,7 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="x_admin_show('添加商品','goodsAdd.html?shop_id={$shop_id}',820,500)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html?shop_id={$shop_id}&cate_id={$cate_id}',820,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商品
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -54,8 +54,9 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox',fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
-                    , { field: 'name', title: '商品名称', width: '20%'}
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'name', title: '商品名称', width: '10%'}
+                    , { field: 'title', title: '副标题', width: '10%'}
                     , { field: 'thumb', title: '商品主图', width: '10%',
                         templet:function(d){
                             if(d.thumb){
@@ -66,14 +67,12 @@
                             return img;
                         }
                     }
-                    , { field: 'cate_title', title: '所属分类', width: '20%'}
+                    , { field: 'cate_title', title: '所属分类', width: '25%'}
                     , { field: 'brand_name', title: '所属品牌', width: '15%'}
                     , {
                         field: 'handle', title: '操作',width: '20%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop/goodsAttr?id=' + d.id + '\',1000,500);">属性</button>'+
-                            '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop/goodsEdit?id=' + d.id + '\',800,480);">编辑</button>'+
-                            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }

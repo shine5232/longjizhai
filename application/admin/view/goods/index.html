@@ -12,9 +12,9 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html',820,500)">
+                <!-- <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html',820,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商品
-                </button>
+                </button> -->
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
@@ -46,6 +46,7 @@
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
                     , { field: 'name', title: '商品名称' }
+                    , { field: 'title', title: '副标题', width: '10%'}
                     , { field: 'thumb', title: '商品主图',width:'10%',
                         templet:function(d){
                             if(d.thumb){
@@ -58,7 +59,6 @@
                     }
                     , { field: 'brand_name', title: '所属品牌', width: '10%'}
                     , { field: 'cate_title', title: '所属分类' }
-                    , { field: 'title', title: '副标题', width: '10%'}
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
                         field: 'handle', title: '操作',width: '20%',

@@ -22,7 +22,10 @@ class Goods extends Main
         $name = $this->request->param('name','');
         $brand_id = $this->request->param('brand_id','');
         $cate_id = $this->request->param('cate_id','');
+        $user = session('user');
+        echo '<pre>';var_dump($user);die;
         $page_start = ($page - 1) * $limit;
+
         $where['a.status'] = ['eq',0];
         if($name){
             $where['a.name'] = ['like',"%$name%"];
@@ -33,7 +36,7 @@ class Goods extends Main
         if($cate_id){
             $where['a.cate_id'] = ['eq',$cate_id];
         }
-        $data = Db::name('goods_info')->alias('a')
+        $data = Db::name('shop_goods')->alias('a')
             ->join('goods_cate b','b.id = a.cate_id','LEFT')
             ->join('brands c','c.id = a.brand_id','LEFT')
             ->where($where)
@@ -41,7 +44,7 @@ class Goods extends Main
             ->limit($page_start,$limit)
             ->field('a.*,b.title as cate_title,c.name as brand_name')
             ->select();
-        $count = Db::name('goods_info')->alias('a')
+        $count = Db::name('shop_goods')->alias('a')
             ->join('goods_cate b','b.id = a.cate_id','LEFT')
             ->where($where)
             ->count();
