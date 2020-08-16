@@ -11,6 +11,9 @@
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索预约','/admin/appointment/search?type='+type,800,480)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
             </div>
         </script>
     </div>
@@ -19,12 +22,6 @@
 <script>
     var tableIns;
     var type = {$type};
-    var is_reply = {$is_reply};
-    if(is_reply == 1){
-        reply = '详情' 
-    }else{
-        reply = '回复' 
-    }
     if(type == 1){
         name = '技工'
     }else if(type == 2){
@@ -43,7 +40,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/review/indexList?type='+type+'&is_reply='+is_reply //数据接口
+            , url: '/admin/appointment/indexList?type='+type //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
@@ -51,13 +48,20 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'uname', title: name, width: '15%' }
-                    , { field: 'content', title: '评论内容', width: '15%' }
-                    , { field: 'create_time', title: '评论时间', width: '15%', }
+                    , { field: 'name', title: '预约人', width: '8%' }
+                    , { field: 'appointmented_name', title: '预约技工', width: '8%' }
+                    , { field: 'appoint_time', title: '预约时间', width: '12%', }
+                    , { field: 'mobile', title: '预约电话', width: '12%', }
+                    , { field: 'content', title: '预约留言', width: '20%', }
+                    , { field: 'status_name', title: '预约状态', width: '8%', }
+                    , { field: 'note', title: '备注', width: '15%', }
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'回复\',\'/admin/review/reply?id=' + d.id + '\',800,480);">'+reply+'</button>' ;
+                            var handle = '';
+                            if(d.status == 0){
+                                var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'处理预约\',\'/admin/appointment/detail?id=' + d.id + '\',800,480);">处理预约</button>' ;
+                            }
                             return handle;
                         }
                     }
