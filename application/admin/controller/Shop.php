@@ -284,4 +284,148 @@ class Shop extends Main
         $this->ret['msg'] = '关联成功';
         return json($this->ret);
     }
+    /**
+     * 商家管理-商品列表页面
+     */
+    public function goodsLis(){
+        $shop_id  = $this->request->get('id');
+        $cate_id = Db::name('shop')->where('id',$shop_id)->value('shop_cate');
+        $this->assign('shop_id',$shop_id);
+        $this->assign('cate_id',$cate_id);
+        return $this->fetch('goods_lis');
+    }
+    /**
+     * 商家管理-商品搜索页面
+     */
+    public function searchGoods(){
+        $cate_id  = $this->request->get('cate_id');
+        $cate = _getGoodsCate();//获取顶级分类
+        $this->assign('cate',$cate);
+        $this->assign('cate_id',$cate_id);
+        return $this->fetch('search_goods');
+    }
+    /**
+     * 商家管理-商品列表数据请求
+     */
+    public function goods_ajax(){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $shop_id = $this->request->param('shop_id','');
+        $cate_id = $this->request->param('cate_id','');
+        $brand_id = $this->request->param('brand_id','');
+        $page_start = ($page - 1) * $limit;
+        $where['a.shop_id'] = ['eq',$shop_id];
+        if($cate_id){
+            $where['b.cate_id'] = ['eq',$cate_id];
+        }
+        if($brand_id){
+            $where['b.brand_id'] = ['eq',$brand_id];
+        }
+        $data = Db::name('shop_goods')->alias('a')
+            ->join('goods_info b','b.id = a.goods_id','INNER')
+            ->join('brands c','c.id = b.brand_id','LEFT')
+            ->where($where)
+            ->field('a.id,b.name,b.thumb,b.cate_id,c.name as brand_name')
+            ->order('a.id DESC')
+            ->limit($page_start,$limit)
+            ->select();
+        $count = Db::name('shop_goods')->alias('a')
+            ->join('goods_info b','b.id = a.goods_id','INNER')
+            ->join('brands c','c.id = b.brand_id','LEFT')
+            ->where($where)
+            ->count();            
+        $datas = [];
+        if($data){
+            foreach($data as $key=>$vo){
+                $datas[$key] = $vo;
+                $datas[$key]['cate_title'] = _getAllCateTitle($vo['cate_id']);
+            }
+            $this->ret['count'] = $count;
+            $this->ret['data'] = $datas;
+        }
+        return json($this->ret);
+    }
+    /**
+     * 商家管理-商品编辑页面
+     */
+    public function goodsEdit(){
+        $shop_goods_id  = $this->request->get('id');
+        $data = Db::name('shop_goods')->where('id',$shop_goods_id)->find();
+        $this->assign('data',$data);
+        return $this->fetch('goods_edit');
+    }
+    /**
+     * 商家管理-商品属性列表页面
+     */
+    public function goodsAttr(){
+        $shop_goods_id  = $this->request->get('id');
+        $this->assign('shop_goods_id',$shop_goods_id);
+        return $this->fetch('goods_attr');
+    }
+    /**
+     * 商家管理-商品属性列表数据请求
+     */
+    public function goods_attr_ajax(){
+        $page = $this->request->param('page',1,'intval');
+        $limit = $this->request->param('limit',20,'intval');
+        $id = $this->request->param('shop_goods_id','');
+        $page_start = ($page - 1) * $limit;
+        $where['a.shop_id'] = ['eq',$shop_id];
+        $data = Db::name('shop_goods')->alias('a')
+            ->join('goods_info b','b.id = a.goods_id','INNER')
+            ->join('brands c','c.id = b.brand_id','LEFT')
+            ->where($where)
+            ->field('a.id,b.name,b.thumb,b.cate_id,c.name as brand_name')
+            ->order('a.id DESC')
+            ->limit($page_start,$limit)
+            ->select();
+        $count = Db::name('shop_goods')->alias('a')
+            ->join('goods_info b','b.id = a.goods_id','INNER')
+            ->join('brands c','c.id = b.brand_id','LEFT')
+            ->where($where)
+            ->count();            
+        $datas = [];
+        if($data){
+            foreach($data as $key=>$vo){
+                $datas[$key] = $vo;
+                $datas[$key]['cate_title'] = _getAllCateTitle($vo['cate_id']);
+            }
+            $this->ret['count'] = $count;
+            $this->ret['data'] = $datas;
+        }
+        return json($this->ret);
+    }
+    /**
+     * 商家管理-商品添加页面
+     */
+    public function goodsAdd(){
+        $cate = _getGoodsCate();//获取顶级分类
+        $shop_id  = $this->request->get('id');
+        $cate_id = Db::name('shop')->where('id',$shop_id)->value('shop_cate');
+        $this->assign('cate',$cate);
+        $this->assign('cate_id',$cate_id);
+        return $this->fetch('goods_add');
+    }
+    /**
+     * 商家管理-商品添加数据处理
+     */
+    public function addGoods(){
+        $post     = $this->request->post();
+        $id = $post['id'];
+        $uid = $post['uid'];
+        $update1 = [
+            'uid'=>$uid,
+            'update_time'=>date('Y-m-d H:i:s')
+        ];
+        $update2 = ['locked' => 1];
+        if($post['type']==2){
+            $update1['uid'] = '';
+            $update2['locked'] = 0;
+        }
+        Db::name('shop')->where('id',$id)->update($update1);
+        Db::name('member')->where('id',$uid)->update($update2);
+        $this->ret['code'] = 200;
+        $this->ret['msg'] = '关联成功';
+        return json($this->ret);
+    }
 }
