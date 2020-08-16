@@ -1,0 +1,139 @@
+{include file='public/head'}
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+        .logo-img{
+            width: 50px;
+        }
+    </style>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                {if $count < 5}
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加图片','imgAdd.html?shop_goods_id={$id}',860,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加图片
+                </button>
+                {/if}
+            </div>
+        </script>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+	var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/shop/img_ajax?shop_goods_id='+{$id} //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'img',title: '商品图片',
+                        templet: function(d){
+                            return '<img src="'+d.img+'" class="logo-img" />';
+                        }
+                    }
+                    , { field: 'title', title: '图片标题', width: '15%',edit: 'text' }
+                    , { field: 'sort', title: '排序', width: '10%',edit: 'text' }
+                    , { field: 'create_time', title: '创建时间', width: '20%', }
+                    , {
+                        field: 'handle', title: '操作',width: '10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听批量删除 
+        */
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var ids = [];
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    data.forEach(function (v, i) {
+                        ids.push(v.id);
+                    });
+                    delAll(ids);
+                    break;
+            };
+        });
+        /**
+         * 监听单元格编辑
+        */
+        table.on('edit(test)',function(obj){
+            var params = obj.data;
+            $.post('/admin/shop/editImg', params, function(data){
+                var res = data.data;
+                if(data.code == 200){
+                    layer.msg('修改成功',{
+                        icon:1,
+                        time:1000
+                    },function(){
+                        location.reload();
+                    });
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
+    });
+    /**
+     * 批量删除
+    */
+    function delAll(argument) {
+        if (argument == '') {
+            layer.msg('没有选中的数据', { icon: 5 });
+        } else {
+            argument = argument.toString();
+            layer.confirm('确认要全部删除吗？', function (index) {
+                $.post('/admin/shop/deleteImg', { id: argument }, function (j) {
+                    if (j.code == 200) {
+                        layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg('删除失败', { icon: 5, time: 1000 });
+                    }
+                }, 'json');
+            });
+        }
+    }
+    /**
+     * 单个删除
+    */
+    function delUser(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/shop/deleteImg', { id: id }, function (j) {
+                if (j.code == 200) {
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.msg('删除失败', { icon: 5, time: 1000 });
+                }
+            }, 'json');
+        });
+    }
+</script>
+</html>
