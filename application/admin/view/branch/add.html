@@ -128,7 +128,7 @@ layui.use(['form','layer'], function(){
 				county: data.field.county,
 				status: data.field.status
 			};
-		$.post('/admin/branch/addBranch', params, function(data){
+		$.post('/admin/branch/branchAdd', params, function(data){
             var res = data.data;
             if(data.code == 200){
 				layer.msg('添加成功',{

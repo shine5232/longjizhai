@@ -52,7 +52,7 @@
                 pid:data.field.pid,
                 type_sort:data.field.type_sort
 			};
-			$.post('/admin/member_type/addType', params, function (data) {
+			$.post('/admin/member_type/add', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {

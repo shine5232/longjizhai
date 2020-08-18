@@ -18,9 +18,7 @@ class Goods extends Main
             $brand_id = $this->request->param('brand_id','');
             $cate_id = $this->request->param('cate_id','');
             $user = session('user');
-            //echo '<pre>';var_dump($user);die;
             $page_start = ($page - 1) * $limit;
-
             $where['a.status'] = ['eq',0];
             if($name){
                 $where['a.name'] = ['like',"%$name%"];
@@ -30,6 +28,9 @@ class Goods extends Main
             }
             if($cate_id){
                 $where['a.cate_id'] = ['eq',$cate_id];
+            }
+            if($user['county']){
+                $where['a.county'] = ['eq',$user['county']];
             }
             $data = Db::name('shop_goods')->alias('a')
                 ->join('goods_cate b','b.id = a.cate_id','LEFT')
@@ -72,7 +73,7 @@ class Goods extends Main
                 'content'=>$post['content'],
                 'create_time'=>date('Y-m-d H:i:s')
             ];
-            $db = Db::name('goods_info')->insert($insert);
+            $db = Db::name('shop_goods')->insert($insert);
             if($db){
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '添加成功';
@@ -102,13 +103,13 @@ class Goods extends Main
                 'content'=>$post['content'],
                 'update_time'=>date('Y-m-d H:i:s')
             ];
-            Db::name('goods_info')->where('id',$id)->update($update);
+            Db::name('shop_goods')->where('id',$id)->update($update);
             $this->ret['code'] = 200;
             $this->ret['msg'] = '修改成功';
             return json($this->ret);
         }else{
             $id  = $this->request->get('id');
-            $goods_info = Db::name('goods_info')->where('id',$id)->find();
+            $goods_info = Db::name('shop_goods')->where('id',$id)->find();
             //根据当前分类获取上级所有分类
             $pid = $goods_info['cate_id'];
             $cate_id = [$goods_info['cate_id']];
@@ -158,9 +159,9 @@ class Goods extends Main
             'delete_time'   =>  date('Y-m-d H:i:s')
         ];
         if(count($ids) > 1){
-            $res = Db::name('goods_info')->where('id','in',$id)->update($upd);
+            $res = Db::name('shop_goods')->where('id','in',$id)->update($upd);
         }else{
-            $res = Db::name('goods_info')->where('id',$ids[0])->update($upd);
+            $res = Db::name('shop_goods')->where('id',$ids[0])->update($upd);
         }
         if($res){
             $this->ret['code'] = 200;
@@ -179,14 +180,14 @@ class Goods extends Main
             $page_start = ($page - 1) * $limit;
             $where['a.status'] = ['eq',0];
             $where['a.goods_id'] = ['eq',$goods_id];
-            $data = Db::name('goods_attr')->alias('a')
+            $data = Db::name('shop_goods_attr')->alias('a')
                 ->join('goods_info b','b.id = a.goods_id','INNER')
                 ->where($where)
                 ->field('a.*,b.unit')
                 ->order('a.id DESC')
                 ->limit($page_start,$limit)
                 ->select();
-            $count = Db::name('goods_attr')->alias('a')
+            $count = Db::name('shop_goods_attr')->alias('a')
                 ->join('goods_info b','b.id = a.goods_id','INNER')
                 ->where($where)
                 ->count();
@@ -221,7 +222,7 @@ class Goods extends Main
                 'goods_id'=>$post['goods_id'],
                 'create_time'=>date('Y-m-d H:i:s')
             ];
-            $db = Db::name('goods_attr')->insert($insert);
+            $db = Db::name('shop_goods_attr')->insert($insert);
             if($db){
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '添加成功';
@@ -253,13 +254,13 @@ class Goods extends Main
                 'online'=>isset($post['online'])?$post['online']:0,
                 'update_time'=>date('Y-m-d H:i:s')
             ];
-            Db::name('goods_attr')->where('id',$id)->update($update);
+            Db::name('shop_goods_attr')->where('id',$id)->update($update);
             $this->ret['code'] = 200;
             $this->ret['msg'] = '修改成功';
             return json($this->ret);
         }else{
             $id  = $this->request->get('id');
-            $goods_attr = Db::name('goods_attr')->where('id',$id)->find();
+            $goods_attr = Db::name('shop_goods_attr')->where('id',$id)->find();
             $this->assign('goods_attr',$goods_attr);
             return $this->fetch('attr_edit');
         }
@@ -275,9 +276,9 @@ class Goods extends Main
             'delete_time'   =>  date('Y-m-d H:i:s')
         ];
         if(count($ids) > 1){
-            $res = Db::name('goods_attr')->where('id','in',$id)->update($upd);
+            $res = Db::name('shop_goods_attr')->where('id','in',$id)->update($upd);
         }else{
-            $res = Db::name('goods_attr')->where('id',$ids[0])->update($upd);
+            $res = Db::name('shop_goods_attr')->where('id',$ids[0])->update($upd);
         }
         if($res){
             $this->ret['code'] = 200;
@@ -295,12 +296,12 @@ class Goods extends Main
             $limit = $this->request->param('limit',20,'intval');
             $page_start = ($page - 1) * $limit;
             $where['goods_id'] = $goods_id;
-            $data = Db::name('goods_img')
+            $data = Db::name('shop_goods_img')
                 ->where($where)
                 ->order('sort DESC,id DESC')
                 ->limit($page_start,$limit)
                 ->select();
-            $count = Db::name('goods_img')
+            $count = Db::name('shop_goods_img')
                 ->where($where)
                 ->count();
             if($data){
@@ -310,7 +311,7 @@ class Goods extends Main
             return json($this->ret);
         }else{
             $id  = $this->request->get('id');
-            $count = Db::name('goods_img')->where('goods_id',$id)->count();
+            $count = Db::name('shop_goods_img')->where('goods_id',$id)->count();
             $this->assign('id',$id);
             $this->assign('count',$count);
             return $this->fetch('goods_img');
@@ -329,7 +330,7 @@ class Goods extends Main
                     'img' => $v
                 ];
             }
-            $db = Db::name('goods_img')->insertAll($insert);
+            $db = Db::name('shop_goods_img')->insertAll($insert);
             if($db){
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '添加成功';
@@ -337,7 +338,7 @@ class Goods extends Main
             return json($this->ret);
         }else{
             $goods_id = $this->request->get('goods_id');
-            $count = Db::name('goods_img')->where('goods_id',$goods_id)->count();
+            $count = Db::name('shop_goods_img')->where('goods_id',$goods_id)->count();
             $this->assign('count',$count);
             $this->assign('goods_id',$goods_id);
             return $this->fetch('img_add');
@@ -356,13 +357,13 @@ class Goods extends Main
                 'img'=>$post['img'],
                 'update_time'=>date('Y-m-d H:i:s')
             ];
-            Db::name('goods_img')->where('id',$id)->update($update);
+            Db::name('shop_goods_img')->where('id',$id)->update($update);
             $this->ret['code'] = 200;
             $this->ret['msg'] = '修改成功';
             return json($this->ret);
         }else{
             $id  = $this->request->get('id');
-            $goods_attr = Db::name('goods_img')->where('id',$id)->find();
+            $goods_attr = Db::name('shop_goods_img')->where('id',$id)->find();
             $this->assign('goods_img',$goods_attr);
             return $this->fetch('img_edit');
         }
@@ -374,9 +375,9 @@ class Goods extends Main
         $id = $this->request->post('id');
         $ids = explode(',',$id);
         if(count($ids) > 1){
-            $res = Db::name('goods_img')->where('id','in',$id)->delete();
+            $res = Db::name('shop_goods_img')->where('id','in',$id)->delete();
         }else{
-            $res = Db::name('goods_img')->where('id',$ids[0])->delete();
+            $res = Db::name('shop_goods_img')->where('id',$ids[0])->delete();
         }
         if($res){
             $this->ret['code'] = 200;

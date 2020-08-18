@@ -1,0 +1,146 @@
+{include file='public/head'}
+
+<body>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>复制分站数据</legend>
+            <div class="layui-field-box">
+                <div class="layui-form">
+                    <div class="layui-form-item" id="region">
+                        <label class="layui-form-label">数据源</label>
+                        <div class="layui-input-inline">
+                            <select name="province_from" lay-filter="province" id="province1" lay-verify="required"
+                                data-id="1">
+                                <option value="">请选择省</option>
+                                {volist name='province' id='vo'}
+                                <option value="{$vo.region_code}">{$vo.region_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city_from" lay-filter="city" id="city1" lay-verify="required" data-id="1">
+                                <option value="">请选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="county_from" lay-filter="county" id="county1" lay-verify="required" data-id="1">
+                                <option value="">请选择区/县</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="region">
+                        <label class="layui-form-label">目标分站</label>
+                        <div class="layui-input-inline">
+                            <select name="province_to" lay-filter="province" id="province2" lay-verify="required"
+                                data-id="2">
+                                <option value="">请选择省</option>
+                                {volist name='province' id='vo'}
+                                <option value="{$vo.region_code}">{$vo.region_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city_to" lay-filter="city" id="city2" lay-verify="required" data-id="2">
+                                <option value="">请选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="county_to" lay-filter="county" id="county2" lay-verify="required" data-id="2">
+                                <option value="">请选择区/县</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        /**
+         * 监听省份选择
+        */
+        form.on('select(province)', function (data) {
+            var id = $(data.elem).data('id');
+            $.post('/api/region/index', {
+                code: data.value,
+                type: 2
+            }, function (data) {
+                var res = data.data;
+                if (data.code == 0) {
+                    if (res.length > 0) {
+                        var option = '<option value="">请选择市</option>';
+                        res.forEach(function (v, i) {
+                            option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+                        });
+                        $('#city' + id).html(option);
+                        $('#county' + id).html('<option value="">请选择区/县</option>');
+                        form.render('select');
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+        });
+        /**
+         * 监听城市选择
+        */
+        form.on('select(city)', function (data) {
+            var id = $(data.elem).data('id');
+            $.post('/api/region/index', {
+                code: data.value,
+                type: 2,
+                is_open: 1
+            }, function (data) {
+                var res = data.data;
+                if (data.code == 0) {
+                    if (res.length > 0) {
+                        var option = '<option value="">请选择区/县</option>';
+                        res.forEach(function (v, i) {
+                            option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+                        });
+                        $('#county' + id).html(option);
+                        form.render('select');
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+        });
+        /**
+         * 监听表单提交
+        */
+        form.on('submit(toSubmit)', function (data) {
+            $.post('/admin/branch/copy', data.field, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    layer.msg('添加成功', {
+                        icon: 1,
+                        time: 1000
+                    }, function () {
+                        x_admin_close();
+                        parent.location.reload();
+                    });
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+            return false;
+        });
+    });
+</script>
+
+</html>

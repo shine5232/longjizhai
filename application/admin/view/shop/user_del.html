@@ -54,7 +54,7 @@
         form.on('submit(toSubmit)', function (data) {
             layer.confirm('确认要解绑该会员吗？', function (index) {
                 var params = data.field;
-                $.post('/admin/shop/addUser', params, function (data) {
+                $.post('/admin/shop/userAdd', params, function (data) {
                     var res = data.data;
                     if (data.code == 200) {
                         layer.msg('解绑成功', {

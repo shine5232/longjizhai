@@ -47,7 +47,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/shop/goods_ajax?shop_id='+shop_id //数据接口
+            , url: '/admin/shop_goods/goodsLis?shop_id='+shop_id //数据接口
             , page: true //开启分页
             , limit: 10
             , id: 'test'
@@ -72,7 +72,7 @@
                     , {
                         field: 'handle', title: '操作',width: '20%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
@@ -105,7 +105,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/shop/deleteGoods', { id: argument }, function (j) {
+                $.post('/admin/shop_goods/deleteGoods', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -122,7 +122,7 @@
     */
     function delGoods(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/shop/deleteGoods', { id: id }, function (j) {
+            $.post('/admin/shop_goods/deleteGoods', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();

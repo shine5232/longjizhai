@@ -4,36 +4,42 @@
         header {
             color: black;
         }
+        #thumb {
+            display: none;
+        }
         .layui-upload-img{
 			width: auto;
 			height: 60px;
 			margin-left: 20px;
 		}
+        .pay{
+            display: none;
+        }
     </style>
     <div class="x-body">
         <div class="layui-form" style="margin-right: 20px;">
             <div class="layui-form-item">
                 <label class="layui-form-label">属性名称</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" value="{$goods_attr['name']}" placeholder="请输入属性名称" type="text" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入属性名称" type="text" />
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">市场价</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="price" value="{$goods_attr['price']}" placeholder="请输入市场价" type="number" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="price" placeholder="请输入市场价" type="number" />
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">平台价</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="shop_price" value="{$goods_attr['shop_price']}" placeholder="请输入平台价" type="number" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="shop_price" placeholder="请输入平台价" type="number" />
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">属性规格</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="specs" value="{$goods_attr['specs']}" placeholder="请输入属性规格" type="number" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="specs" placeholder="请输入属性规格" type="number" />
                 </div>
             </div>
             <div class="layui-form-item">
@@ -42,45 +48,43 @@
                     <button type="button" class="layui-btn upload-img">
                         <i class="layui-icon">&#xe67c;</i>缩略图
                     </button>
-                    {if $goods_attr['thumb']}
-                    <img class="layui-upload-img" id="thumb" src="__public__{$goods_attr['thumb']}">
-                    {/if}
+                    <img class="layui-upload-img" id="thumb" src="">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">分批付款</label>
                 <div class="layui-input-block">
-                    <input type="checkbox" name="paytype" lay-filter="paytype" lay-skin="switch" lay-text="是|否" value="1" {if condition="$goods_attr['paytype'] == 1"}checked{/if} />
+                    <input type="checkbox" lay-filter="paytype" name="paytype" lay-skin="switch" lay-text="是|否" value="1">
                 </div>
             </div>
-            <div class="pay" style="{if $goods_attr['paytype'] == 1}display: inline;{else}display: none;{/if}">
+            <div class="pay">
                 <div class="layui-form-item">
                     <label class="layui-form-label">首批占比(%)</label></label>
                     <div class="layui-input-block">
-                        <input autocomplete="off" class="layui-input pay_type" name="pay_one" placeholder="请输入首批占比" type="number" value="{$goods_attr['pay_one']}" />
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_one" placeholder="请输入首批占比" type="number" value="" />
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">二批占比(%)</label></label>
                     <div class="layui-input-block">
-                        <input autocomplete="off" class="layui-input pay_type" name="pay_two" placeholder="请输入二批占比" type="number" value="{$goods_attr['pay_two']}" />
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_two" placeholder="请输入二批占比" type="number" value="" />
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">三批占比(%)</label></label>
                     <div class="layui-input-block">
-                        <input autocomplete="off" class="layui-input pay_type" name="pay_three" placeholder="请输入三批占比" type="number" value="{$goods_attr['pay_three']}" />
+                        <input autocomplete="off" class="layui-input pay_type" name="pay_three" placeholder="请输入三批占比" type="number" value="" />
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">是否上架</label>
                 <div class="layui-input-block">
-                  <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" {if condition="$goods_attr['online'] == 1"}checked{/if} />
+                  <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" checked>
                 </div>
             </div>
-            <input type="hidden" name="thumb" value="{$goods_attr['thumb']}" />
-            <input type="hidden" name="id" value="{$goods_attr['id']}" />
+            <input type="hidden" name="thumb" value="" />
+            <input type="hidden" name="goods_id" value="{$goods_id}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
@@ -105,10 +109,10 @@
         */
         form.on('submit(toSubmit)',function(data){
             var params = data.field;
-            $.post('/admin/shop/editAttr', params, function(data){
+            $.post('/admin/shop_goods_attr/attrAdd', params, function(data){
                 var res = data.data;
                 if(data.code == 200){
-                    layer.msg('修改成功',{
+                    layer.msg('添加成功',{
                         icon:1,
                         time:1000
                     },function(){

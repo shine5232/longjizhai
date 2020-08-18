@@ -15,11 +15,9 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                {if $count < 5}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加图片','imgAdd.html?shop_goods_id={$id}',860,500)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加图片
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加属性','attrAdd.html?shop_goods_id={$shop_goods_id}',860,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加属性
                 </button>
-                {/if}
             </div>
         </script>
     </div>
@@ -36,26 +34,35 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/shop/img_ajax?shop_goods_id='+{$id} //数据接口
+            , url: '/admin/shop_goods_attr/goodsAttr?shop_goods_id='+{$shop_goods_id} //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
-                    , { field: 'img',title: '商品图片',
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'name', title: '属性名称', width: '10%' }
+                    , { field: 'price', title: '市场价', width: '10%'}
+                    , { field: 'shop_price', title: '商铺价', width: '10%'}
+                    , { field: 'specs', title: '属性规格', width: '10%'}
+                    , { field: 'unit', title: '单位名称', width: '10%'}
+                    , { field: 'thumb',title: '缩略图', width:'10%',
                         templet: function(d){
-                            return '<img src="'+d.img+'" class="logo-img" />';
+                            if(d.thumb){
+                                var img = '<img src="__public__'+d.thumb+'" class="logo-img" />'
+                            }else{
+                                var img = '暂无缩略图';
+                            }
+                            return img;
                         }
                     }
-                    , { field: 'title', title: '图片标题', width: '15%',edit: 'text' }
-                    , { field: 'sort', title: '排序', width: '10%',edit: 'text' }
-                    , { field: 'create_time', title: '创建时间', width: '20%', }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',width: '10%',
+                        field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/shop_goods_attr/attrEdit?id=' + d.id + '\',860,500);">编辑</button>'+
+                            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
@@ -78,25 +85,6 @@
                     break;
             };
         });
-        /**
-         * 监听单元格编辑
-        */
-        table.on('edit(test)',function(obj){
-            var params = obj.data;
-            $.post('/admin/shop/editImg', params, function(data){
-                var res = data.data;
-                if(data.code == 200){
-                    layer.msg('修改成功',{
-                        icon:1,
-                        time:1000
-                    },function(){
-                        location.reload();
-                    });
-                }else{
-                    layer.msg(data.msg);
-                }
-            },'json');
-        });
     });
     /**
      * 批量删除
@@ -107,7 +95,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/shop/deleteImg', { id: argument }, function (j) {
+                $.post('/admin/shop_goods_attr/deleteAttr', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -124,7 +112,7 @@
     */
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/shop/deleteImg', { id: id }, function (j) {
+            $.post('/admin/shop_goods_attr/deleteAttr', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();

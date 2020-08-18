@@ -99,7 +99,7 @@ class User extends Controller
             $userId = Db::name('user')->getLastInsID();
              Db::name('auth_group_access')
                 ->insert(['uid'=>$userId,'group_id'=>$group_id]);
-            $this->success('success');
+            $this->success('添加成功');
         }
     }
     //编辑页面

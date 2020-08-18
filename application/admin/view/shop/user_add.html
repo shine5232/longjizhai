@@ -44,7 +44,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/shop/user_ajax?county='+county //数据接口
+            , url: '/admin/shop/userAdd?county='+county //数据接口
             , page: true //开启分页
             , limit: 10
             , id: 'test'
@@ -104,7 +104,7 @@
                 id:shop_id,
                 type:1
             };
-            $.post('/admin/shop/addUser', params, function (j) {
+            $.post('/admin/shop/userAdd', params, function (j) {
                 if (j.code == 200) {
                     layer.msg('绑定成功', { icon: 1, time: 1000 }, function () {
                         x_admin_close();

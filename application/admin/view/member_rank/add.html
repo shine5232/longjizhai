@@ -60,7 +60,7 @@
                 rank_type:data.field.rank_type,
 				rank_sort: data.field.rank_sort,
 			};
-			$.post('/admin/member_rank/addRank', params, function (data) {
+			$.post('/admin/member_rank/add', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {

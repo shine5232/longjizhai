@@ -33,7 +33,7 @@
                 id:data.field.id,
 				type_title: data.field.type_title,
 			};
-			$.post('/admin/member_type/editType', params, function (data) {
+			$.post('/admin/member_type/edit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('修改成功', {

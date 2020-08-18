@@ -105,7 +105,7 @@ layui.use(['form','layer'], function(){
 				region_name: data.field.region_name,
 				city: data.field.city
 			};
-		$.post('/admin/branch/addCounty', params, function(data){
+		$.post('/admin/branch/countyAdd', params, function(data){
             var res = data.data;
             if(data.code == 200){
                 layer.msg('添加成功',{

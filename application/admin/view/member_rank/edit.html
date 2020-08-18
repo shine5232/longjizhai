@@ -58,7 +58,7 @@
 				rank_sort: data.field.rank_sort,
                 id:data.field.id
 			};
-			$.post('/admin/member_rank/editRank', params, function (data) {
+			$.post('/admin/member_rank/edit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {
