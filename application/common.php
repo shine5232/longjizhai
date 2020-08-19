@@ -193,6 +193,17 @@ function _getRegion($parent_code=false,$is_open = false,$all=false){
     return $data; 
 }
 /**
+ * 根据地区code获取地区数据
+ */
+function _getRegionNameByCode($code = false){
+    $data = '';
+    if($code){
+        $where['region_code'] = $code;
+        $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->find();
+    }
+    return $data;
+}
+/**
  * 获取商品分类信息
  */
 function _getGoodsCate($pid=false,$parents=false){

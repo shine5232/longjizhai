@@ -299,10 +299,111 @@ class Branch extends Controller
      */
     public function copy(){
         if(request()->isPost()){
+            ini_set('max_execution_time', '0');
             $post = $this->request->post();
+            $county_name_from = _getRegionNameByCode($post['county_from']);
+            $county_name_to = _getRegionNameByCode($post['county_to']);
             //筛选商家数据
-            $shop = Db::name('shop')->where('county',$post['county_from'])->field('id,title,shop_cate')->select();
-            echo '<pre>';var_dump($shop);die;
+            $shop_where = array('county'=>$post['county_from'],'status'=>0);
+            $shop = Db::name('shop')->where($shop_where)->field('id,name,title,shop_cate')->select();
+            if($post['county_from'] == $post['county_to']){
+                $this->ret['msg'] = '复制失败，数据源与目标分站相同';
+                return json($this->ret);
+            }
+            $shop_to = Db::name('shop')->where(array('county'=>$post['county_to'],'status'=>0))->count();
+            if($shop_to){
+                $this->ret['msg'] = '复制失败，已有分站数据';
+                return json($this->ret);
+            }
+            if(count($shop)){
+                foreach($shop as $shop_key=>$shop_v){
+                    //复制商家数据
+                    $insert_shop = [
+                        'name'=>str_replace($county_name_from['region_short_name'],$county_name_to['region_short_name'],$shop_v['name']),
+                        'title'=>$shop_v['title'],
+                        'shop_cate'=>$shop_v['shop_cate'],
+                        'province'=>$post['province_to'],
+                        'city'=>$post['city_to'],
+                        'county'=>$post['county_to'],
+                        'create_time'=>date('Y-m-d H:i:s')
+                    ];
+                    //$shop_id = 1;
+                    $shop_id = Db::name('shop')->insertGetId($insert_shop);
+                    //复制商家商品数据
+                    $shop_goods_where = array('shop_id'=>$shop_v['id'],'status'=>0);
+                    $shop_goods = Db::name('shop_goods')->where($shop_goods_where)->field('id,name,cate_id,brand_id,keywords,title,content,thumb,unit')->select();
+                    $count_goods = count($shop_goods);
+                    if($count_goods){
+                        foreach($shop_goods as $key_goods=>$goods_v){
+                            $insert_goods = [
+                                'name'=>$goods_v['name'],
+                                'cate_id'=>$goods_v['cate_id'],
+                                'brand_id'=>$goods_v['brand_id'],
+                                'keywords'=>$goods_v['keywords'],
+                                'title'=>$goods_v['title'],
+                                'content'=>$goods_v['content'],
+                                'thumb'=>$goods_v['thumb'],
+                                'unit'=>$goods_v['unit'],
+                                'county'=>$post['county_to'],
+                                'create_time'=>date('Y-m-d H:i:s'),
+                                'shop_id'=>$shop_id
+                            ];
+                            //var_dump($insert_goods);
+                            //$goods_id = 2;
+                            $goods_id = Db::name('shop_goods')->insertGetId($insert_goods);
+                            //复制商品属性数据
+                            $goods_attr_where = array('goods_id'=>$goods_v['id'],'status'=>0);
+                            $goods_attr = Db::name('shop_goods_attr')->where($goods_attr_where)->field('id,name,price,shop_price,goods_id,thumb,paytype,pay_one,pay_two,pay_three,specs')->select();
+                            $count_attr = count($goods_attr);
+                            if($count_attr){
+                                foreach($goods_attr as $key_attr=>$attr_v){
+                                    $insert_attr = [
+                                        'name'=>$attr_v['name'],
+                                        'price'=>$attr_v['price'],
+                                        'shop_price'=>$attr_v['shop_price'],
+                                        'paytype'=>$attr_v['paytype'],
+                                        'pay_one'=>$attr_v['pay_one'],
+                                        'pay_two'=>$attr_v['pay_two'],
+                                        'thumb'=>$attr_v['thumb'],
+                                        'pay_three'=>$attr_v['pay_three'],
+                                        'specs'=>$attr_v['specs'],
+                                        'goods_id'=>$goods_id,
+                                        'create_time'=>date('Y-m-d H:i:s')
+                                    ];
+                                    //var_dump($insert_attr);
+                                    Db::name('shop_goods_attr')->insert($insert_attr);
+                                    usleep(5000);
+                                }
+                            }
+                            //复制商品图片数据
+                            $goods_img_where = array('goods_id'=>$goods_v['id']);
+                            $goods_img = Db::name('shop_goods_img')->where($goods_img_where)->field('img,title,sort')->select();
+                            $count_img = count($goods_img);
+                            if($count_img){
+                                foreach($goods_img as $key_img=>$img_v){
+                                    $insert_img = [
+                                        'img'=>$img_v['img'],
+                                        'title'=>$img_v['title'],
+                                        'goods_id'=>$goods_id,
+                                        'sort'=>$img_v['sort'],
+                                        'create_time'=>date('Y-m-d H:i:s')
+                                    ];
+                                    //var_dump($insert_img);
+                                    Db::name('shop_goods_img')->insert($insert_img);
+                                    usleep(5000);
+                                }
+                            }
+                            usleep(($count_attr * 5000));
+                        }
+                    }
+                    usleep(($count_goods * 5000));
+                }
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '复制成功';
+            }else{
+                $this->ret['msg'] = '复制失败，没有找到数据源';
+            }
+            return json($this->ret);
         }else{
             $province = _getRegion();
             $this->assign('province',$province);

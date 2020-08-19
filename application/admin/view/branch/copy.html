@@ -28,7 +28,8 @@
                             </select>
                         </div>
                         <div class="layui-input-inline">
-                            <select name="county_from" lay-filter="county" id="county1" lay-verify="required" data-id="1">
+                            <select name="county_from" lay-filter="county" id="county1" lay-verify="required"
+                                data-id="1">
                                 <option value="">请选择区/县</option>
                             </select>
                         </div>
@@ -81,15 +82,15 @@
             }, function (data) {
                 var res = data.data;
                 if (data.code == 0) {
+                    var option = '<option value="">请选择市</option>';
                     if (res.length > 0) {
-                        var option = '<option value="">请选择市</option>';
                         res.forEach(function (v, i) {
                             option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
                         });
-                        $('#city' + id).html(option);
-                        $('#county' + id).html('<option value="">请选择区/县</option>');
-                        form.render('select');
                     }
+                    $('#city' + id).html(option);
+                    $('#county' + id).html('<option value="">请选择区/县</option>');
+                    form.render('select');
                 } else {
                     layer.msg(data.msg);
                 }
@@ -106,15 +107,16 @@
                 is_open: 1
             }, function (data) {
                 var res = data.data;
+                console.log(res);
                 if (data.code == 0) {
+                    var option = '<option value="">请选择区/县</option>';
                     if (res.length > 0) {
-                        var option = '<option value="">请选择区/县</option>';
                         res.forEach(function (v, i) {
                             option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
                         });
-                        $('#county' + id).html(option);
-                        form.render('select');
                     }
+                    $('#county' + id).html(option);
+                    form.render('select');
                 } else {
                     layer.msg(data.msg);
                 }
@@ -124,16 +126,21 @@
          * 监听表单提交
         */
         form.on('submit(toSubmit)', function (data) {
+            var index = layer.msg('复制中，请稍后...', {
+                icon: 16,
+                time: 0,
+                shade: 0
+            });
             $.post('/admin/branch/copy', data.field, function (data) {
                 var res = data.data;
+                layer.close(index);
                 if (data.code == 200) {
-                    layer.msg('添加成功', {
+                    layer.msg('复制成功', {
                         icon: 1,
                         time: 1000
                     }, function () {
-                        x_admin_close();
-                        parent.location.reload();
-                    });
+						location.reload();
+					});
                 } else {
                     layer.msg(data.msg);
                 }

@@ -1,4 +1,5 @@
 {include file='public/head'}
+
 <body>
 	<style type="text/css" media="screen">
 		header {
@@ -17,8 +18,8 @@
 			<div class="layui-form-item">
 				<label class="layui-form-label">拼&nbsp;&nbsp;&nbsp;音</label>
 				<div class="layui-input-block">
-					<input type="text" id="branch_pinyin" name="branch_pinyin" lay-verify="required|branch_pinyin" autocomplete="off"
-						placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
+					<input type="text" id="branch_pinyin" name="branch_pinyin" lay-verify="required|branch_pinyin"
+						autocomplete="off" placeholder="请输入拼音(用于分站域名前缀)" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item" id="region">
@@ -43,10 +44,10 @@
 				</div>
 			</div>
 			<div class="layui-form-item">
-                <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;态</label>
-                <div class="layui-input-block">
-                  <input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭" value="1">
-                </div>
+				<label class="layui-form-label">状&nbsp;&nbsp;&nbsp;态</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭" value="1">
+				</div>
 			</div>
 			<div class="layui-form-item">
 				<div class="layui-input-block">
@@ -59,68 +60,68 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
-layui.use(['form','layer'], function(){
-  	var form = layui.form;
-  	var layer = layui.layer;
-  	form.verify({
-		/* name: function (value) {
-			if (value.length < 5) {
-				return '用户名至少得5个字符啊';
-			}
-		} */
-	});
-	/**
-	 * 监听省份选择
-	*/
-	form.on('select(province)',function(data){
-        $.post('/api/region/index', { 
-            code: data.value,
-            type:2 
-        }, function(data){
-            var res = data.data;
-            if(data.code == 0){
-                if(res.length > 0){
-                    var option = '<option value="">请选择市</option>';
-                    res.forEach(function(v,i){
-                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
-                    });
-                    $('#city').html(option);
-                    $('#county').html('<option value="">请选择区/县</option>');
-                    form.render('select');
-                }
-            }else{
-                layer.msg(data.msg);
-            }
-        },'json');
-	});
-	/**
-	 * 监听城市选择
-	*/
-	form.on('select(city)',function(data){
-        $.post('/api/region/index', { 
-			code: data.value,
-            type:2 
-        }, function(data){
-            var res = data.data;
-            if(data.code == 0){
-                if(res.length > 0){
-                    var option = '<option value="">请选择区/县</option>';
-                    res.forEach(function(v,i){
-                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
-                    });
-                    $('#county').html(option);
-                    form.render('select');
-                }
-            }else{
-                layer.msg(data.msg);
-            }
-        },'json');
-	});
-	/**
-	 * 监听表单提交
-	*/
-	form.on('submit(toSubmit)',function(data){
-		var params = {
+	layui.use(['form', 'layer'], function () {
+		var form = layui.form;
+		var layer = layui.layer;
+		form.verify({
+			/* name: function (value) {
+				if (value.length < 5) {
+					return '用户名至少得5个字符啊';
+				}
+			} */
+		});
+		/**
+		 * 监听省份选择
+		*/
+		form.on('select(province)', function (data) {
+			$.post('/api/region/index', {
+				code: data.value,
+				type: 2
+			}, function (data) {
+				var res = data.data;
+				if (data.code == 0) {
+					var option = '<option value="">请选择市</option>';
+					if (res.length > 0) {
+						res.forEach(function (v, i) {
+							option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+						});
+					}
+					$('#city').html(option);
+					$('#county').html('<option value="">请选择区/县</option>');
+					form.render('select');
+				} else {
+					layer.msg(data.msg);
+				}
+			}, 'json');
+		});
+		/**
+		 * 监听城市选择
+		*/
+		form.on('select(city)', function (data) {
+			$.post('/api/region/index', {
+				code: data.value,
+				type: 2
+			}, function (data) {
+				var res = data.data;
+				if (data.code == 0) {
+					var option = '<option value="">请选择区/县</option>';
+					if (res.length > 0) {
+						res.forEach(function (v, i) {
+							option += '<option value="' + v.region_code + '">' + v.region_name + '</option>';
+						});
+					}
+					$('#county').html(option);
+					form.render('select');
+				} else {
+					layer.msg(data.msg);
+				}
+			}, 'json');
+		});
+		/**
+		 * 监听表单提交
+		*/
+		form.on('submit(toSubmit)', function (data) {
+			var params = {
 				branch_name: data.field.branch_name,
 				branch_pinyin: data.field.branch_pinyin,
 				province: data.field.province,
@@ -128,22 +129,23 @@ layui.use(['form','layer'], function(){
 				county: data.field.county,
 				status: data.field.status
 			};
-		$.post('/admin/branch/branchAdd', params, function(data){
-            var res = data.data;
-            if(data.code == 200){
-				layer.msg('添加成功',{
-					icon:1,
-					time:1000
-				},function(){
-					x_admin_close();
-					parent.location.reload();
-				});
-            }else{
-                layer.msg(data.msg);
-            }
-		},'json');
-		return false;
+			$.post('/admin/branch/branchAdd', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('添加成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg(data.msg);
+				}
+			}, 'json');
+			return false;
+		});
 	});
-});
 </script>
+
 </html>
