@@ -11,9 +11,9 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加会员','add.html',800,500)">
+                <!-- <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加会员','add.html',800,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加会员
-                </button>
+                </button> -->
             </div>
         </script>
     </div>
@@ -38,7 +38,37 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'rank_name', title: '会员名称' }
+                    , { field: 'uname', title: '会员名称' }
+                    , { field: 'type', title: '会员类型',width:'10%',
+                        templet:function(d){
+                            var type = '会员';
+                            if(d.type==1){
+                                type = '技工';
+                            }else if(d.type==2){
+                                type = '工长';
+                            }else if(d.type==3){
+                                type = '设计师';
+                            }else if(d.type==4){
+                                type = '装饰公司';
+                            }else if(d.type==5){
+                                type = '商家';
+                            }else if(d.type==6){
+                                type = '业主';
+                            }
+                            return type;
+                        }
+                    }
+                    , { field: 'mobile', title: '联系电话',width:'15%' }
+                    , { field: 'area', title: '所属地区',width:'15%',
+                        templet:function(d){
+                            if(d.county){
+                                var area = d.province_name+'-'+d.city_name+'-'+d.county_name;
+                            }else{
+                                var area = '总站';
+                            }
+                            return area;
+                        } 
+                    }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
                         field: 'handle', title: '操作', width: '15%',

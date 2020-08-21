@@ -16,34 +16,28 @@ class Member extends Main
         if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
-            $title = $this->request->param('title', '');
-            $keywords = $this->request->param('keywords', '');
-            $cate_id = $this->request->param('cate_id', '');
             $page_start = ($page - 1) * $limit;
             $where = array();
-            if ($title) {
-                $where['a.title'] = ['like', "%$title%"];
-            }
-            if ($keywords) {
-                $where['a.keywords'] = ['like', "%$keywords%"];
-            }
-            if ($cate_id) {
-                $where['a.cate_id'] = $cate_id;
-            }
-            $data = Db::name('member')->alias('a')
-                ->join('region b', 'a.county = b.region_code', 'LEFT')
-                ->join('region c', 'a.city = c.region_code', 'LEFT')
-                ->join('region d', 'a.province = d.region_code', 'LEFT')
-                ->where($where)
-                ->field('a.*,b.region_name as county_name,c.region_name as city_name,d.region_name as province_name')
-                ->order('a.id DESC')
-                ->limit($page_start, $limit)
-                ->select();
+            // $data = Db::name('member')->alias('a')
+            //     ->join('region b', 'a.county = b.region_code', 'INNER')
+            //     ->join('region c', 'a.city = c.region_code', 'INNER')
+            //     ->join('region d', 'a.province = d.region_code', 'INNER')
+            //     ->where($where)
+            //     ->field('a.*,b.region_name as county_name,c.region_name as city_name,d.region_name as province_name')
+            //     ->order('a.id DESC')
+            //     ->limit($page_start, $limit)
+            //     ->select();
+            $sql = "SELECT A.*,B.region_name as county_name,C.region_name as city_name,D.region_name as province_name FROM (
+                SELECT id,uname,province,city,county,create_time,birthday,mobile,cancel_time,lastlogin,loginip,point,realname,subor,subscribe FROM lg_member
+                ORDER BY id DESC
+                LIMIT $page_start, $limit
+            )A
+            LEFT JOIN lg_region B ON A.province = B.region_code
+            INNER JOIN lg_region C ON A.province = C.region_code
+            INNER JOIN lg_region D ON A.province = D.region_code ";
+            $data = Db::query($sql);
             $count = Db::name('member')
                 ->alias('a')
-                ->join('region b', 'a.county = b.region_code', 'LEFT')
-                ->join('region c', 'a.city = c.region_code', 'LEFT')
-                ->join('region d', 'a.province = d.region_code', 'LEFT')
                 ->where($where)
                 ->count();
             if ($data) {
