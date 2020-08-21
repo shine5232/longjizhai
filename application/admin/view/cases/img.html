@@ -1,0 +1,105 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData" onclick="update('4')">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    var id = {$id};
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+            tableIns = table.render({
+                elem: '#demo'
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: []
+                , url: '/admin/Cases/img?id='+id //数据接口
+                , page: true //开启分页
+                , limit: 20
+                , id: 'test'
+                , cols: [
+                    [ //表头
+                        { type: 'checkbox', fixed: 'left' }
+                        , { field: 'id', title: 'ID', width: '15%', fixed: 'left' }
+                        , { field: 'img', title: '图片', width: '30%' ,
+                            templet:function(d){
+                                if(d.img){
+                                    var img = '<img src="__public__'+d.img+'" class="logo-img" />';
+                                }else{
+                                    var img = '暂无图片';
+                                }
+                                return img;
+                            }
+                        }
+                        , { field: 'title', title: '标题', width: '15%' }
+                        , { field: 'sort', title: '排序', width: '15%' }
+                        , {
+                            field: 'handle', title: '操作',
+                            templet: function (d) {
+                                var handle =
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCase(' + d.id + ',2);">删除</button>';
+                                return handle;
+                            }
+                        }
+                    ]
+                ]
+            });
+       
+    });
+    function update(method) {
+        var data = [];
+        data = layui.table.checkStatus('test').data;  
+        layer.confirm('确认要进行操作吗？', function (index) {
+            var delList=[];
+            data.forEach(function(n,i){
+                delList.push(n.id);             
+            });
+            // console.log(delList);
+            // return false;
+            //捉到所有被选中的，发异步进行删除
+            delList = JSON.stringify( delList )
+            $.post('/admin/cases/update?method='+method, { delList: delList }, function (j) {
+                    if(j.code == 200){
+                        layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                    }else{
+                        layer.msg('操作失败', { icon: 2, time: 1000 });
+                    }
+                },'json');
+        });
+    }
+    //
+    function delCase(id,method) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/cases/delete', { id: id,method:method }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+    
+   
+</script>
+
+</html>

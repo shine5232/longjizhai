@@ -43,7 +43,16 @@
                     , { field: 'mobile', title: '手机号', width: '10%' }
                     , { field: 'city', title: '所属城市', width: '15%' }
                     , { field: 'credentials_code', title: '证件号', width: '10%' }
-                    , { field: 'credentials_img', title: '证件图片', width: '10%' }
+                    , { field: 'credentials_img', title: '证件图片', width: '10%' ,
+                            templet:function(d){
+                                if(d.credentials_img){
+                                    var img = '<img src="__public__'+d.img+'" class="logo-img" />';
+                                }else{
+                                    var img = '暂无图片';
+                                }
+                                return img;
+                            }
+                        }
                     , { field: 'is_pass', title: '是否通过', width: '5%' }
                     , { field: 'create_time', title: '申请时间', width: '10%' }
                     , { field: 'checked_time', title: '审核时间', width: '10%' }
