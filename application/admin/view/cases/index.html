@@ -25,6 +25,15 @@
 <script>
     var tableIns;
     var type = {$type};
+    if(type == 1){
+        name = '技工'
+    }else if(type == 2){
+        name = '工长'
+    }else if(type == 3){
+        name = '设计师'
+    }else if(type == 4){
+        name = '装饰公司'
+    }
     layui.use(['laydate', 'form', 'table'], function () {
         var table = layui.table, laydate = layui.laydate, form = layui.form;
         /**
@@ -45,7 +54,7 @@
                         , { field: 'case_title', title: '案例名', width: '10%' }
                         , { field: 'region', title: '所属站点', width: '12%' }
                         , { field: 'village_name', title: '小区名', width: '10%' }
-                        , { field: 'uname', title: '技工', width: '8%' }
+                        , { field: 'uname', title: type, width: '8%' }
                         , { field: 'view_num', title: '浏览数', width: '6%' }
                         , { field: 'collect_num', title: '收藏数', width: '6%' }
                         , { field: 'sort', title: '排序', width: '6%' }
