@@ -45,14 +45,16 @@
                 test_id:'{$test_id}'
             }
             , page: true //开启分页
-            , limit: 20
+            , limit: 10
             , id: 'test'
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '8%', fixed: 'left' }
                     , { field: 'title', title: '题目名称', width: '15%' }
-                    , { field: 'type', title: '题目类型', width: '15%',
+                    , { field: 'answer', title: '答案', width: '8%', }
+                    , { field: 'point', title: '分值', width: '8%', }
+                    , { field: 'type', title: '题目类型', width: '10%',
                         templet:function(d){
                             if(d.type=='radio'){
                                 var type = '单选题';
@@ -66,7 +68,7 @@
                             return type;
                         }
                     }
-                    , { field: 'status', title: '是否启用', width: '10%',
+                    , { field: 'status', title: '是否启用', width: '15%',
                         templet:function(d){
                             var can_used = '<div class="layui-input-inline">' +
                                 '<input type="checkbox" name="status" value="1" lay-skin="switch" lay-text="启用|关闭" lay-filter="cc" data-user-id="' + d.id + '" ' + (d.status == 1 ? 'checked' : '') + ' />' +
@@ -76,9 +78,9 @@
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',width: '10%',
+                        field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑题目\',\'/admin/test/optionEdit?id=' + d.id + '\',500,480);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑题目\',\'/admin/test/optionEdit?id=' + d.id + '\',500,300);">编辑</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
@@ -108,7 +110,7 @@
         form.on('switch(cc)', function (data) {
             var t = data.elem;
             var id = $(t).attr('data-user-id');
-            $.post('/admin/test/updateStatus', { id: id }, function (j) {
+            $.post('/admin/test/changeStatus', { id: id }, function (j) {
                 if (j.code == '200') {
                     layer.msg('设置成功');
                 }

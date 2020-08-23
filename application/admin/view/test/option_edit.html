@@ -5,9 +5,6 @@
         header {
             color: black;
         }
-        .option{
-            display: none;
-        }
         .items{
             display: flex;
             align-items: center;
@@ -25,7 +22,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">题目</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入题目" type="text" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入题目" type="text" value="{$option['title']}" />
                 </div>
             </div>
             <div class="layui-form-item">
@@ -33,51 +30,63 @@
                 <div class="layui-input-block">
                     <select lay-filter="type" name="type" lay-verify="required">
                         <option value="">请选择</option>
-                        <option value="radio">单选</option>
-                        <option value="checkbox">多选</option>
-                        <option value="input">输入框</option>
-                        <option value="textarea">文本域</option>
+                        <option value="radio" {if condition="$option['type'] == 'radio'"}selected{/if}>单选</option>
+                        <option value="checkbox" {if condition="$option['type'] == 'checkbox'"}selected{/if}>多选</option>
+                        <option value="input" {if condition="$option['type'] == 'input'"}selected{/if}>输入框</option>
+                        <option value="textarea" {if condition="$option['type'] == 'textarea'"}selected{/if}>文本域</option>
                     </select>
                 </div>
             </div>
+            {if $option['type'] == 'radio' || $option['type'] == 'checkbox'}
             <div class="option">
-                <div class="layui-form-item option-i option1">
-                    <label class="layui-form-label">选项A</label>
+                <!-- {$i=1} -->
+                {foreach $option['option'] as $key=>$vo}
+                <div class="layui-form-item option-i option{$i}">
+                    <label class="layui-form-label">选项{$key}</label>
                     <div class="layui-input-inline items">
-                        <input autocomplete="off" class="layui-input option-item" lay-verify="required" name="option[A]" placeholder="请输入选项" type="text" value="" />
+                        <input autocomplete="off" class="layui-input option-item" lay-verify="required" name="option[{$key}]" placeholder="请输入选项" type="text" value="{$vo}" />
                         <div class="option-add">
                             <button type="button" class="layui-btn layui-btn-sm" onclick="addCate(this)">
                                 <i class="layui-icon">&#xe608;</i>
                             </button>
+                            {if $i > 1}
+                            <button type="button" class="layui-btn layui-btn-danger layui-btn-sm delete" data-id="{$i}" onclick="delCate(this)" >
+                                <i class="layui-icon">&#xe640;</i>
+                            </button>
+                            {/if}
                         </div>
                     </div>
                 </div>
+                <!-- {$i++} -->
+                {/foreach}
             </div>
+            {/if}
             <div class="layui-form-item">
                 <label class="layui-form-label">答案</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="answer" placeholder="请输入答案(多个选项请用英文逗号隔开)" type="text" value="" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="answer" placeholder="请输入答案(多个选项请用英文逗号隔开)" type="text" value="{$option['answer']}" />
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">分值</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="point" placeholder="请输入分值" type="number" value="" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="point" placeholder="请输入分值" type="number" value="{$option['point']}" />
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">排序</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort" placeholder="请输入序号" type="text" value="0" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort" placeholder="请输入序号" type="text" value="{$option['sort']}" />
                 </div>
             </div>
             <div class="layui-form-item">
 				<label class="layui-form-label">状态</label>
 				<div class="layui-input-block">
-					<input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭" value="1" checked />
+					<input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭" value="1" {if condition="$option['status'] == 1"}checked{/if} />
 				</div>
             </div>
-            <input type="hidden" name="test_id" value="{$test_id}" />
+            <input type="hidden" name="id" value="{$option['id']}" />
+            <input type="hidden" name="test_id" value="{$option['test_id']}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
@@ -103,10 +112,10 @@
         });
         form.on('submit(toSubmit)', function (data) {
             var params = data.field;
-			$.post('/admin/test/optionAdd', params, function (data) {
+			$.post('/admin/test/optionEdit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
-					layer.msg('添加成功', {
+					layer.msg('修改成功', {
 						icon: 1,
 						time: 1000
 					}, function () {
@@ -114,7 +123,7 @@
 						parent.location.reload();
 					});
 				} else {
-					layer.msg('添加失败', {
+					layer.msg('修改失败', {
 						icon: 1,
 						time: 1000
 					}, function () {
@@ -126,7 +135,7 @@
         });
     });
     /**
-     * 添加选项
+     * 修改选项
     */
     function addCate(obj) {
         var num = $('.option-i').length;
@@ -156,6 +165,7 @@
         $('.option' + id).remove();
         var num = $('.option-i').length;
         $('.option-i').each(function (i, v) {
+            console.log(i);
             var s = i + 1;
             var name = numChange(s);
             $(v).attr('class', 'layui-form-item option-i option' + s);

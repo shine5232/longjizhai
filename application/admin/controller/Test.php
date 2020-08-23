@@ -145,14 +145,11 @@ class Test extends Main
     public function optionAdd(){
         if(request()->isPost()){
             $post = $this->request->post();
-            var_dump($post);die;
-            $status = isset($post['status'])?$post['status']:0;
-            $insert = [
-                'title'=>$post['title'],
-                'status'=>$status,
-                'create_time'=>date('Y-m-d H:i:s')
-            ];
-            $res = Db::name('test_option')->insert($insert);
+            $post['answer'] = strtoupper($post['answer']);
+            $post['status'] = isset($post['status'])?$post['status']:0;
+            $post['create_time'] = date('Y-m-d H:i:s');
+            $post['option'] = isset($post['option'])?serialize($post['option']):'';
+            $res = Db::name('test_option')->insert($post);
             if ($res) {
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '添加成功';
@@ -163,5 +160,72 @@ class Test extends Main
             $this->assign('test_id',$test_id);
             return $this->fetch('option_add');
         }
+    }
+    /**
+     * 测评管理-题目编辑
+     */
+    public function optionEdit(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            $id = $post['id'];
+            $post['answer'] = strtoupper($post['answer']);
+            $post['status'] = isset($post['status'])?$post['status']:0;
+            $post['create_time'] = date('Y-m-d H:i:s');
+            $post['option'] = isset($post['option'])?serialize($post['option']):'';
+            unset($post['id']);
+            $res = Db::name('test_option')->where('id',$id)->update($post);
+            if ($res) {
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '修改成功';
+            }
+            return json($this->ret);
+        }else{
+            $id = $this->request->get('id');
+            $option = Db::name('test_option')->where('id',$id)->find();
+            $option['option'] = unserialize($option['option']);
+            $this->assign('option',$option);
+            return $this->fetch('option_edit');
+        }
+    }
+    /**
+     * 测评管理-状态改变
+     */
+    public function changeStatus(){
+        $id = $this->request->param('id');
+        $option = Db::name('test_option')->where('id', $id)->find();
+        $data = [];
+        if ($option) {
+            $data = [
+                'status'        =>  $option['status'] == 0 ? 1 : 0,
+                'update_time'   =>  date('Y-m-d H:i:s')
+            ];
+        }
+        $result = Db::name('test_option')->where('id', $id)->update($data);
+        if ($result) {
+            $this->ret['code'] = 200;
+        }
+        return json($this->ret);
+    }
+    /**
+     * 测评管理-选项删除
+     */
+    public function deleteOption()
+    {
+        $id = $this->request->post('id');
+        $ids = explode(',', $id);
+        $upd = [
+            'deleted'    =>  1,
+            'delete_time'   =>  date('Y-m-d H:i:s')
+        ];
+        if (count($ids) > 1) {
+            $res = Db::name('test_option')->where('id', 'in', $id)->update($upd);
+        } else {
+            $res = Db::name('test_option')->where('id', $ids[0])->update($upd);
+        }
+        if ($res) {
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '删除成功';
+        }
+        return json($this->ret);
     }
 }
