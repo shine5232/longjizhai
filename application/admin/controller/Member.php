@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use \think\Db;
 use \think\Reuquest;
+use app\admin\model\MemberRank as MemberRankModel;
 
 class Member extends Main
 {
@@ -13,35 +14,56 @@ class Member extends Main
      */
     public function index()
     {
+        $user = session('user');
         if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
+            $realname = $this->request->param('realname', '');
+            $mobile = $this->request->param('mobile', '');
+            $province = $this->request->param('province', '');
+            $city = $this->request->param('city', '');
+            $county = $this->request->param('county', '');
+            $type = $this->request->param('type', '');
             $page_start = ($page - 1) * $limit;
-            $where = array();
-            // $data = Db::name('member')->alias('a')
-            //     ->join('region b', 'a.county = b.region_code', 'INNER')
-            //     ->join('region c', 'a.city = c.region_code', 'INNER')
-            //     ->join('region d', 'a.province = d.region_code', 'INNER')
-            //     ->where($where)
-            //     ->field('a.*,b.region_name as county_name,c.region_name as city_name,d.region_name as province_name')
-            //     ->order('a.id DESC')
-            //     ->limit($page_start, $limit)
-            //     ->select();
-            $sql = "SELECT A.*,B.region_name as county_name,C.region_name as city_name,D.region_name as province_name FROM (
-                SELECT id,uname,province,city,county,create_time,birthday,mobile,cancel_time,lastlogin,loginip,point,realname,subor,subscribe FROM lg_member
-                ORDER BY id DESC
-                LIMIT $page_start, $limit
-            )A
-            LEFT JOIN lg_region B ON A.province = B.region_code
-            INNER JOIN lg_region C ON A.province = C.region_code
-            INNER JOIN lg_region D ON A.province = D.region_code ";
-            $data = Db::query($sql);
-            $count = Db::name('member')
-                ->alias('a')
-                ->where($where)
-                ->count();
+            $where = '1';
+            if ($realname) {
+                $where .= " AND A.realname = '$realname'";
+            }
+            if ($mobile) {
+                $where .= " AND A.mobile = '$mobile'";
+            }
+            if ($province) {
+                $where .= " AND A.province = $province";
+            }
+            if ($city) {
+                $where .= " AND A.city = $city";
+            }
+            if ($county) {
+                $where .= " AND A.county = $county";
+            }
+            if ($type) {
+                $where['type'] = ['eq', $type];
+                $where .= " AND A.type = $type";
+            }
+            if($user['county']){
+                $where .= " AND A.county = ".$user['county'];
+            }
+            $sql1 = "SELECT A.*,B.region_name as county_name,C.region_name as city_name,D.region_name as province_name 
+                    FROM (
+                        SELECT A.*,B.rank_name FROM lg_member A
+                        INNER JOIN lg_member_rank B ON A.rank_id = B.id
+                        WHERE $where
+                        ORDER BY A.subor DESC,A.id DESC 
+                        limit $page_start, $limit
+                    ) A 
+                    LEFT JOIN lg_region B ON A.county = B.region_code 
+                    LEFT JOIN lg_region C ON B.region_superior_code = C.region_code 
+                    LEFT JOIN lg_region D ON C.region_superior_code = D.region_code ";
+            $sql2 = "SELECT COUNT(0) AS num FROM lg_member WHERE $where";
+            $data = Db::query($sql1);
+            $count = Db::query($sql2);
             if ($data) {
-                $this->ret['count'] = $count;
+                $this->ret['count'] = $count[0]['num'];
                 $this->ret['data'] = $data;
             }
             return json($this->ret);
@@ -109,9 +131,10 @@ class Member extends Main
      */
     public function search()
     {
-        $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $this->assign('cate', $cate);
+        $user = session('user');
+        $province = _getRegion(); //获取省份数据
+        $this->assign('province', $province);
+        $this->assign('user', $user);
         return $this->fetch();
     }
     /**
@@ -130,5 +153,64 @@ class Member extends Main
             $this->ret['msg'] = 'success';
         }
         return json($this->ret);
+    }
+    /**
+     * 会员管理-会员积分日志
+     */
+    public function point(){
+        if(request()->isAjax()){
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $uid = $this->request->param('uid');
+            $page_start = ($page - 1) * $limit;
+            $data = Db::name('point_log')->where('uid',$uid)->order('id DESC')->limit($page_start, $limit)->select();
+            $count = Db::name('point_log')->where('uid',$uid)->count();
+            if ($data) {
+                $this->ret['count'] = $count;
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        }else{
+            $id  = $this->request->get('id');
+            $this->assign('uid',$id);
+            return $this->fetch('point');
+        }
+    }
+    /**
+     * 会员管理-会员充值
+     */
+    public function recharge()
+    {
+        if (request()->isPost()) {
+            $post = $this->request->post();
+            $upd = [
+                'point' => (int)$post['yue'] + (int)$post['point']
+            ];
+            $insert = [
+                'uid' => $post['id'],
+                'point' => (int)$post['point'],
+                'point_from' => 2,
+                'remark' => $post['remark'],
+                'create_time' => date('Y-m-d H:i:s')
+            ];
+            Db::startTrans();
+            try {
+                $res1 = Db::name('member')->where('id', $post['id'])->update($upd);
+                $res2 = Db::name('point_log')->insert($insert);
+                if($res1 && $res2){
+                    Db::commit();
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+            } catch (\Exception $e) {
+                Db::rollback();
+            }
+            return json($this->ret);
+        } else {
+            $id  = $this->request->get('id');
+            $member = Db::name('member')->where('id', $id)->find();
+            $this->assign('member', $member);
+            return $this->fetch('recharge');
+        }
     }
 }

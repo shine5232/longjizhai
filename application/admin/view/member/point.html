@@ -1,0 +1,66 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , height: 'full-60'
+            , url: '/admin/member/point?uid='+{$uid} //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'point', title: '积分', width: '20%', }
+                    , { field: 'point_from', title: '积分来源',width:'20%',
+                        templet:function(d){
+                            var point_from = '';
+                            if(d.point_from==1){
+                                point_from = '用户注册';
+                            }else if(d.point_from==2){
+                                point_from = '充值';
+                            }else if(d.point_from==3){
+                                point_from = '验证手机号';
+                            }else if(d.point_from==4){
+                                point_from = '身份验证';
+                            }else if(d.point_from==5){
+                                point_from = '签到';
+                            }else if(d.point_from==6){
+                                point_from = '关注公众号';
+                            }else if(d.point_from==7){
+                                point_from = '会员推广';
+                            }else if(d.point_from==8){
+                                point_from = '预约';
+                            }else if(d.point_from==9){
+                                point_from = '查电话';
+                            }else if(d.point_from==10){
+                                point_from = '抽奖';
+                            }else if(d.point_from==11){
+                                point_from = '兑换商品';
+                            }else if(d.point_from==12){
+                                point_from = '加钱购';
+                            }
+                            return point_from;
+                        }
+                    }
+                    , { field: 'remark', title: '备注',width:'30%' }
+                    , { field: 'create_time', title: '添加时间', width: '20%' }
+                ]
+            ]
+        });
+    });
+</script>
+
+</html>

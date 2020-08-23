@@ -1,0 +1,83 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+
+        #thumb1,#thumb2 {
+            display: none;
+        }
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+    </style>
+    <div class="x-body">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">会员账号</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" disabled type="text" value="{$member['uname']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">积分余额</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" readonly name="yue" type="text" value="{$member['point']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">充值积分</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="point" lay-verify="required|number" placeholder="请输入充值积分数量" type="number" value="" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入内容" name="remark" class="layui-textarea" lay-verify="required"></textarea>
+                </div>
+            </div>
+            <input type="hidden" name="id" value="{$member['id']}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+			$.post('/admin/member/recharge', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('充值成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('充值失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+        });
+    });
+</script>
+
+</html>
