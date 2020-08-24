@@ -1,0 +1,124 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">二维码名称</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="company_name" placeholder="请输入二维码名称" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="company_tel" placeholder="联系电话" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">开始时间</label>
+				<div class="layui-input-block">
+					<input type="input" class="layui-input date" name="start_time" id="date1" placeholder="yyyy-MM-dd HH:mm:ss" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">结束时间</label>
+                <div class="layui-input-block">
+					<input type="input" class="layui-input date" name="end_time" id="date2" placeholder="yyyy-MM-dd HH:mm:ss" />
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">二维码类型</label>
+                <div class="layui-input-block">
+                    <select lay-filter="type" name="type" lay-verify="required">
+                        <option value="">请选择</option>
+                        <option value="0">专属二维码</option>
+                        <option value="1">通用二维码</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择试题</label>
+                <div class="layui-input-block">
+                    <select lay-filter="test_id" name="test_id" lay-verify="required">
+                        <option value="">请选择试题</option>
+                        {foreach $test as $key=>$v}
+                        <option value="{$v['id']}">{$v['title']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">显示费用</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="is_money" lay-skin="switch" lay-text="开启|关闭" value="1" />
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入内容" id="notice" name="content"
+                        style="width: 100%;height: 400px;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    KindEditor.ready(function (K) {
+        notice = K.create('#notice', {
+            uploadJson: '/api/file/upload?type=article',
+            afterBlur: function(){
+                this.sync();
+            }
+        });
+    });
+    layui.use(['form', 'layer', 'upload','laydate'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload,laydate = layui.laydate;
+        lay('.date').each(function(){
+            laydate.render({
+                elem: this
+                ,type: 'datetime'
+                ,trigger: 'click'
+            });
+        });
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+			$.post('/admin/test/codeAdd', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('添加成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('添加失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+        });
+    });
+</script>
+
+</html>

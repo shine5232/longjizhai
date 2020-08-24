@@ -1,0 +1,116 @@
+{include file="public/head"}
+<style>
+    .logo-img{
+        width: 50px;
+    }
+</style>
+<body>
+    <div class="x-body">
+        <div class="layui-form">
+            <table id="demo" lay-filter="test"></table>
+        </div>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加二维码','codeAdd.html',800,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加二维码
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索二维码','searchCode.html',800,500)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/test/code' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'company_name', title: '名称', width: '15%' }
+                    , { field: 'company_tel', title: '联系电话', width: '10%' }
+                    , { field: 'status', title: '是否已用', width: '10%',
+                        templet:function(d){
+                            if(d.status == '1'){
+                                var can_used = '已用';
+                            }else{
+                                var can_used = '未用';
+                            }
+                            return can_used;
+                        }
+                    }
+                    , { field: 'is_money', title: '显示费用', width: '10%',
+                        templet:function(d){
+                            if(d.is_money == '1'){
+                                var can_used = '显示';
+                            }else{
+                                var can_used = '隐藏';
+                            }
+                            return can_used;
+                        }
+                    }
+                    , { field: 'type', title: '是否通用', width: '10%',
+                        templet:function(d){
+                            if(d.type == '1'){
+                                var can_used = '是';
+                            }else{
+                                var can_used = '否';
+                            }
+                            return can_used;
+                        }
+                    }
+                    , { field: 'start_time', title: '开始时间', width: '12%', }
+                    , { field: 'end_time', title: '结束时间', width: '12%', }
+                    , {
+                        field: 'handle', title: '操作',width: '11%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑二维码\',\'/admin/test/codeEdit?id=' + d.id + '\',800,500);">编辑</button>'+
+                            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="download(' + d.id + ');">下载</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听状态改变
+        */
+        form.on('switch(cc)', function (data) {
+            var t = data.elem;
+            var id = $(t).attr('data-user-id');
+            $.post('/admin/test/codeStatus', { id: id }, function (j) {
+                if (j.code == '200') {
+                    layer.msg('设置成功');
+                }
+                if (j.code == '0') {
+                    layer.msg('设置失败');
+                }
+            }, 'json');
+        });
+    });
+    /**
+     * 下载二维码
+    */
+    function download(id){
+        window.location.href = '/admin/test/codeDownload?id='+id;
+    }
+</script>
+
+</html>

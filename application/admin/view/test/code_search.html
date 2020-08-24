@@ -1,0 +1,75 @@
+{include file='public/head'}
+
+<body>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id='searchForm'>
+            <div class="layui-form-item">
+                <label class="layui-form-label">二维码名称</label>
+                <div class="layui-input-block">
+                    <input type="text" id="company_name" name="company_name" autocomplete="off"
+                        placeholder="请输入二维码名称" class="layui-input" value="" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input type="text" id="company_tel" name="company_tel" autocomplete="off"
+                        placeholder="请输入联系电话" class="layui-input" value="" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">二维码类型</label>
+                <div class="layui-input-block">
+                    <select lay-filter="type" name="type">
+                        <option value="">请选择</option>
+                        <option value="0">专属二维码</option>
+                        <option value="1">通用二维码</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="searchSubmit">提交</button>
+                    <button type="reset" id="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    var form = {},cate_id = '';
+    layui.use(['form', 'layer'], function () {
+        form = layui.form;
+        var layer = layui.layer;
+        form.on('submit(searchSubmit)', function (data) {
+            var index = layer.msg('查询中，请稍后...', {
+                icon: 16,
+                time: false,
+                shade: 0
+            });
+            setTimeout(function () {
+                x_admin_close();
+                parent.tableIns.reload({
+                    where: { //设定异步数据接口的额外参数，任意设
+                        company_name: data.field.company_name,
+                        company_tel: data.field.company_tel,
+                        type: data.field.type
+                    }
+                    , page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+            }, 1000);
+            return false;
+        });
+    });  
+    $("#reset").on("click",function(){ window.location.reload();});
+</script>
+
+</html>

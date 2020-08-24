@@ -1,0 +1,104 @@
+{include file="public/head"}
+<style>
+    .logo-img{
+        width: 50px;
+    }
+    .title{
+        background: #eee;
+        width: 100px;
+        text-align: right !important;
+    }
+    .cont,.option-title{
+        text-align: left !important;
+    }
+    .layui-input-block{
+        margin-left:0 !important;
+    }
+</style>
+<body>
+    <div class="x-body">
+        <div class="layui-form">
+            <table class="layui-table">
+                <tbody>
+                    <tr>
+                        <td class="title">ID：</td>
+                        <td class="cont">{$data['id']}</td>
+                        <td class="title">测试人：</td>
+                        <td class="cont">{$data['name']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">联系电话：</td>
+                        <td class="cont">{$data['mobile']}</td>
+                        <td class="title">公司名称：</td>
+                        <td class="cont">{$data['company']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">所属地区：</td>
+                        <td class="cont">{$data['area']}</td>
+                        <td class="title">年营业额：</td>
+                        <td class="cont">{$data['turnover']}(万元)</td>
+                    </tr>
+                    <tr>
+                        <td class="title">成立时间：</td>
+                        <td class="cont">{$data['time']}</td>
+                        <td class="title">员工数量：</td>
+                        <td class="cont">{$data['number']}(人)</td>
+                    </tr>
+                    <tr>
+                        <td class="title">测评分数：</td>
+                        <td class="cont">{$data['point']}</td>
+                        <td class="title">注册资本：</td>
+                        <td class="cont">{$data['capital']}(万元)</td>
+                    </tr>
+                    <tr>
+                        <td class="title">保证金：</td>
+                        <td class="cont">{$data['fee']}(元)</td>
+                        <td class="title">测评时间：</td>
+                        <td class="cont">{$data['create_time']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">品牌：</td>
+                        <td class="cont">{$data['brand']}</td>
+                        <td class="title">备注：</td>
+                        <td class="cont">{$data['message']}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="layui-table">
+                <tbody>
+                    {foreach $data['option'] as $key=>$v}
+                    <tr>
+                        <td class="option-title">{$key+1}、{$v['title']}({$v['point']}分)</td>
+                        <td class="option-title">
+                            <div class="layui-input-block">
+                            {if $v['type'] == 'radio'}
+                                {foreach $v['option'] as $keys=>$vo}
+                                <input type="radio" name="option[{$key}{$keys}]" value="{$keys}" title="{$vo}" {if condition="$keys == $data['options'][$key]"}checked{/if} disabled />
+                                {/foreach}
+                            {elseif $v['type'] == 'checkbox'}
+                                {foreach $v['option'] as $keys=>$vo}
+                                <input type="checkbox" name="option[{$key}{$keys}]" value="{$keys}" title="{$vo}" {if condition="$keys == $data['options'][$key]"}checked{/if} disabled />
+                                {/foreach}
+                            {elseif $v['type'] == 'textarea'}
+                                <textarea class="layui-textarea" name="desc" disabled>{$data['options'][$key]}</textarea>
+                            {else}
+                                <input type="text" disabled value="{$data['options'][$key]}" class="layui-input" />
+                            {/if}
+                            </div>
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        form.render();
+    });   
+</script>
+</html>
