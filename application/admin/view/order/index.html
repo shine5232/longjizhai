@@ -1,0 +1,67 @@
+{include file="public/head"}
+<style>
+    .logo-img{
+        width: 50px;
+    }
+</style>
+<body>
+    <div class="x-body">
+        <div class="layui-form">
+            <table id="demo" lay-filter="test"></table>
+        </div>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索订单','/admin/order/search.html?status={$status}',400,300)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/order/index' //数据接口
+            , where:{
+                status:{$status}
+            }
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'order_sn', title: '订单编号', width: '18%' }
+                    , { field: 'money', title: '订单金额', width: '10%'}
+                    , { field: 'pay_money', title: '支付金额', width: '10%'}
+                    , { field: 'points', title: '积分抵扣', width: '10%'}
+                    , { field: 'uname', title: '用户账号', width: '10%'}
+                    , { field: 'shop_name', title: '下单商铺', width: '10%'}
+                    , { field: 'create_time', title: '下单时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',width: '7%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'订单详情\',\'/admin/order/detail?id=' + d.id + '\',900,500);">详情</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+    });
+</script>
+
+</html>

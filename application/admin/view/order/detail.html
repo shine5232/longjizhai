@@ -1,0 +1,141 @@
+{include file="public/head"}
+<style>
+    .logo-img {
+        width: 30px;
+    }
+
+    .title {
+        background: #eee;
+        width: 100px;
+        text-align: right !important;
+    }
+
+    .cont,
+    .option-title {
+        text-align: left !important;
+    }
+
+    .layui-input-block {
+        margin-left: 0 !important;
+    }
+</style>
+
+<body>
+    <div class="x-body">
+        <div class="layui-form">
+            <fieldset class="layui-elem-field">
+                <legend>订单信息</legend>
+                <div class="layui-field-box">
+                    <table class="layui-table">
+                        <tbody>
+                            <tr>
+                                <td class="title">订单ID：</td>
+                                <td class="cont">{$order['id']}</td>
+                                <td class="title">订单编号：</td>
+                                <td class="cont">{$order['order_sn']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">订单金额：</td>
+                                <td class="cont">{$order['money']}</td>
+                                <td class="title">支付金额：</td>
+                                <td class="cont">{$order['pay_money']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">积分抵扣：</td>
+                                <td class="cont">{$order['points']}</td>
+                                <td class="title">包含运费：</td>
+                                <td class="cont">{$order['freight_fee']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">商家改价：</td>
+                                <td class="cont">{$order['cut_money']}</td>
+                                <td class="title">下单商铺：</td>
+                                <td class="cont">{$order['shop_name']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">下单账号：</td>
+                                <td class="cont">{$order['uname']}</td>
+                                <td class="title">下单时间：</td>
+                                <td class="cont">{$order['create_time']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">支付时间：</td>
+                                <td class="cont">{$order['pay_time']}</td>
+                                <td class="title">发货时间：</td>
+                                <td class="cont">{$order['send_time']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">收货时间：</td>
+                                <td class="cont">{$order['get_time']}</td>
+                                <td class="title">完成时间：</td>
+                                <td class="cont">{$order['complete_time']}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset class="layui-elem-field">
+                <legend>收件人信息</legend>
+                <div class="layui-field-box">
+                    <table class="layui-table">
+                        <tbody>
+                            <tr>
+                                <td class="title">收件人：</td>
+                                <td class="cont">{$order['get_name']}</td>
+                                <td class="title">联系电话：</td>
+                                <td class="cont">{$order['mobile']}</td>
+                            </tr>
+                            <tr>
+                                <td class="title">收货地区：</td>
+                                <td class="cont">{$order['province']}-{$order['city']}-{$order['county']}</td>
+                                <td class="title">详细地址：</td>
+                                <td class="cont">{$order['address']}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset class="layui-elem-field">
+                <legend>商品信息</legend>
+                <div class="layui-field-box">
+                    <table class="layui-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>商品图片</th>
+                                <th>属性名称</th>
+                                <th>购买数量</th>
+                                <th>商铺单价</th>
+                                <th>商品规格</th>
+                                <th>价格合计</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $order['info'] as $key=>$v}
+                            <tr>
+                                <td>{$v['name']}</td>
+                                <td><img class="logo-img" src="__public__{$v['thumb']}" alt=""></td>
+                                <td>{$v['attr_name']}</td>
+                                <td>{$v['goods_num']}</td>
+                                <td>{$v['shop_price']}</td>
+                                <td>{$v['specs']} {$v['unit']}</td>
+                                <td>{$v['goods_num']*$v['shop_price']}</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        form.render();
+    });   
+</script>
+
+</html>
