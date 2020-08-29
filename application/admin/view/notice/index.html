@@ -17,7 +17,7 @@
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索公告','search.html',800,480)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索公告','search.html',400,200)">
                     <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
             </div>
@@ -44,7 +44,7 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'title', title: '标题', width: '15%' }
+                    , { field: 'title', title: '标题' }
                     , { field: 'name', title: '所属站点', width: '15%' }
                     , {
                         field: 'order_price', title: '状态', width: '10%',
@@ -57,7 +57,7 @@
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',
+                        field: 'handle', title: '操作', width: '10%',
                         templet: function (d) {
                             var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑分站\',\'/admin/notice/noticeEdit?id=' + d.id + '\',800,480);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delNotice(' + d.id + ');">删除</button>';

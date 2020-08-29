@@ -168,6 +168,7 @@ class auth extends Main
             } */
             $group_data['id']    = $post['id'];
             $group_data['rules'] = is_array($post['auth_rule_ids']) ? implode(',', $post['auth_rule_ids']) : '';
+            //var_dump($group_data);die;
             if (Db::name('auth_group')->where('id',$post['id'])->update($group_data) !== false) {
                 $this->success('授权成功');
             } else {
