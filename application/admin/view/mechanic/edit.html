@@ -8,10 +8,14 @@
 	<div class="x-body">
 		<div class="layui-form">
 			<div class="layui-form-item">
-				<label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;名</label>
-				<div class="layui-input-block">
-					<input type="text" id="name" name="name" lay-verify="required|name" autocomplete="off"
-						placeholder="请输入姓名" value="{$data.name}" class="layui-input">
+				<label class="layui-form-label">所属用户</label>
+				<div class="layui-input-inline">
+					<select name="uid" lay-verify="required" lay-search="">
+						<option value="">直接选择或搜索选择</option>
+						{volist name='member' id = 'vo'}
+						<option value="{$vo.uid}" {if condition="$vo.uid == $data.uid"}selected{/if}>{$vo.uname}</option>
+						{/volist}
+					</select>
 				</div>
 			</div>
 			<div class="layui-form-item">
@@ -28,11 +32,15 @@
 						placeholder="请输入电话" class="layui-input">
 				</div>
 			</div>
-			<div class="layui-form-item zc_hide">
-				<label class="layui-form-label">公&nbsp;&nbsp;&nbsp;司</label>
-				<div class="layui-input-block">
-					<input type="text" id="company" name="company" value="{$data.company}" autocomplete="off"
-						placeholder="请输入所在公司" class="layui-input">
+			<div class="layui-form-item">
+				<label class="layui-form-label">装饰公司</label>
+				<div class="layui-input-inline">
+					<select name="company" lay-verify="required" lay-search="">
+						<option value="">直接选择或搜索选择</option>
+						{volist name='type4' id = 'vo'}
+						<option value="{$vo.id}" {if condition="$vo.id == $data.id"}selected{/if}>{$vo.nickName}</option>
+						{/volist}
+					</select>
 				</div>
 			</div>
 			<div class="layui-form-item zc_hide">
@@ -148,7 +156,7 @@ layui.use(['form','layer'], function(){
 	*/
 	form.on('submit(toSubmit)',function(data){
 		var params = {
-				name: data.field.name,
+				uid: data.field.uid,
 				nickName: data.field.nickName,
 				phone: data.field.phone,
 				company: data.field.company,

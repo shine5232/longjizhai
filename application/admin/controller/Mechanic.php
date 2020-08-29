@@ -28,7 +28,7 @@ class Mechanic extends Main
         $country = $this->request->param('country','');
         $where = '';
         if($keywords){
-            $where = " AND (A.name LIKE '%".$keywords."%' OR A.phone LIKE '%".$keywords."%') ";
+            $where = " AND (E.uname LIKE '%".$keywords."%' OR A.phone LIKE '%".$keywords."%') ";
         }
         $where1 = '';
         if($city){
@@ -43,8 +43,12 @@ class Mechanic extends Main
             $where3 = " AND (A.country =".$country;
         }
         $page_start = ($page - 1) * $limit;
-        $sql = "SELECT A.id,
-                        A.name,
+        $sql = "SELECT A.*,
+                        concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,
+                        E.uname
+                FROM (
+                    SELECT A.id,
+                        A.uid,
                         A.nickName,
                         A.subordinate,
                         A.phone,
@@ -54,18 +58,23 @@ class Mechanic extends Main
                         A.case,
                         A.create_time,
                         A.site,
-                        CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS is_zong,
-                        concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city
-                FROM lg_mechanic A 
+                        A.province,
+                        A.county,
+                        CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS is_zong
+                        FROM lg_mechanic A
+                    WHERE type = ".$type." AND status = 0".$where.$where1.$where2.$where3."
+                    ORDER BY id DESC
+                    limit $page_start,$limit
+                ) A 
                 INNER JOIN lg_region B ON A.province = B.region_code
                 INNER JOIN lg_region C ON A.city = C.region_code
                 INNER JOIN lg_region D ON A.county = D.region_code
-                WHERE A.type = ".$type." AND A.status = 0".$where.$where1.$where2.$where3."
-                ORDER BY id DESC
-                limit $page_start,$limit";
+                INNER JOIN lg_member E ON A.uid = E.uid";
         // var_dump($sql);die;
         $data = Db::query($sql);
-        $sql1 = "SELECT COUNT(1) AS count FROM lg_mechanic A WHERE A.type = ".$type." AND A.status = 0".$where.$where1.$where2.$where3;
+        $sql1 = "SELECT COUNT(1) AS count FROM lg_mechanic A 
+        INNER JOIN lg_member B ON A.uid = B.uid
+        WHERE A.type = ".$type." AND A.status = 0".$where.$where1.$where2.$where3;
         $count = Db::query($sql1);
         // var_dump($count);die;
         if($data){
@@ -80,9 +89,13 @@ class Mechanic extends Main
     // addCommunity
     public function add($type){
         // var_dump($type);die;
+        $type4 = Db::name('mechanic')->where('type = 4')->where('status =  0')->select();
+        $member = Db::name('member')->select();
         $region = _getRegion();
         $this->assign('regin',$region);
         $this->assign('type',$type);
+        $this->assign('member',$member);
+        $this->assign('type4',$type4);
         return $this->fetch('add');
     }
     /**
@@ -111,8 +124,10 @@ class Mechanic extends Main
                 $this->ret['msg'] = '设计师已存在';
             }elseif($post['type'] == 2){
                 $this->ret['msg'] = '技工已存在';
-            }else{
+            }elseif($post['type'] == 3){
                 $this->ret['msg'] = '工长已存在';
+            }elseif($post['type'] == 4){
+                $this->ret['msg'] = '装饰公司已存在';
             }
             return json($this->ret);
         }
@@ -135,6 +150,8 @@ class Mechanic extends Main
         $id  = $this->request->get('id');
         $type  = $this->request->get('type');
         $data = Db::name('mechanic')->where('id',$id)->find();
+        $type4 = Db::name('mechanic')->where('type = 4')->where('status =  0')->select();
+        $member = Db::name('member')->where('type = 4')->select();
         $province = _getRegion();
         $city = _getRegion($data['province']);
         $county = _getRegion($data['city'],false,true);
@@ -143,6 +160,8 @@ class Mechanic extends Main
         $this->assign('county', $county);
         $this->assign('data',$data);
         $this->assign('type',$type);
+        $this->assign('member',$member);
+        $this->assign('type4',$type4);
         return $this->fetch('edit');
     }
     /**
@@ -170,8 +189,10 @@ class Mechanic extends Main
                 $this->ret['msg'] = '设计师已存在';
             }elseif($post['type'] == 2){
                 $this->ret['msg'] = '技工已存在';
-            }else{
+            }elseif($post['type'] == 3){
                 $this->ret['msg'] = '工长已存在';
+            }elseif($post['type'] == 4){
+                $this->ret['msg'] = '装饰公司已存在';
             }
             $this->ret['code'] = -1;
             return json($this->ret);

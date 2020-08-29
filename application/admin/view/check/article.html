@@ -57,7 +57,7 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/editA?id=' + d.id + '\',800,480);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=2' + '\',800,480);">审核</button>' ;
                             return handle;
                         }
                     }

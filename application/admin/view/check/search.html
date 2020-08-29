@@ -16,7 +16,7 @@
                 </div> 
             </div>
             
-            <div class="layui-form-item">
+            <div class="layui-form-item Authen">
                 <label class="layui-form-label">账号类型</label>
                 <div class="layui-input-block">
                     <select lay-filter="aihao" name="type" id='type'>
@@ -40,10 +40,15 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
+    $('.Authen').hide();
+    if({$type} == 1){
+        $('.Authen').show();
+    }
     layui.use(['form', 'layer'], function () {
         var form = layui.form;
         var layer = layui.layer;
         form.on('submit(searchSubmit)', function (data) {
+            // console.log(data);return false;
             var index = layer.msg('查询中，请稍后...', {
                 icon: 16,
                 time: false,

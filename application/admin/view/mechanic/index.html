@@ -62,8 +62,7 @@
                             field: 'handle', title: '操作',
                             templet: function (d) {
                                 var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑\',\'/admin/mechanic/edit?id=' + d.id + '&type='+type+'\',800,480);">编辑</button>' +
-                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>'+
-                                    '<button type="button" class="layui-btn layui-btn-search layui-btn-xs" onclick="x_admin_show(\'充值\',\'/admin/community/communityEdit?id=' + d.id + '\',800,480);">充值积分</button>';
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>';
                                 return handle;
                             }
                         }
@@ -94,15 +93,14 @@
                             field: 'handle', title: '操作',
                             templet: function (d) {
                                 var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑设计师\',\'/admin/mechanic/edit?id=' + d.id + '&type='+type+'\',800,480);">编辑</button>' +
-                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>'+
-                                    '<button type="button" class="layui-btn layui-btn-search layui-btn-xs" onclick="x_admin_show(\'充值\',\'/admin/community/communityEdit?id=' + d.id + '\',800,480);">充值积分</button>';
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>';
                                 return handle;
                             }
                         }
                     ]
                 ]
             });
-        }else{
+        }else if(type == 3){
             tableIns = table.render({
                 elem: '#demo'
                 , toolbar: '#toolbarDemo'
@@ -128,8 +126,38 @@
                             field: 'handle', title: '操作',
                             templet: function (d) {
                                 var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑设计师\',\'/admin/mechanic/edit?id=' + d.id + '&type='+type+'\',800,480);">编辑</button>' +
-                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>'+
-                                    '<button type="button" class="layui-btn layui-btn-search layui-btn-xs" onclick="x_admin_show(\'充值\',\'/admin/community/communityEdit?id=' + d.id + '\',800,480);">充值积分</button>';
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>';
+                                return handle;
+                            }
+                        }
+                    ]
+                ]
+            });
+        }else if(type == 4 ){
+            tableIns = table.render({
+                elem: '#demo'
+                , toolbar: '#toolbarDemo'
+                , defaultToolbar: []
+                , url: '/admin/Mechanic/indexList?type='+type //数据接口
+                , page: true //开启分页
+                , limit: 20
+                , id: 'test'
+                , cols: [
+                    [ //表头
+                        { type: 'checkbox', fixed: 'left' }
+                        , { field: 'id', title: 'ID', width: '4%', fixed: 'left' }
+                        , { field: 'name', title: '公司名', width: '6%' }
+                        , { field: 'nickName', title: '所属会员', width: '7%', }
+                        , { field: 'subordinate', title: '下级', width: '6%' }
+                        , { field: 'phone', title: '手机', width: '9%', }
+                        , { field: 'city', title: '城市', width: '12%' }
+                        , { field: 'create_time', title: '注册时间', width: '12%' }
+                        , { field: 'is_zong', title: '总站', width: '5%', }
+                        , {
+                            field: 'handle', title: '操作',
+                            templet: function (d) {
+                                var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑设计师\',\'/admin/mechanic/edit?id=' + d.id + '&type='+type+'\',800,480);">编辑</button>' +
+                                    '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delCommunity(' + d.id + ');">删除</button>';
                                 return handle;
                             }
                         }
