@@ -66,7 +66,7 @@ class check extends Main
      */
     public function edit()
     {
-        if (request()->isAjax()) {
+        if (request()->isPost()) {
             $id = $this->request->get('id');
             $type = $this->request->get('type');
             $post =  $this->request->post();
@@ -134,14 +134,6 @@ class check extends Main
             return $this->fetch();
         }
     }
-    /**
-     * 审核管理-审核认证
-     */
-    public function update()
-    {
-    }
-
-
     public function search()
     {
         $type = $this->request->get('type');

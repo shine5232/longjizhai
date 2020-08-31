@@ -141,6 +141,7 @@ class Auth
         $authList = $this->getAuthList($uid, $type);
         if (is_string($name)) {
             $name = strtolower($name);
+            $name = preg_replace('/\?.*$/U', '', $name);
             if (strpos($name, ',') !== false) {
                 $name = explode(',', $name);
             } else {
@@ -152,7 +153,9 @@ class Auth
             $REQUEST = unserialize(strtolower(serialize($this->request->param())));
         }
         foreach ($authList as $auth) {
-            $query = preg_replace('/^.+\?/U', '', $auth);
+            $auths      = preg_replace('/\?.*$/U', '', $auth);
+            //var_dump($auth);
+            /* $query = preg_replace('/^.+\?/U', '', $auth);
             if ('url' == $mode && $query != $auth) {
                 parse_str($query, $param); //解析规则中的param
                 $intersect = array_intersect_assoc($REQUEST, $param);
@@ -165,6 +168,9 @@ class Auth
                 if (in_array($auth, $name)) {
                     $list[] = $auth;
                 }
+            } */
+            if (in_array($auths, $name)) {
+                $list[] = $auths;
             }
         }
         if ('or' == $relation && !empty($list)) {
@@ -174,7 +180,6 @@ class Auth
         if ('and' == $relation && empty($diff)) {
             return true;
         }
-
         return false;
     }
 

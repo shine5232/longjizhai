@@ -8,12 +8,12 @@
 	</style>
 	<div class="x-body">
 		<div class="layui-form">
-			<div class="layui-inline">
+			<div class="layui-form-item">
 				<label class="layui-form-label">所属用户</label>
 				<div class="layui-input-inline">
 					<select name="uid" lay-verify="required" lay-search="">
 						<option value="">直接选择或搜索选择</option>
-						{volist name='type4' id = 'vo'}
+						{volist name='member' id = 'vo'}
 						<option value="{$vo.uid}">{$vo.uname}</option>
 						{/volist}
 					</select>
@@ -34,7 +34,7 @@
 				</div>
 			</div>
 
-			<div class="layui-inline">
+			<div class="layui-form-item">
 				<label class="layui-form-label">装饰公司</label>
 				<div class="layui-input-inline">
 					<select name="company" lay-verify="required" lay-search="">

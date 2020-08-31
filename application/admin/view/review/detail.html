@@ -18,7 +18,7 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">评论人</label>
 					<div class="layui-input-block">
-						<input id="reviewer" name="reviewer" autocomplete="off" value="{$data.reviewer}"
+						<input id="reviewer" name="reviewer" disabled autocomplete="off" value="{$data.reviewer}"
 							class="layui-input" disabled="disabled" />
 					</div>
 				</div>
@@ -40,14 +40,14 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">设计得分</label>
 					<div class="layui-input-block">
-						<input id="design_code" name="design_code" autocomplete="off" value="{$data.design_code}"
+						<input id="design_code" name="design_code" disabled autocomplete="off" value="{$data.design_code}"
 							class="layui-input" disabled="disabled" />
 					</div>
 				</div>
 				<div class="layui-form-item">
 					<label class="layui-form-label">服务得分</label>
 					<div class="layui-input-block">
-						<input id="service_code" name="service_code" autocomplete="off" value="{$data.service_code}"
+						<input id="service_code" name="service_code" disabled autocomplete="off" value="{$data.service_code}"
 							class="layui-input" disabled="disabled" />
 					</div>
 				</div>
@@ -55,7 +55,7 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">贴心得分</label>
 					<div class="layui-input-block">
-						<input id="intimate_code" name="intimate_code" autocomplete="off" value="{$data.intimate_code}"
+						<input id="intimate_code" name="intimate_code" disabled autocomplete="off" value="{$data.intimate_code}"
 							class="layui-input" disabled="disabled" />
 					</div>
 				</div>
@@ -67,12 +67,6 @@
 					</div>
 				</div>
 				<input type="hidden" value="{$data.id}" name="id" />
-				<div class="layui-form-item">
-					<div class="layui-input-block">
-						<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
-						<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
-					</div>
-				</div>
 			</div>
 		</div>
 </body>

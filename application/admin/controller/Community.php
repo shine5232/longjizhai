@@ -14,7 +14,7 @@ class Community extends Main
      */
     public function index()
     {
-        if (request()->isPost()) {
+        if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $keywords = $this->request->param('keywords', '');
@@ -61,15 +61,8 @@ class Community extends Main
         }
     }
     /**
-     * 小区管理-业主小区列表数据
-     */
-    public function index_list()
-    {
-    }
-    /**
      * 小区管理-添加小区页面
      */
-    // addCommunity
     public function communityAdd()
     {
         if (request()->isPost()) {
@@ -104,12 +97,6 @@ class Community extends Main
             $this->assign('regin', $region);
             return $this->fetch('community_add');
         }
-    }
-    /**
-     * 业主小区管理-添加小区数据
-     */
-    public function addCommunity()
-    {
     }
     /**
      * 小区管理-编辑小区页面
@@ -170,12 +157,6 @@ class Community extends Main
             $this->assign('data', $data);
             return $this->fetch('community_edit');
         }
-    }
-    /**
-     * 小区管理-编辑小区数据
-     */
-    public function editCommunity()
-    {
     }
     /**
      * 小区管理-小区搜索页面

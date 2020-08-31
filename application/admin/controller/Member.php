@@ -59,7 +59,7 @@ class Member extends Main
                     LEFT JOIN lg_region B ON A.county = B.region_code 
                     LEFT JOIN lg_region C ON B.region_superior_code = C.region_code 
                     LEFT JOIN lg_region D ON C.region_superior_code = D.region_code ";
-            $sql2 = "SELECT COUNT(0) AS num FROM lg_member WHERE $where";
+            $sql2 = "SELECT COUNT(0) AS num FROM lg_member AS A WHERE $where";
             $data = Db::query($sql1);
             $count = Db::query($sql2);
             if ($data) {

@@ -257,3 +257,20 @@ function json($data=array('code'=>0,'msg'=>'error','data'=>'')){
     //输出json  
     echo json_encode($data);
 }
+/**
+ * 数组参数以&符拼接成字符串 
+ */
+function _paramArrayToStr($param){
+    $str = '?';
+    if(is_array($param)){
+        if(count($param)){
+            foreach($param as $key=>$v){
+                $str .= $key.'='.$v.'&';
+            }
+        }else{
+            $str = '';
+        }
+    }
+    $str = rtrim($str,'&');
+    return $str;
+}

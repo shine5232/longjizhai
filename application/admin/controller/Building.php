@@ -63,18 +63,11 @@ class Building extends Main
         }
     }
     /**
-     * 在建工地管理-业主在建工地列表数据
-     */
-    public function index_list()
-    {
-    }
-    /**
      * 在建工地管理-添加在建工地页面
      */
-    // addBuilding
     public function buildingAdd()
     {
-        if (request()->isAjax()) {
+        if (request()->isPost()) {
             $post     = $this->request->post();
             $post['create_time'] = date('Y-m-d H:i:S');
             $post['village_type'] = 2;
@@ -112,17 +105,11 @@ class Building extends Main
         }
     }
     /**
-     * 业主在建工地管理-添加在建工地数据
-     */
-    public function addBuilding()
-    {
-    }
-    /**
      * 在建工地管理-编辑在建工地页面
      */
     public function buildingEdit()
     {
-        if (request()->isAjax()) {
+        if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
             $row = Db::name('village')
@@ -168,12 +155,6 @@ class Building extends Main
             $this->assign('company', $company);
             return $this->fetch('edit');
         }
-    }
-    /**
-     * 在建工地管理-编辑在建工地数据
-     */
-    public function editBuilding()
-    {
     }
     /**
      * 在建工地管理-在建工地搜索页面
@@ -225,6 +206,9 @@ class Building extends Main
         }
         return json($this->ret);
     }
+    /**
+     * 在建工地管理-工地日志
+     */
     public function buildingLog()
     {
         if (request()->isAjax()) {
@@ -257,12 +241,12 @@ class Building extends Main
             return $this->fetch('log');
         }
     }
-    public function buildingLogList()
-    {
-    }
+    /**
+     * 在建工地管理-添加在建工地
+     */
     public function logAdd()
     {
-        if (request()->isAjax()) {
+        if (request()->isPost()) {
             $post     = $this->request->post();
             $post['create_time'] = date('Y-m-d H:i:S');
             $db = Db::name('building_log')->insert($post);
@@ -284,12 +268,12 @@ class Building extends Main
             return $this->fetch('log_add');
         }
     }
-    public function addLog()
-    {
-    }
+    /**
+     * 在建工地管理-编辑在建工地
+     */
     public function logEdit($id, $village_id)
     {
-        if (request()->isAjax()) {
+        if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
             $NoticeModel = new BuildLogModel;
@@ -316,11 +300,8 @@ class Building extends Main
         }
     }
     /**
-     * 在建工地管理-编辑在建工地数据
+     * 在建工地管理-删除日志
      */
-    public function editLog()
-    {
-    }
     public function delLog()
     {
         $id = $this->request->post('id');
@@ -331,7 +312,9 @@ class Building extends Main
         }
         return json($this->ret);
     }
-
+    /**
+     * 在建工地管理-批量删除日志
+     */
     public function delLogAll()
     {
         $delList = $this->request->post('delList');

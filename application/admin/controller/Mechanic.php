@@ -5,38 +5,39 @@ namespace app\admin\controller;
 use \think\Db;
 use app\admin\model\Mechanic as MechanicModel;
 use \think\Reuquest;
+use think\Session;
 
 class Mechanic extends Main
 {
     protected $ret = ['code' => 0, 'msg' => "", 'count' => 0, 'data' => []];
-
     /**
      * 技工管理-业主小区列表
      */
     public function index($type)
     {
-        if (request()->isPost()) {
+        if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $keywords = $this->request->param('keywords', '');
             $city = $this->request->param('city', '');
             $province = $this->request->param('province', '');
-            $country = $this->request->param('country', '');
+            $county = $this->request->param('county', '');
             $where = '';
             if ($keywords) {
-                $where = " AND (E.uname LIKE '%" . $keywords . "%' OR A.phone LIKE '%" . $keywords . "%') ";
+                $where .= " AND (E.uname LIKE '%" . $keywords . "%' OR A.phone LIKE '%" . $keywords . "%') ";
             }
-            $where1 = '';
             if ($city) {
-                $where1 = " AND A.city =" . $city;
+                $where .= " AND A.city =" . $city;
             }
-            $where2 = '';
             if ($province) {
-                $where2 = " AND  A.province = " . $province;
+                $where .= " AND  A.province = " . $province;
             }
-            $where3 = '';
-            if ($country) {
-                $where3 = " AND (A.country =" . $country;
+            if ($county) {
+                $where .= " AND A.county =" . $county;
+            }
+            $user = Session::get('user');
+            if($user['county']){
+                $where .= " AND A.county =" . $user['county'];
             }
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,
@@ -58,7 +59,7 @@ class Mechanic extends Main
                         A.county,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS is_zong
                         FROM lg_mechanic A
-                    WHERE type = " . $type . " AND status = 0" . $where . $where1 . $where2 . $where3 . "
+                    WHERE type = " . $type . " AND status = 0" . $where . "
                     ORDER BY id DESC
                     limit $page_start,$limit
                 ) A 
@@ -70,7 +71,7 @@ class Mechanic extends Main
             $data = Db::query($sql);
             $sql1 = "SELECT COUNT(1) AS count FROM lg_mechanic A 
         INNER JOIN lg_member B ON A.uid = B.uid
-        WHERE A.type = " . $type . " AND A.status = 0" . $where . $where1 . $where2 . $where3;
+        WHERE A.type = " . $type . " AND A.status = 0" . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
@@ -84,17 +85,11 @@ class Mechanic extends Main
         }
     }
     /**
-     * 技工管理-设计师列表数据
-     */
-    public function indexList($type)
-    {
-    }
-    /**
      * 技工管理-添加技工页面
      */
-    // addCommunity
     public function add($type)
     {
+        $user = Session::get('user');
         if (request()->isPost()) {
             $post     = $this->request->post();
             $post['create_time'] = date('Y-m-d H:i:s');
@@ -138,7 +133,11 @@ class Mechanic extends Main
             return json($this->ret);
         } else {
             $type4 = Db::name('mechanic')->where('type = 4')->where('status =  0')->select();
-            $member = Db::name('member')->select();
+            $where['subscribe'] = 1;
+            if($user['county']){
+                $where['county'] = $user['county'];
+            }
+            $member = Db::name('member')->where($where)->field('id,uid,uname,realname')->select();
             $region = _getRegion();
             $this->assign('regin', $region);
             $this->assign('type', $type);
@@ -148,12 +147,6 @@ class Mechanic extends Main
         }
         // var_dump($type);die;
 
-    }
-    /**
-     * 技工管理-添加技工数据
-     */
-    public function addMechanic()
-    {
     }
     /**
      * 技工管理-编辑技工页面
@@ -220,12 +213,6 @@ class Mechanic extends Main
             $this->assign('type4', $type4);
             return $this->fetch('edit');
         }
-    }
-    /**
-     * 技工管理-编辑技工数据
-     */
-    public function editMechanic()
-    {
     }
     /**
      * 技工管理-技工搜索页面

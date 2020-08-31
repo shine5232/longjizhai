@@ -12,7 +12,7 @@ class Authenticate extends Main
      */
     public function index($type)
     {
-        if (request()->isPost()) {
+        if (request()->isAjax()) {
             $type  = $this->request->get('type');
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
@@ -68,13 +68,6 @@ class Authenticate extends Main
             return $this->fetch('index');
         }
     }
-    /**
-     * 认证管理-列表页面接口数据
-     */
-    public function indexList()
-    {
-    }
-
     /**
      * 认证管理-列表搜索页面
      */

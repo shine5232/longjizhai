@@ -14,7 +14,7 @@ class notice extends Main
      */
     public function index()
     {
-        if (request()->isPost()) {
+        if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $keywords = $this->request->param('keywords', '');
@@ -59,12 +59,6 @@ class notice extends Main
         }
     }
     /**
-     * 公告管理管理-公告列表页面接口数据
-     */
-    public function noticeList()
-    {
-    }
-    /**
      * 公告管理-公告添加页面
      */
     public function noticeAdd()
@@ -92,16 +86,6 @@ class notice extends Main
             return  $this->fetch('add');
         }
     }
-
-
-    /**
-     * 公告管理-公告添加处理
-     */
-    public function addNotice()
-    {
-    }
-
-
     /**
      * 公告管理-公告编辑页面
      */
@@ -131,14 +115,6 @@ class notice extends Main
                 ->find();
             return  $this->fetch('edit', ['data' => $data]);
         }
-    }
-
-
-    /**
-     * 公告管理-公告编辑处理
-     */
-    public function editNotice()
-    {
     }
 
     /**
