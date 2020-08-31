@@ -21,22 +21,23 @@ class Building extends Main
             $keywords = $this->request->param('keywords', '');
             $city = $this->request->param('city', '');
             $province = $this->request->param('province', '');
-            $country = $this->request->param('country', '');
+            $county = $this->request->param('county', '');
             $where = '';
             if ($keywords) {
-                $where = " AND A.village_name LIKE '%" . $keywords . "%'";
+                $where .= " AND A.village_name LIKE '%" . $keywords . "%'";
             }
-            $where1 = '';
             if ($city) {
-                $where1 = " AND A.city =" . $city;
+                $where .= " AND A.city =" . $city;
             }
-            $where2 = '';
             if ($province) {
-                $where2 = " AND  A.province = " . $province;
+                $where .= " AND  A.province = " . $province;
             }
-            $where3 = '';
-            if ($country) {
-                $where3 = " AND (A.country =" . $country;
+            if ($county) {
+                $where .= " AND A.county =" . $county;
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.county = '.$user['county'];
             }
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.id,A.village_addr,A.village_name,concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,area,price,E.name AS speed_name
@@ -45,12 +46,12 @@ class Building extends Main
                 INNER JOIN lg_region C ON A.city = C.region_code
                 INNER JOIN lg_region D ON A.county = D.region_code
                 LEFT JOIN lg_speed E ON A.speed_id = E.id
-                WHERE A.village_type = 2 AND A.status = 0" . $where . $where1 . $where2 . $where3 . "
+                WHERE A.village_type = 2 AND A.status = 0" . $where . "
                 ORDER BY id DESC
                 limit $page_start,$limit";
             // var_dump($sql);die;
             $data = Db::query($sql);
-            $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 2 AND A.status = 0" . $where . $where1 . $where2 . $where3;
+            $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 2 AND A.status = 0" . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
@@ -276,10 +277,12 @@ class Building extends Main
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
+            $village_id = $post['village_id'];
             $NoticeModel = new BuildLogModel;
             // save方法第二个参数为更新条件
+            unset($post['village_id']);
             $res = $NoticeModel->save($post, ['id', $id]);
-            Db::name('village')->where('id', $post['village_id'])->update(['speed_id' => $post['speed_id']]);
+            Db::name('village')->where('id', $village_id)->update(['speed_id' => $post['speed_id']]);
             //    var_dump(Db::name('building_log')->getLastSql());die;
             if ($res) {
                 $this->ret['code'] = 200;

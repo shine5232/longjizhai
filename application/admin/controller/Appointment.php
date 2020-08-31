@@ -22,13 +22,17 @@ class Appointment extends Main
             if ($keywords) {
                 $where = " AND (A.name = '" . $keywords . "' OR B.uname = '" . $keywords . "')";
             }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.county = '.$user['county'];
+            }
             $sql = "SELECT CASE WHEN A.status = 0 THEN '未处理' WHEN A.status = 1 THEN '预约成功' ELSE '预约失败' END AS status_name,A.status ,A.note,A.name,A.id,B.uname AS appointmented_name,A.mobile,A.appoint_time,A.content
                 FROM lg_appointment A 
                 INNER JOIN lg_member B ON A.appointmented_uid = B.id 
                 WHERE B.type = " . $type . $where . "
                 ORDER BY A.id DESC
                 limit $page_start,$limit";
-            // var_dump($sql);die;
+            //var_dump($sql);die;
             $data = Db::query($sql);
             // var_dump($data);die;
             $sql1 = "SELECT COUNT(1) AS count FROM lg_appointment A 

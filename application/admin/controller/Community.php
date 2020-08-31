@@ -20,22 +20,23 @@ class Community extends Main
             $keywords = $this->request->param('keywords', '');
             $city = $this->request->param('city', '');
             $province = $this->request->param('province', '');
-            $country = $this->request->param('country', '');
+            $county = $this->request->param('county', '');
             $where = '';
             if ($keywords) {
-                $where = " AND A.village_name LIKE '%" . $keywords . "%'";
+                $where .= " AND A.village_name LIKE '%" . $keywords . "%'";
             }
-            $where1 = '';
             if ($city) {
-                $where1 = " AND A.city =" . $city;
+                $where .= " AND A.city =" . $city;
             }
-            $where2 = '';
             if ($province) {
-                $where2 = " AND  A.province = " . $province;
+                $where .= " AND  A.province = " . $province;
             }
-            $where3 = '';
-            if ($country) {
-                $where3 = " AND (A.country =" . $country;
+            if ($county) {
+                $where .= " AND A.county =" . $county;
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.county = '.$user['county'];
             }
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.id,A.village_addr,A.village_name,concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city
@@ -43,12 +44,12 @@ class Community extends Main
                     INNER JOIN lg_region B ON A.province = B.region_code
                     INNER JOIN lg_region C ON A.city = C.region_code
                     INNER JOIN lg_region D ON A.county = D.region_code
-                    WHERE A.village_type = 1 AND A.status = 0" . $where . $where1 . $where2 . $where3 . "
+                    WHERE A.village_type = 1 AND A.status = 0" . $where . "
                     ORDER BY id DESC
                     limit $page_start,$limit";
             // var_dump($sql);die;
             $data = Db::query($sql);
-            $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 1 AND A.status = 0" . $where . $where1 . $where2 . $where3;
+            $sql1 = "SELECT COUNT(1) AS count FROM lg_village A WHERE A.village_type = 1 AND A.status = 0" . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
@@ -67,6 +68,12 @@ class Community extends Main
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
+            $user = session('user');
+            if($user['county']){
+                $post['province'] = $user['province'];
+                $post['city'] = $user['city'];
+                $post['county'] = $user['county'];
+            }
             $post['create_time'] = date('Y-m-d H:i:S');
             $post['village_type'] = 1;
             $row = Db::name('village')
@@ -106,6 +113,12 @@ class Community extends Main
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
+            $user = session('user');
+            if($user['county']){
+                $post['province'] = $user['province'];
+                $post['city'] = $user['city'];
+                $post['county'] = $user['county'];
+            }
             $row = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])

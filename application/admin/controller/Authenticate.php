@@ -22,19 +22,20 @@ class Authenticate extends Main
             $country = $this->request->param('country', '');
             $where = '';
             if ($keywords) {
-                $where = " AND (B.uname LIKE '%" . $keywords . "%' OR B.mobile LIKE '%" . $keywords . "%') ";
+                $where .= " AND (B.uname LIKE '%" . $keywords . "%' OR B.mobile LIKE '%" . $keywords . "%') ";
             }
-            $where1 = '';
             if ($city) {
-                $where1 = " AND B.city =" . $city;
+                $where .= " AND B.city =" . $city;
             }
-            $where2 = '';
             if ($province) {
-                $where2 = " AND  B.province = " . $province;
+                $where .= " AND  B.province = " . $province;
             }
-            $where3 = '';
             if ($country) {
-                $where3 = " AND (B.country =" . $country;
+                $where .= " AND B.country =" . $country;
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND B.country = '.$user['county'];
             }
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,B.uname,B.mobile,
@@ -45,7 +46,7 @@ class Authenticate extends Main
                 INNER JOIN lg_region C ON B.province = C.region_code
                 INNER JOIN lg_region D ON B.city = D.region_code
                 INNER JOIN lg_region E ON B.county = E.region_code
-                WHERE A.type = " . $type . " AND A.status = 0" . $where . $where1 . $where2 . $where3 . "
+                WHERE A.type = " . $type . " AND A.status = 0" . $where . "
                 ORDER BY id DESC
                 limit $page_start,$limit";
             // var_dump($sql);die;
@@ -55,7 +56,7 @@ class Authenticate extends Main
         INNER JOIN lg_region C ON B.province = C.region_code
         INNER JOIN lg_region D ON B.city = D.region_code
         INNER JOIN lg_region E ON B.county = E.region_code
-        WHERE A.type = " . $type . " AND A.status = 0" . $where . $where1 . $where2 . $where3;
+        WHERE A.type = " . $type . " AND A.status = 0" . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {

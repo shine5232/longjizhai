@@ -17,13 +17,18 @@ class cases extends Main
             $page = $this->request->param('page',1,'intval');
             $limit = $this->request->param('limit',20,'intval');
             $page_start = ($page - 1) * $limit;
+            $user = session('user');
+            $where = 'A.type = '.$type.' AND A.deleted = 0 ';
+            if($user['county']){
+                $where .= ' AND A.province = '.$user['province'] .' AND A.city = '.$user['city'].' AND A.county = '.$user['county'].' ';
+            }
             $sql = "SELECT A.*,CASE WHEN B.region_name IS NULL THEN '总站' ELSE CONCAT(D.region_name,'-',C.region_name,'-',B.region_name) END AS region 
                     FROM (
                         SELECT case_title,C.village_name,B.uname,view_num,collect_num,sort,CASE WHEN is_zong = 0 THEN '否' ELSE '是' END AS is_zong,A.create_time,A.id,A.county
                         FROM lg_cases A
                         INNER JOIN lg_member B ON A.user_id = B.uid
                         INNER JOIN lg_village C ON A.area_id = C.id
-                        WHERE A.type = ".$type."
+                        WHERE ".$where." 
                             AND A.deleted = 0
                         ORDER BY sort DESC
                         LIMIT $page_start,$limit
@@ -35,9 +40,8 @@ class cases extends Main
                     ";
                 // var_dump($sql);die;
                 $data = Db::query($sql);
-            $count = Db::name('cases')
-                ->where('type',$type)
-                ->where('deleted',0)
+            $count = Db::name('cases')->alias('A')
+                ->where($where)
                 ->count();
             if($data){
                 $this->ret['count'] = $count;

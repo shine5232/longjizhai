@@ -94,7 +94,11 @@ class article extends Main
             $keywords = $this->request->param('keywords','');
             $cate_id = $this->request->param('cate_id','');
             $page_start = ($page - 1) * $limit;
-            $where = ['a.status'=>0];
+            $where['a.status'] = ['eq',0];
+            $user = session('user');
+            if($user['county']){
+                $where['a.county'] = $user['county'];
+            }
             if($title){
                 $where['a.title'] = ['like',"%$title%"];
             }
@@ -135,6 +139,8 @@ class article extends Main
             $post     = $this->request->post();
             $admin_user = session('user');
             if($admin_user['county'] != null){
+                $post['province'] = $admin_user['province'];
+                $post['city'] = $admin_user['city'];
                 $post['county'] = $admin_user['county'];
             }
             $post['create_time']   = date('Y-m-d H:i:s');
