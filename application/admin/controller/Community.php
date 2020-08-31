@@ -66,22 +66,25 @@ class Community extends Main
      */
     public function communityAdd()
     {
+        $user = session('user');
         if (request()->isPost()) {
             $post     = $this->request->post();
-            $user = session('user');
-            if($user['county']){
-                $post['province'] = $user['province'];
-                $post['city'] = $user['city'];
-                $post['county'] = $user['county'];
-            }
             $post['create_time'] = date('Y-m-d H:i:S');
             $post['village_type'] = 1;
+            $where = [];
+            if($post['province']){
+                $where['province'] = $post['province'];
+            }
+            if($post['city']){
+                $where['city'] = $post['city'];
+            }
+            if($post['county']){
+                $where['county'] = $post['county'];
+            }
             $row = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])
-                ->where('province', $post['province'])
-                ->where('city', $post['city'])
-                ->where('county', $post['county'])
+                ->where($where)
                 ->find();
             // var_dump(Db::name('village')->getLastSql());die;
             // var_dump($row);die;
@@ -102,6 +105,7 @@ class Community extends Main
         } else {
             $region = _getRegion();
             $this->assign('regin', $region);
+            $this->assign('user', $user);
             return $this->fetch('community_add');
         }
     }
@@ -110,21 +114,24 @@ class Community extends Main
      */
     public function communityEdit()
     {
+        $user = session('user');
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
-            $user = session('user');
-            if($user['county']){
-                $post['province'] = $user['province'];
-                $post['city'] = $user['city'];
-                $post['county'] = $user['county'];
+            $where = [];
+            if($post['province']){
+                $where['province'] = $post['province'];
+            }
+            if($post['city']){
+                $where['city'] = $post['city'];
+            }
+            if($post['county']){
+                $where['county'] = $post['county'];
             }
             $row = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])
-                ->where('province', $post['province'])
-                ->where('city', $post['city'])
-                ->where('county', $post['county'])
+                ->where($where)
                 ->where('id', '<>', $id)
                 ->find();
             // var_dump(Db::name('village')->getLastSql());die;
@@ -137,9 +144,7 @@ class Community extends Main
             $row1 = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])
-                ->where('province', $post['province'])
-                ->where('city', $post['city'])
-                ->where('county', $post['county'])
+                ->where($where)
                 ->where('id', $id)
                 ->find();
             // var_dump($row1);die;
@@ -160,7 +165,12 @@ class Community extends Main
             return json($this->ret);
         } else {
             $id  = $this->request->get('id');
-            $data = Db::name('village')->where('id', $id)->find();
+            if($user['county']){
+                $where['province'] = $user['province'];
+                $where['city'] = $user['city'];
+                $where['county'] = $user['county'];
+            }
+            $data = Db::name('village')->where('id', $id)->where($where)->find();
             $province = _getRegion();
             $city = _getRegion($data['province']);
             $county = _getRegion($data['city'], false, true);
@@ -168,6 +178,7 @@ class Community extends Main
             $this->assign('city', $city);
             $this->assign('county', $county);
             $this->assign('data', $data);
+            $this->assign('user', $user);
             return $this->fetch('community_edit');
         }
     }
@@ -176,8 +187,10 @@ class Community extends Main
      */
     public function search()
     {
+        $user = session('user');
         $region = _getRegion();
         $this->assign('regin', $region);
+        $this->assign('user', $user);
         return $this->fetch();
     }
     /**

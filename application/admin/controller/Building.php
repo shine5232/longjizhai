@@ -68,10 +68,14 @@ class Building extends Main
      */
     public function buildingAdd()
     {
+        $user = session('user');
         if (request()->isPost()) {
             $post     = $this->request->post();
             $post['create_time'] = date('Y-m-d H:i:S');
             $post['village_type'] = 2;
+            $post['province'] = $user['province'];
+            $post['city'] = $user['city'];
+            $post['county'] = $user['county'];
             $row = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])
@@ -96,12 +100,17 @@ class Building extends Main
             }
             return json($this->ret);
         } else {
+            $where['status'] = 0;
+            if($user['county']){
+                $where['county'] = $user['county'];
+            }
             $company = Db::name('company')
-                ->where('status = 0')
+                ->where($where)
                 ->select();
             $region = _getRegion();
             $this->assign('regin', $region);
             $this->assign('company', $company);
+            $this->assign('user', $user);
             return $this->fetch('add');
         }
     }
@@ -110,9 +119,13 @@ class Building extends Main
      */
     public function buildingEdit()
     {
+        $user = session('user');
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
+            $post['province'] = $user['province'];
+            $post['city'] = $user['city'];
+            $post['county'] = $user['county'];
             $row = Db::name('village')
                 ->where('village_name', $post['village_name'])
                 ->where('village_addr', $post['village_addr'])
@@ -130,7 +143,8 @@ class Building extends Main
             }
             $NoticeModel = new VillageModel;
             // save方法第二个参数为更新条件
-            $res = $NoticeModel->save($post, ['id', $id]);
+            unset($post['id']);
+            $res = $NoticeModel->save($post, ['id'=>$id]);
             // var_dump($db);die;
             if ($res) {
                 $this->ret['code'] = 200;
@@ -141,8 +155,12 @@ class Building extends Main
             }
             return json($this->ret);
         } else {
+            $where['status'] = 0;
+            if($user['county']){
+                $where['county'] = $user['county'];
+            }
             $company = Db::name('company')
-                ->where('status = 0')
+                ->where($where)
                 ->select();
             $id  = $this->request->get('id');
             $data = Db::name('village')->where('id', $id)->find();
@@ -154,6 +172,7 @@ class Building extends Main
             $this->assign('county', $county);
             $this->assign('data', $data);
             $this->assign('company', $company);
+            $this->assign('user', $user);
             return $this->fetch('edit');
         }
     }
@@ -162,8 +181,10 @@ class Building extends Main
      */
     public function search()
     {
+        $user = session('user');
         $region = _getRegion();
         $this->assign('regin', $region);
+        $this->assign('user', $user);
         return $this->fetch();
     }
     /**
@@ -213,7 +234,7 @@ class Building extends Main
     public function buildingLog()
     {
         if (request()->isAjax()) {
-            $id = $this->request->post('id');
+            $id = $this->request->param('id');
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $page_start = ($page - 1) * $limit;

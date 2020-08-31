@@ -7,6 +7,7 @@
 	</style>
 	<div class="x-body">
 		<div class="layui-form">
+			{if $user['county'] == ''}
 			<div class="layui-form-item" id="region">
 				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
 				<div class="layui-input-inline">
@@ -34,6 +35,11 @@
 					</select>
 				</div>
 			</div>
+			{else}
+				<input type="hidden" name="province" value="{$user['province']}" />
+				<input type="hidden" name="city" value="{$user['city']}" />
+				<input type="hidden" name="county" value="{$user['county']}" />
+			{/if}
 			<div class="layui-form-item">
 				<label class="layui-form-label">小区名称</label>
 				<div class="layui-input-block">
