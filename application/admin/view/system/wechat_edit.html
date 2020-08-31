@@ -94,7 +94,7 @@
 				id: data.field.id
 			};
 			// console.log(params);return false;
-			$.post('/admin/system/set_upd', params, function (data) {
+			$.post('/admin/system/setEdit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('修改成功', {

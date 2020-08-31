@@ -122,7 +122,7 @@ layui.use(['form','layer'], function(){
 				city: data.field.city,
 				county: data.field.county
 			};
-		$.post('/admin/community/addCommunity', params, function(data){
+		$.post('/admin/community/communityAdd', params, function(data){
             var res = data.data;
             if(data.code == 200){
 				layer.msg('添加成功',{

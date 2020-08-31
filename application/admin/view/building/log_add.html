@@ -76,7 +76,7 @@ layui.use(['form','layer'], function(){
 
 			};
 			// console.log(params);return false;
-		$.post('/admin/building/addLog', params, function(data){
+		$.post('/admin/building/logAdd', params, function(data){
             var res = data.data;
             if(data.code == 200){
 				layer.msg('添加成功',{

@@ -67,7 +67,7 @@ layui.use(['form','layer'], function(){
 				status: data.field.status,
 				content: data.field.content
 			};
-		$.post('/admin/notice/addNotice', params, function(data){
+		$.post('/admin/notice/noticeAdd', params, function(data){
             var res = data.data;
             if(data.code == 200){
 				layer.msg('添加成功',{

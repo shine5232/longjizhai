@@ -130,7 +130,7 @@ layui.use(['form','layer'], function(){
 				county: data.field.county,
 				id: data.field.id
 			};
-		$.post('/admin/community/editCommunity', params, function(data){
+		$.post('/admin/community/communityEdit', params, function(data){
             var res = data.data;
             if(data.code == 200){
                 layer.msg('修改成功',{

@@ -127,7 +127,7 @@
 				zong_min:data.field.zong_min,
 				fen_min:data.field.fen_min
 			};
-			$.post('/admin/system/set_upd', params, function (data) {
+			$.post('/admin/system/setEdit', params, function (data) {
 			console.log(params);
 				var res = data.data;
 				if (data.code == 200) {

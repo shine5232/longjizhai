@@ -167,7 +167,7 @@
 				city: data.field.city,
 				county: data.field.county
 			};
-			$.post('/admin/mechanic/addMechanic', params, function (data) {
+			$.post('/admin/mechanic/mechanicAdd', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('添加成功', {

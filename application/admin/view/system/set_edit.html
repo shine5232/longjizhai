@@ -102,7 +102,7 @@
 				logo:data.field.logo,
 				wechat:data.field.wechat
 			};
-			$.post('/admin/system/set_upd', params, function (data) {
+			$.post('/admin/system/setEdit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('修改成功', {

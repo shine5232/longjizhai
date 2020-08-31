@@ -70,7 +70,7 @@ layui.use(['form','layer'], function(){
 				status: data.field.status,
 				id: data.field.id
 			};
-		$.post('/admin/notice/editNotice', params, function(data){
+		$.post('/admin/notice/noticeEdit', params, function(data){
             var res = data.data;
             if(data.code == 200){
                 layer.msg('修改成功',{
