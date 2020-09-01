@@ -1,0 +1,77 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">属性值</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入属性名称" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">属性名称</label>
+                <div class="layui-input-block">
+                    <select lay-filter="type" name="type" lay-verify="required">
+                        <option value="">请选择</option>
+                        <option value="4">服务</option>
+                        <option value="5">规模</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" value="0" name="sort" placeholder="请输入序号" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">显示启用</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="0" checked />
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form,layer = layui.layer;
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+			$.post('/admin/company/attrAdd', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('添加成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('添加失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+        });
+    });
+</script>
+
+</html>

@@ -1,0 +1,205 @@
+{include file='public/head'}
+
+<body>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+
+        .layui-upload-img {
+            width: auto;
+            height: 60px;
+            margin-left: 20px;
+        }
+    </style>
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属用户</label>
+                <div class="layui-input-block">
+                    <select name="uid" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择</option>
+                        {volist name='member' id = 'vo'}
+                        <option value="{$vo.id}" {if condition="$company['uid'] == $vo['id']"}selected{/if}>{$vo.uname}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入公司名称"
+                        class="layui-input" value="{$company['name']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司简称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="short_name" lay-verify="required" autocomplete="off" placeholder="请输入公司简称"
+                        class="layui-input" value="{$company['short_name']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司电话</label>
+                <div class="layui-input-block">
+                    <input type="text" id="phone" name="phone" lay-verify="required" autocomplete="off"
+                        placeholder="请输入公司电话" class="layui-input" value="{$company['phone']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">服务口号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="slogan" autocomplete="off" value="{$company['slogan']}" placeholder="请输入服务口号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">经度位置</label>
+                <div class="layui-input-block">
+                    <input type="text" name="longitude" autocomplete="off" value="{$company['longitude']}" placeholder="请输入经度位置" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">纬度位置</label>
+                <div class="layui-input-block">
+                    <input type="text" name="latitude" autocomplete="off" value="{$company['latitude']}" placeholder="请输入纬度位置" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司等级</label>
+                <div class="layui-input-block">
+                    <select name="level" lay-verify="required">
+                        <option value="">请选择等级</option>
+                        {volist name='rank' id = 'vo'}
+                        <option value="{$vo.id}" {if condition="$company['level'] == $vo['id']"}selected{/if}>{$vo.type_title}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司服务</label>
+                <div class="layui-input-block">
+                    {foreach $serve_attr as $key=>$vo}
+                    <input type="checkbox" name="serve[{$vo.id}]" value="{$vo['id']}" lay-skin="primary"
+                        title="{$vo['title']}" {in name="$vo['id']" value="$company['serve']"}checked{/in} />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司规模</label>
+                <div class="layui-input-block">
+                    {foreach $scale_attr as $key=>$vo}
+                    <input type="radio" name="scale" lay-skin="primary" title="{$vo['title']}" value="{$vo['id']}" {if condition="$vo['id'] == $company['scale']"}checked{/if} />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">长方形logo</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img" data-id="1">
+                        <i class="layui-icon">&#xe67c;</i>选择图片
+                    </button>
+                    <img class="layui-upload-img" id="thumb1" src="__public__{$company['thumb']}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">正方形logo</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img" data-id="2">
+                        <i class="layui-icon">&#xe67c;</i>选择图片
+                    </button>
+                    <img class="layui-upload-img" id="thumb2" src="__public__{$company['logo']}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司介绍</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入公司介绍" id="notice" name="content"
+                        style="width: 100%;height: 400px;">{$company['content']}</textarea>
+                </div>
+            </div>
+            <input class="layui-input" type="hidden" name="thumb" value="{$company['thumb']}" />
+            <input class="layui-input" type="hidden" name="logo" value="{$company['logo']}" />
+            <input type="hidden" name="id" value="{$company['id']}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+                    <button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    KindEditor.ready(function (K) {
+        notice = K.create('#notice', {
+            uploadJson: '/api/file/upload?type=article',
+            afterBlur: function(){
+                this.sync();
+            }
+        });
+    });
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+		/**
+		 * 监听表单提交
+		 */
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+            $.post('/admin/company/edit', params, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    layer.msg('修改成功', {
+                        icon: 1,
+                        time: 1000
+                    }, function () {
+                        x_admin_close();
+                        parent.location.reload();
+                    });
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+            return false;
+        });
+        /**
+         * 监听图片上传
+         */
+        var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=thumb',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                var item = this.item;
+                var id = $(item).data('id');
+                obj.preview(function (index, file, result) {
+                    $('#thumb' + id).attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                var item = this.item;
+                var id = $(item).data('id');
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    if (id == '1') {
+                        $("input[name='thumb']").val(res.url);
+                    } else {
+                        $("input[name='logo']").val(res.url);
+                    }
+                    $('#thumb' + id).show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    });
+</script>
+
+</html>

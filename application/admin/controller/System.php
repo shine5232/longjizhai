@@ -13,7 +13,7 @@ class System extends Controller
      */
     public function setting()
     {
-        if (request()->isPost()) {
+        if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $page_start = ($page - 1) * $limit;
@@ -26,13 +26,6 @@ class System extends Controller
             return $this->fetch();
         }
     }
-    /**
-     * 设置管理接口
-     */
-    public function setting_list()
-    {
-    }
-
     public function siteConfig()
     {
         return $this->fetch();

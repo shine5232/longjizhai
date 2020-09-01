@@ -24,7 +24,7 @@ class Appointment extends Main
             }
             $user = session('user');
             if($user['county']){
-                $where .= ' AND A.county = '.$user['county'];
+                $where .= ' AND A.province = '.$user['province'].' AND A.city = '.$user['city'].' AND A.county = '.$user['county'];
             }
             $sql = "SELECT CASE WHEN A.status = 0 THEN '未处理' WHEN A.status = 1 THEN '预约成功' ELSE '预约失败' END AS status_name,A.status ,A.note,A.name,A.id,B.uname AS appointmented_name,A.mobile,A.appoint_time,A.content
                 FROM lg_appointment A 

@@ -5,6 +5,14 @@
 		header {
 			color: black;
 		}
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+        #thumb1,#thumb2{
+            display: none;
+        }
 	</style>
 	<div class="x-body">
 		<div class="layui-form">
@@ -20,39 +28,62 @@
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">用户名</label>
+				<label class="layui-form-label">公司名称</label>
 				<div class="layui-input-block">
-					<input type="text" id="nickName" name="nickName" lay-verify="required|nickName" autocomplete="off"
-						placeholder="请输入用户名" class="layui-input">
+					<input type="text" name="nickName" lay-verify="required|nickName" autocomplete="off"
+						placeholder="请输入公司名称" class="layui-input">
+				</div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">公司简称</label>
+				<div class="layui-input-block">
+					<input type="text" name="short_name" autocomplete="off"
+						placeholder="请输入公司简称" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">手&nbsp;&nbsp;&nbsp;机</label>
+				<label class="layui-form-label">电&nbsp;&nbsp;&nbsp;话</label>
 				<div class="layui-input-block">
 					<input type="text" id="phone" name="phone" lay-verify="required|phone" autocomplete="off"
 						placeholder="请输入手机号" class="layui-input">
 				</div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">服务口号</label>
+				<div class="layui-input-block">
+					<input type="text" name="serve" autocomplete="off"
+						placeholder="请输入服务口号" class="layui-input">
+				</div>
 			</div>
-
-			<div class="layui-form-item">
-				<label class="layui-form-label">装饰公司</label>
+            <div class="layui-form-item">
+				<label class="layui-form-label">等&nbsp;&nbsp;&nbsp;级</label>
 				<div class="layui-input-inline">
-					<select name="company" lay-verify="required" lay-search="">
-						<option value="">直接选择或搜索选择</option>
-						{volist name='type4' id = 'vo'}
-						<option value="{$vo.id}">{$vo.nickName}</option>
+					<select name="rank" lay-verify="required">
+						<option value="">请选择等级</option>
+						{volist name='rank' id = 'vo'}
+						<option value="{$vo.id}">{$vo.title}</option>
 						{/volist}
 					</select>
 				</div>
-			</div>
-
-			<div class="layui-form-item zc_hide">
-				<label class="layui-form-label">毕业院校</label>
-				<div class="layui-input-block">
-					<input type="text" id="university" name="university" autocomplete="off" placeholder="请输入所在装修公司名称"
-						class="layui-input">
-				</div>
-			</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">长方形logo</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img" data-id="1">
+                        <i class="layui-icon">&#xe67c;</i>选择图片
+                    </button>
+                    <img class="layui-upload-img" id="thumb1" src="">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">正方形logo</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img" data-id="2">
+                        <i class="layui-icon">&#xe67c;</i>选择图片
+                    </button>
+                    <img class="layui-upload-img" id="thumb2" src="">
+                </div>
+            </div>
 			{if $user['county'] == ''}
 			<div class="layui-form-item" id="region">
 				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
@@ -91,22 +122,10 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
-	$(".zc_hide").hide();
-	layui.use(['form', 'layer'], function () {
+	layui.use(['form', 'layer', 'upload'], function () {
 		var form = layui.form;
-		var layer = layui.layer;
-		var type = {$type};
-		console.log(type);
-		if (type == 1) {
-			$(".zc_hide").show();
-		}
-		form.verify({
-			/* name: function (value) {
-				if (value.length < 5) {
-					return '用户名至少得5个字符啊';
-				}
-			} */
-		});
+        var layer = layui.layer;
+        var upload = layui.upload;
 		/**
 		 * 监听省份选择
 		 */
@@ -178,7 +197,32 @@
 				}
 			}, 'json');
 			return false;
-		});
+        });
+        /**
+         * 监听图片上传
+         */
+         var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=thumb',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#thumb').attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    $("input[name='thumb']").val(res.url);
+                    $('#thumb').show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
 	});
 </script>
 

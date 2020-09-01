@@ -1,0 +1,154 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id="mainForm" style="margin-right: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">文章标题</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="title"
+                        placeholder="请输入文章标题" type="text" value="{$article.title}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属设计师</label>
+                <div class="layui-input-block">
+                    <select name="author" lay-verify="required" lay-search="">
+						<option value="">直接选择或搜索选择</option>
+						{volist name='designer' id = 'vo'}
+						<option value="{$vo.id}" {if condition="$vo['id'] == $article['author']"}selected{/if}>{$vo.nickName}</option>
+						{/volist}
+					</select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">关&nbsp;键&nbsp;&nbsp;词</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="keywords"
+                        placeholder="请输入关键词" type="text" value="{$article.keywords}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">文章简介</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="desc"
+                        placeholder="请输入文章简介" type="text" value="{$article.desc}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">文章内容</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入文章内容" id="notice" name="content"
+                        style="width: 100%;height: 400px;">{$article.content}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">缩&nbsp;略&nbsp;&nbsp;图</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img">
+                        <i class="layui-icon">&#xe67c;</i>缩略图
+                    </button>
+                    <img class="layui-upload-img" id="thumb" src="__public__{$article.thumb}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort"
+                        placeholder="排序数值越大排列越靠前" type="text" value="{$article.sort}" />
+                </div>
+            </div>
+            <input type="hidden" name="thumb" value="{$article.thumb}" />
+            <input type="hidden" name="id" value="{$article.id}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    KindEditor.ready(function (K) {
+        notice = K.create('#notice', {
+            uploadJson: '/api/file/upload?type=article',
+            afterBlur: function(){
+                this.sync();
+            }
+        });
+    });
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload;
+        form.on('submit(toSubmit)', function (data) {
+            var params = {
+                id:data.field.id,
+				title: data.field.title,
+				cate_id: 76,
+                author:data.field.author,
+				keywords: data.field.keywords,
+				desc: data.field.desc,
+				thumb: data.field.thumb,
+				sort: data.field.sort,
+				content: data.field.content,
+			};
+			$.post('/admin/designer/articleEdit', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('修改成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('修改失败', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+        });
+        var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=thumb',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#thumb').attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    $("input[name='thumb']").val(res.url);
+                    $('#thumb').show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    });
+</script>
+
+</html>

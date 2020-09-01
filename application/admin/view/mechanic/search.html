@@ -15,7 +15,7 @@
                         placeholder="请输入关键词" class="layui-input" value="" />
                 </div>
             </div>
-            
+            {if $user['county'] == ''}
 			<div class="layui-form-item" id="region">
 				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
 				<div class="layui-input-inline">
@@ -36,7 +36,12 @@
 						<option value="">请选择区/县</option>
 					</select>
 				</div>
-			</div>
+            </div>
+            {else}
+				<input type="hidden" name="province" value="{$user['province']}" />
+				<input type="hidden" name="city" value="{$user['city']}" />
+				<input type="hidden" name="county" value="{$user['county']}" />
+			{/if}
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="searchSubmit">提交</button>

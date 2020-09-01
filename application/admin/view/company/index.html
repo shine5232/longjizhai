@@ -1,0 +1,159 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData1">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>推荐至总站
+                </button>
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData2">
+                    <i class="layui-icon layui-icon-delete"></i>撤销至分站
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加装饰公司','add.html',800,500)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索','search.html',400,280)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/company/index' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'name', title: '公司名称', width: '15%' }
+                    , { field: 'short_name', title: '公司简称', width: '12%', }
+                    , { field: 'phone', title: '手机', width: '10%' }
+                    , { field: 'city', title: '城市', width: '15%' }
+                    , { field: 'type_title', title: '等级', width: '10%' }
+                    , { field: 'create_time', title: '创建时间', width: '12%' }
+                    , { field: 'zong', title: '总站', width: '6%', }
+                    , {
+                        field: 'handle', title: '操作',width:'10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑装饰公司\',\'/admin/company/edit?id=' + d.id+'\',800,480);">编辑</button>' +
+                                '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+        /**
+         * 监听批量操作
+        */
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var ids = [];
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    data.forEach(function (v, i) {
+                        ids.push(v.id);
+                    });
+                    delAll(ids);
+                    break;
+                case 'getCheckData1':
+                    var data = checkStatus.data;
+                    data.forEach(function (v, i) {
+                        ids.push(v.id);
+                    });
+                    updateAll(ids,2);
+                    break;
+                case 'getCheckData2':
+                    var data = checkStatus.data;
+                    data.forEach(function (v, i) {
+                        ids.push(v.id);
+                    });
+                    updateAll(ids,3);
+                    break;
+            };
+        });
+    });
+    /**
+     * 批量删除
+    */
+    function delAll(argument) {
+        if (argument == '') {
+            layer.msg('没有选中的数据', { icon: 5 });
+        } else {
+            argument = argument.toString();
+            layer.confirm('确认要全部删除吗？', function (index) {
+                $.post('/admin/company/delete', { id: argument }, function (j) {
+                    if (j.code == 200) {
+                        layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg('删除失败', { icon: 5, time: 1000 });
+                    }
+                }, 'json');
+            });
+        }
+    }
+    /**
+     * 单个删除
+    */
+    function delUser(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/company/delete', { id: id }, function (j) {
+                if (j.code == 200) {
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.msg('删除失败', { icon: 5, time: 1000 });
+                }
+            }, 'json');
+        });
+    }
+    /**
+     * 批量推荐/撤销
+    */
+    function updateAll(argument,type){
+        if (argument == '') {
+            layer.msg('没有选中的数据', { icon: 5 });
+        } else {
+            argument = argument.toString();
+            layer.confirm('确认要批量操作吗？', function (index) {
+                $.post('/admin/company/updateAll', { id: argument,type:type }, function (j) {
+                    if (j.code == 200) {
+                        layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg('操作失败', { icon: 5, time: 1000 });
+                    }
+                }, 'json');
+            });
+        }
+   }
+</script>
+
+</html>

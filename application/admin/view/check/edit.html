@@ -55,7 +55,7 @@
 				checked: data.field.checked ? 1 : 2
 			};
 			if (uid != '') {
-				$.post('/admin/check/edit?id=' + data.field.id + '&uid=' + uid + '$type=' + data.field
+				$.post('/admin/check/edit?id=' + data.field.id + '&uid=' + uid + '&type=' + data.field
 					.type, params,
 					function (data) {
 						var res = data.data;

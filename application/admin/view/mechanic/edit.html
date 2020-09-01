@@ -50,6 +50,7 @@
 						placeholder="请输入毕业院校" class="layui-input">
 				</div>
 			</div>
+			{if $user['county'] == ''}
 			<div class="layui-form-item" id="region"> 
 				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
 				<div class="layui-input-inline">
@@ -77,6 +78,11 @@
 					</select>
 				</div>
 			</div>
+			{else}
+				<input type="hidden" name="province" value="{$user['province']}" />
+				<input type="hidden" name="city" value="{$user['city']}" />
+				<input type="hidden" name="county" value="{$user['county']}" />
+			{/if}
 			<input type="hidden" value="{$data.id}" name="id" />
 			<div class="layui-form-item">
 				<div class="layui-input-block">
@@ -155,18 +161,9 @@ layui.use(['form','layer'], function(){
 	 * 监听表单提交
 	*/
 	form.on('submit(toSubmit)',function(data){
-		var params = {
-				uid: data.field.uid,
-				nickName: data.field.nickName,
-				phone: data.field.phone,
-				company: data.field.company,
-				university: data.field.university,
-				type: type,
-				province: data.field.province,
-				city: data.field.city,
-				county: data.field.county,
-				id: data.field.id
-			};
+		var params = {};
+			params = data.field;
+			params.type = type;
 		$.post('/admin/mechanic/edit', params, function(data){
             var res = data.data;
             if(data.code == 200){

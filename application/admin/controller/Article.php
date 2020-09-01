@@ -47,7 +47,7 @@ class article extends Main
         if(request()->isPost()){
             $post =  $this->request->post();
             $id = $post['id'];
-            $validate = validate('auth');
+            $validate = validate('cate');
             $validate->scene('edit');
             $res = $validate->check($post);
             if($res!==true){

@@ -19,7 +19,7 @@ class Authenticate extends Main
             $keywords = $this->request->param('keywords', '');
             $city = $this->request->param('city', '');
             $province = $this->request->param('province', '');
-            $country = $this->request->param('country', '');
+            $county = $this->request->param('county', '');
             $where = '';
             if ($keywords) {
                 $where .= " AND (B.uname LIKE '%" . $keywords . "%' OR B.mobile LIKE '%" . $keywords . "%') ";
@@ -30,23 +30,23 @@ class Authenticate extends Main
             if ($province) {
                 $where .= " AND  B.province = " . $province;
             }
-            if ($country) {
-                $where .= " AND B.country =" . $country;
+            if ($county) {
+                $where .= " AND B.county =" . $county;
             }
             $user = session('user');
             if($user['county']){
-                $where .= ' AND B.country = '.$user['county'];
+                $where .= ' AND B.province = '.$user['province'].' AND B.city = '.$user['city'].' AND B.county = '.$user['county'];
             }
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,B.uname,B.mobile,
-                        CASE WHEN A.status = 1 THEN '是' ELSE '否' END AS is_pass,
+                        CASE WHEN A.checked = 1 THEN '是' ELSE '否' END AS is_pass,
                         concat(C.region_name,'-',D.region_name,'-',E.region_name) AS city
                 FROM lg_authenticate A 
                 INNER JOIN lg_member B on A.uid = B.id
                 INNER JOIN lg_region C ON B.province = C.region_code
                 INNER JOIN lg_region D ON B.city = D.region_code
                 INNER JOIN lg_region E ON B.county = E.region_code
-                WHERE A.type = " . $type . " AND A.status = 0" . $where . "
+                WHERE A.type = " . $type . $where . "
                 ORDER BY id DESC
                 limit $page_start,$limit";
             // var_dump($sql);die;
@@ -56,7 +56,7 @@ class Authenticate extends Main
         INNER JOIN lg_region C ON B.province = C.region_code
         INNER JOIN lg_region D ON B.city = D.region_code
         INNER JOIN lg_region E ON B.county = E.region_code
-        WHERE A.type = " . $type . " AND A.status = 0" . $where;
+        WHERE A.type = " . $type . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
@@ -76,7 +76,9 @@ class Authenticate extends Main
     {
         $region = _getRegion();
         $type  = $this->request->get('type');
+        $user = session('user');
         $this->assign('type', $type);
+        $this->assign('user', $user);
         $this->assign('regin', $region);
         return $this->fetch('search');
     }

@@ -21,12 +21,16 @@ class check extends Main
             $page_start = ($page - 1) * $limit;
             $keywords = $this->request->param('keywords', '');
             $type = $this->request->param('type', '');
-            $where = '';
+            $where = ' AND A.checked = 0';
             if ($keywords) {
                 $where .= " AND B.uname LIKE '%" . $keywords . "%' ";
             }
             if ($type) {
                 $where  .= " AND A.type = " . $type;
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.province = '.$user['province'].' AND A.city = '.$user['city'].' AND A.county = '.$user['county'];
             }
             // var_dump($where);die;
             $sql = "SELECT A.*,CASE WHEN B.region_name IS NULL THEN '总站' ELSE CONCAT(D.region_name,'-',C.region_name,'-',B.region_name) END AS region 
@@ -83,7 +87,7 @@ class check extends Main
                 if ($res) {
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
-                    if ($post['status'] == 1) {
+                    if ($post['checked'] == 1) {
                         $set = Db::name('settings')->where('id = 2')->find();
                         $data =  unserialize($set['val']);
                         Db::name('member')->where('uid', $uid)->setInc('point', $data['card']);
@@ -124,10 +128,10 @@ class check extends Main
         } else {
             $id = $this->request->get('id');
             $type = $this->request->get('type');
+            $uid = '';
             if ($this->request->get('uid')) {
                 $uid = $this->request->get('uid');
             }
-            $uid = '';
             $this->assign('id', $id);
             $this->assign('type', $type);
             $this->assign('uid', $uid);
@@ -151,6 +155,10 @@ class check extends Main
             $where = '';
             if ($keywords) {
                 $where .= " AND A.title LIKE '%" . $keywords . "%' ";
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.province = '.$user['province'].' AND A.city = '.$user['city'].' AND A.county = '.$user['county'];
             }
             // var_dump($where);die;
             $sql = "SELECT A.*,B.title AS cate
@@ -192,6 +200,10 @@ class check extends Main
             $where = '';
             if ($keywords) {
                 $where .= " AND (A.title LIKE '%" . $keywords . "%' OR B.uname LIKE '%" . $keywords . "%')";
+            }
+            $user = session('user');
+            if($user['county']){
+                $where .= ' AND A.province = '.$user['province'].' AND A.city = '.$user['city'].' AND A.county = '.$user['county'];
             }
             // var_dump($where);die;
             $sql = "SELECT A.*,B.uname AS uname
