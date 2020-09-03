@@ -38,7 +38,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'uname', title: '用户姓名', width: '10%' }
                     , { field: 'mobile', title: '手机号', width: '10%' }
                     , { field: 'city', title: '所属城市', width: '15%' }

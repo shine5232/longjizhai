@@ -41,7 +41,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '9%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '9%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '测评人', width: '10%' }
                     , { field: 'mobile', title: '联系电话', width: '10%', }
                     , { field: 'company', title: '公司名称', width: '10%', }

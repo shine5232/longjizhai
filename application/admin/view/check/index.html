@@ -11,7 +11,7 @@
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索预约','/admin/check/search?type='+{$type},800,480)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索预约','/admin/check/search?type='+{$type},400,240)">
                     <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
             </div>
@@ -39,7 +39,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'uname', title: '申请人', width: '8%' }
                     , { field: 'type', title: '认证类型', width: '8%' }
                     , { field: 'region', title: '所属城市', width: '12%', }
@@ -58,7 +58,7 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&uid='+ d.uid +'&type=1' + '\',800,480);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&uid='+ d.uid +'&type=1' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -77,14 +77,14 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'title', title: '标题', width: '20%' }
                     , { field: 'cate', title: '栏目', width: '20%' }
                     , { field: 'create_time', title: '申请时间', width: '20%', }
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=2' + '\',800,480);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=2' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -103,14 +103,14 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'case_title', title: '案例标题', width: '20%' }
                     , { field: 'uname', title: '所属会员', width: '20%' }
                     , { field: 'create_time', title: '创建时间', width: '20%', }
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=3' + '\',800,480);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=3' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -129,7 +129,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '申请人', width: '20%' }
                     , { field: 'company', title: '公司名称', width: '20%' }
                     , { field: 'mobile', title: '联系电话', width: '20%' }
@@ -137,7 +137,115 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=4' + '\',800,480);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=4' + '\',400,240);">审核</button>' ;
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+       }else if(type == 5){
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/check/company' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '公司名称', width: '20%' }
+                    , { field: 'region_name', title: '所属地区', width: '20%' }
+                    , { field: 'phone', title: '联系电话', width: '20%' }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',width:'10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=5' + '\',400,240);">审核</button>' ;
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+       }else if(type == 6){
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/check/designer' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '设计师', width: '20%' }
+                    , { field: 'region_name', title: '所属地区', width: '20%' }
+                    , { field: 'mobile', title: '联系电话', width: '20%' }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',width:'10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=6' + '\',400,240);">审核</button>' ;
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+       }else if(type == 7){
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/check/gongzhang' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '工长姓名', width: '20%' }
+                    , { field: 'region_name', title: '所属地区', width: '20%' }
+                    , { field: 'mobile', title: '联系电话', width: '20%' }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',width:'10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=7' + '\',400,240);">审核</button>' ;
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+       }else if(type == 8){
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/check/mechanic' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '技工姓名', width: '20%' }
+                    , { field: 'region_name', title: '所属地区', width: '20%' }
+                    , { field: 'mobile', title: '联系电话', width: '20%' }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作',width:'10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=8' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }

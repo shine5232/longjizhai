@@ -50,7 +50,7 @@
                 , cols: [
                     [ //表头
                         { type: 'checkbox', fixed: 'left' }
-                        , { field: 'id', title: 'ID', width: '4%', fixed: 'left' }
+                        , { field: 'id', title: 'ID', width: '4%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                         , { field: 'case_title', title: '案例名', width: '10%' }
                         , { field: 'region', title: '所属站点', width: '12%' }
                         , { field: 'village_name', title: '小区名', width: '10%' }

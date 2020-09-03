@@ -43,7 +43,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'city', title: '城市', width: '15%' }
                     , { field: 'village_name', title: '工地名称', width: '15%' }
                     , { field: 'area', title: '面积', width: '15%', }

@@ -47,7 +47,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '预约人', width: '8%' }
                     , { field: 'appointmented_name', title: '预约技工', width: '8%' }
                     , { field: 'appoint_time', title: '预约时间', width: '12%', }

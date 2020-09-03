@@ -13,7 +13,7 @@
 		}
 	</style>
 	<div class="x-body">
-		<div class="layui-form">
+		<form class="layui-form">
 			<div class="layui-form-item">
 				<label class="layui-form-label">是否通过</label>
 				<div class="layui-input-block">
@@ -21,11 +21,11 @@
 						lay-filter="switch">
 				</div>
 			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">拒绝理由</label>
+			<div class="layui-form-item reason">
+				<label class="layui-form-label">拒绝原因</label>
 				<div class="layui-input-block">
-					<textarea class="layui-textarea" placeholder="请输入公告内容" lay-verify="required" id="reason"
-						name="reason" style="width: 100%;height: 200px;"></textarea>
+					<input class="layui-input" placeholder="请输入拒绝原因" lay-verify="required" id="reason"
+						name="reason" />
 				</div>
 			</div>
 			<input type="hidden" value="{$id}" name="id" />
@@ -33,10 +33,9 @@
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
-					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
 				</div>
 			</div>
-		</div>
+		</form>
 	</div>
 </body>
 {include file='public/foot'}
@@ -60,7 +59,7 @@
 					function (data) {
 						var res = data.data;
 						if (data.code == 200) {
-							layer.msg('修改成功', {
+							layer.msg('审核成功', {
 								icon: 1,
 								time: 1000
 							}, function () {
@@ -68,7 +67,7 @@
 								parent.location.reload();
 							});
 						} else {
-							layer.msg('修改失败', {
+							layer.msg('审核失败', {
 								icon: 1,
 								time: 1000
 							}, function () {
@@ -82,7 +81,7 @@
 					function (data) {
 						var res = data.data;
 						if (data.code == 200) {
-							layer.msg('修改成功', {
+							layer.msg('审核成功', {
 								icon: 1,
 								time: 1000
 							}, function () {
@@ -90,7 +89,7 @@
 								parent.location.reload();
 							});
 						} else {
-							layer.msg('修改失败', {
+							layer.msg('审核失败', {
 								icon: 1,
 								time: 1000
 							}, function () {
@@ -107,10 +106,11 @@
 			if (!data.elem.checked) {
 				if (typeof ($("#reason").attr("required")) == "undefined") {
 					$("#reason").attr("lay-verify", "required");
-
+					$('.reason').show();
 				}
 			} else {
 				$("#reason").removeAttr("lay-verify");
+				$('.reason').hide();
 			}
 			form.render();
 		})

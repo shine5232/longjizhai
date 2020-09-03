@@ -22,7 +22,7 @@
             , id: 'test'
             , cols: [
                 [ //表头
-                    { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'point', title: '积分', width: '20%', }
                     , { field: 'point_from', title: '积分来源',width:'20%',
                         templet:function(d){

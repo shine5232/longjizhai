@@ -19,8 +19,9 @@
                 <div class="layui-input-block">
                     <select name="uid" lay-verify="required" lay-search="">
                         <option value="">直接选择或搜索选择</option>
+                        <option value="{$company['uid']}" selected>{$company['uname']}</option>
                         {volist name='member' id = 'vo'}
-                        <option value="{$vo.id}" {if condition="$company['uid'] == $vo['id']"}selected{/if}>{$vo.uname}</option>
+                        <option value="{$vo.id}">{$vo.uname}</option>
                         {/volist}
                     </select>
                 </div>
@@ -42,7 +43,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">公司电话</label>
                 <div class="layui-input-block">
-                    <input type="text" id="phone" name="phone" lay-verify="required" autocomplete="off"
+                    <input type="number" name="phone" lay-verify="required|phone|number" autocomplete="off"
                         placeholder="请输入公司电话" class="layui-input" value="{$company['phone']}" />
                 </div>
             </div>

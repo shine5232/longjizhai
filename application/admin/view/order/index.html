@@ -43,7 +43,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'order_sn', title: '订单编号', width: '18%' }
                     , { field: 'money', title: '订单金额', width: '10%'}
                     , { field: 'pay_money', title: '支付金额', width: '10%'}

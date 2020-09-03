@@ -46,11 +46,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',
-                        templet:function(d){
-                            return d.LAY_INDEX;
-                        }
-                    }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'type', title: '属性名称', width: '10%',
                         templet:function(d){
                             var type = '';

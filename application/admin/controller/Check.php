@@ -125,6 +125,46 @@ class check extends Main
                 }
                 return json($this->ret);
             }
+            if ($type == 5) {
+                $res = Db::name('company')
+                    ->where('id', $id)
+                    ->update($post);
+                if ($res) {
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+                return json($this->ret);
+            }
+            if ($type == 6) {
+                $res = Db::name('designer')
+                    ->where('id', $id)
+                    ->update($post);
+                if ($res) {
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+                return json($this->ret);
+            }
+            if ($type == 7) {
+                $res = Db::name('gongzhang')
+                    ->where('id', $id)
+                    ->update($post);
+                if ($res) {
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+                return json($this->ret);
+            }
+            if ($type == 8) {
+                $res = Db::name('mechanic')
+                    ->where('id', $id)
+                    ->update($post);
+                if ($res) {
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+                return json($this->ret);
+            }
         } else {
             $id = $this->request->get('id');
             $type = $this->request->get('type');
@@ -269,6 +309,114 @@ class check extends Main
             return json($this->ret);
         } else {
             $this->assign('type', 4);
+            return $this->fetch('index');
+        }
+    }
+    /**
+     * 装饰公司审核
+     */
+    public function company(){
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $keywords = $this->request->param('keywords', '');
+            $where = '';
+            if ($keywords) {
+                $where .= " AND (A.short_name LIKE '%" . $keywords . "%' OR A.name LIKE '%" . $keywords . "%' OR A.mobile = '" . $keywords . "')";
+            }
+            $sql = "SELECT A.*,B.region_name FROM lg_company A LEFT JOIN lg_region B ON B.region_code = A.county WHERE A.checked = 0 AND A.deleted = 0 $where ORDER BY id DESC LIMIT $page_start,$limit";
+            $data = Db::query($sql);
+            $sql2 = "SELECT count(1) AS count FROM lg_company A WHERE  checked = 0 AND deleted = 0 $where";
+            $count = Db::query($sql2);
+            if ($data) {
+                $this->ret['count'] = $count[0]['count'];
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $this->assign('type', 5);
+            return $this->fetch('index');
+        }
+    }
+    /**
+     * 设计师审核
+     */
+    public function designer(){
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $keywords = $this->request->param('keywords', '');
+            $where = '';
+            if ($keywords) {
+                $where .= " AND (A.name LIKE '%" . $keywords . "%' OR A.mobile = '" . $keywords . "')";
+            }
+            $sql = "SELECT A.*,B.region_name FROM lg_designer A LEFT JOIN lg_region B ON B.region_code = A.county WHERE A.checked = 0 AND A.deleted = 0 $where ORDER BY id DESC LIMIT $page_start,$limit";
+            $data = Db::query($sql);
+            $sql2 = "SELECT count(1) AS count FROM lg_designer A WHERE  checked = 0 AND deleted = 0 $where";
+            $count = Db::query($sql2);
+            if ($data) {
+                $this->ret['count'] = $count[0]['count'];
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $this->assign('type', 6);
+            return $this->fetch('index');
+        }
+    }
+    /**
+     * 工长审核
+     */
+    public function gongzhang(){
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $keywords = $this->request->param('keywords', '');
+            $where = '';
+            if ($keywords) {
+                $where .= " AND (A.name LIKE '%" . $keywords . "%' OR A.mobile = '" . $keywords . "')";
+            }
+            $sql = "SELECT A.*,B.region_name FROM lg_gongzhang A LEFT JOIN lg_region B ON B.region_code = A.county WHERE A.checked = 0 AND A.deleted = 0 $where ORDER BY id DESC LIMIT $page_start,$limit";
+            $data = Db::query($sql);
+            $sql2 = "SELECT count(1) AS count FROM lg_gongzhang A WHERE  checked = 0 AND deleted = 0 $where";
+            $count = Db::query($sql2);
+            if ($data) {
+                $this->ret['count'] = $count[0]['count'];
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $this->assign('type', 7);
+            return $this->fetch('index');
+        }
+    }
+    /**
+     * 技工审核
+     */
+    public function mechanic(){
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $keywords = $this->request->param('keywords', '');
+            $where = '';
+            if ($keywords) {
+                $where .= " AND (A.name LIKE '%" . $keywords . "%' OR A.mobile = '" . $keywords . "')";
+            }
+            $sql = "SELECT A.*,B.region_name FROM lg_mechanic A LEFT JOIN lg_region B ON B.region_code = A.county WHERE A.checked = 0 AND A.deleted = 0 $where ORDER BY id DESC LIMIT $page_start,$limit";
+            $data = Db::query($sql);
+            $sql2 = "SELECT count(1) AS count FROM lg_mechanic A WHERE  checked = 0 AND deleted = 0 $where";
+            $count = Db::query($sql2);
+            if ($data) {
+                $this->ret['count'] = $count[0]['count'];
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $this->assign('type', 8);
             return $this->fetch('index');
         }
     }

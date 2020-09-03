@@ -1,0 +1,119 @@
+{include file='public/head'}
+
+<body>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+    </style>
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属用户</label>
+                <div class="layui-input-block">
+                    <select name="uid" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择</option>
+                        <option value="{$gongzhang['uid']}" selected>{$gongzhang['uname']}</option>
+                        {volist name='member' id = 'vo'}
+                        <option value="{$vo.id}">{$vo.uname}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工长姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入工长姓名"
+                        class="layui-input" value="{$gongzhang['name']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工长等级</label>
+                <div class="layui-input-block">
+                    <select name="level" lay-verify="required">
+                        <option value="">请选择等级</option>
+                        {volist name='rank' id = 'vo'}
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $gongzhang['level']"}selected{/if}>{$vo.type_title}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input type="number" name="mobile" lay-verify="required|phone|number" autocomplete="off"
+                        placeholder="请输入联系电话" class="layui-input" value="{$gongzhang['mobile']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">服务理念</label>
+                <div class="layui-input-block">
+                    <input type="text" name="slogan" autocomplete="off" placeholder="请输入服务理念" class="layui-input" value="{$gongzhang['slogan']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工长经验</label>
+                <div class="layui-input-block">
+                    {foreach $ages_attr as $key=>$vo}
+                    <input type="radio" name="ages"lay-skin="primary" value="{$vo['id']}" title="{$vo['title']}" {if condition="$vo['id'] == $gongzhang['ages']"}checked{/if} />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工长介绍</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入工长介绍" id="notice" name="content"
+                        style="width: 100%;height: 400px;">{$gongzhang['content']}</textarea>
+                </div>
+            </div>
+            <input type="hidden" name="id" value="{$gongzhang['id']}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+                    <button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
+<script type="text/javascript">
+    KindEditor.ready(function (K) {
+        notice = K.create('#notice', {
+            uploadJson: '/api/file/upload?type=article',
+            afterBlur: function(){
+                this.sync();
+            }
+        });
+    });
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+		/**
+		 * 监听表单提交
+		 */
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+            $.post('/admin/gong_zhang/gongZhangEdit', params, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    layer.msg('修改成功', {
+                        icon: 1,
+                        time: 1000
+                    }, function () {
+                        x_admin_close();
+                        parent.location.reload();
+                    });
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+            return false;
+        });
+    });
+</script>
+
+</html>

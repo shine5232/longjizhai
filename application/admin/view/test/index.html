@@ -46,7 +46,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'title', title: '试题名称', width: '35%' }
                     , { field: 'status', title: '是否启用', width: '15%',
                         templet:function(d){

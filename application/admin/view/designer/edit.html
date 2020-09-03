@@ -5,17 +5,15 @@
         header {
             color: black;
         }
-        .fu22,.fu23,.fu24{
-            display: none;
-        }
     </style>
     <div class="x-body">
-        <form class="layui-form" lay-filter="form">
+        <form class="layui-form">
             <div class="layui-form-item">
                 <label class="layui-form-label">所属用户</label>
                 <div class="layui-input-block">
                     <select name="uid" lay-verify="required" lay-search="">
                         <option value="">直接选择或搜索选择</option>
+                        <option value="{$designer['uid']}" selected>{$designer['uname']}</option>
                         {volist name='member' id = 'vo'}
                         <option value="{$vo.id}">{$vo.uname}</option>
                         {/volist}
@@ -23,19 +21,19 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">技工姓名</label>
+                <label class="layui-form-label">设计师姓名</label>
                 <div class="layui-input-block">
-                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入技工姓名"
-                        class="layui-input">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入设计师姓名"
+                        class="layui-input" value="{$designer['name']}" />
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">技工等级</label>
+                <label class="layui-form-label">设计师等级</label>
                 <div class="layui-input-block">
                     <select name="level" lay-verify="required">
                         <option value="">请选择等级</option>
                         {volist name='rank' id = 'vo'}
-                        <option value="{$vo.id}">{$vo.type_title}</option>
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $designer['level']"}selected{/if}>{$vo.type_title}</option>
                         {/volist}
                     </select>
                 </div>
@@ -44,53 +42,45 @@
                 <label class="layui-form-label">联系电话</label>
                 <div class="layui-input-block">
                     <input type="number" name="mobile" lay-verify="required|phone|number" autocomplete="off"
-                        placeholder="请输入联系电话" class="layui-input">
+                        placeholder="请输入联系电话" class="layui-input" value="{$designer['mobile']}" />
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">服务理念</label>
+                <label class="layui-form-label">设计理念</label>
                 <div class="layui-input-block">
-                    <input type="text" name="slogan" autocomplete="off" placeholder="请输入服务理念" class="layui-input">
+                    <input type="text" name="slogan" autocomplete="off" placeholder="请输入设计理念" class="layui-input" value="{$designer['slogan']}" />
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">技工经验</label>
+                <label class="layui-form-label">毕业院校</label>
+                <div class="layui-input-block">
+                    <input type="text" name="school" autocomplete="off" placeholder="请输入毕业院校" class="layui-input" value="{$designer['school']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">设计师经验</label>
                 <div class="layui-input-block">
                     {foreach $ages_attr as $key=>$vo}
-                    <input type="radio" name="ages"lay-skin="primary" value="{$vo['id']}" title="{$vo['title']}" />
+                    <input type="radio" name="ages"lay-skin="primary" value="{$vo['id']}" title="{$vo['title']}" {if condition="$vo['id'] == $designer['ages']"}checked{/if} />
                     {/foreach}
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">技工工种</label>
+                <label class="layui-form-label">设计师职位</label>
                 <div class="layui-input-block">
                     {foreach $position_attr as $key=>$vo}
-                    <input type="checkbox" lay-filter="filter" name="position[{$vo['id']}]" lay-skin="primary" title="{$vo['title']}" value="{$vo['id']}" />
+                    <input type="radio" name="position" lay-skin="primary" title="{$vo['title']}" value="{$vo['id']}" {if condition="$vo['id'] == $designer['position']"}checked{/if} />
                     {/foreach}
                 </div>
             </div>
-            <div class="layui-form-item fu fu22">
-                <label class="layui-form-label" id="title22"></label>
-                <div class="layui-input-block" id="children22">
-                </div>
-            </div>
-            <div class="layui-form-item fu fu23">
-                <label class="layui-form-label" id="title23"></label>
-                <div class="layui-input-block" id="children23">
-                </div>
-            </div>
-            <div class="layui-form-item fu fu24">
-                <label class="layui-form-label" id="title24"></label>
-                <div class="layui-input-block" id="children24">
-                </div>
-            </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">技工介绍</label>
+                <label class="layui-form-label">设计师介绍</label>
                 <div class="layui-input-block">
-                    <textarea class="layui-textarea" placeholder="请输入技工介绍" id="notice" name="content"
-                        style="width: 100%;height: 400px;"></textarea>
+                    <textarea class="layui-textarea" placeholder="请输入设计师介绍" id="notice" name="content"
+                        style="width: 100%;height: 400px;">{$designer['content']}</textarea>
                 </div>
             </div>
+            <input type="hidden" name="id" value="{$designer['id']}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
@@ -104,7 +94,6 @@
 <script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
 <script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
 <script type="text/javascript">
-    var form = {};
     KindEditor.ready(function (K) {
         notice = K.create('#notice', {
             uploadJson: '/api/file/upload?type=article',
@@ -114,28 +103,18 @@
         });
     });
     layui.use(['form', 'layer', 'upload'], function () {
-        form = layui.form;
+        var form = layui.form;
         var layer = layui.layer;
         var upload = layui.upload;
-        /**
-         * 监听工种选择
-        */
-        form.on('checkbox(filter)', function(data){
-            var pid = data.value;
-            var checked = data.elem.checked;
-            if(pid == 22 || pid == 23 || pid == 24){
-                getChildren(pid,checked,data.elem);
-            }
-        }); 
 		/**
 		 * 监听表单提交
 		 */
         form.on('submit(toSubmit)', function (data) {
             var params = data.field;
-            $.post('/admin/mechanic/mechanicAdd', params, function (data) {
+            $.post('/admin/designer/designerEdit', params, function (data) {
                 var res = data.data;
                 if (data.code == 200) {
-                    layer.msg('添加成功', {
+                    layer.msg('修改成功', {
                         icon: 1,
                         time: 1000
                     }, function () {
@@ -149,32 +128,6 @@
             return false;
         });
     });
-    /**
-     * 获取下级工种
-    */
-    function getChildren(pid,checked,e){
-        var params = {id:pid};
-        if(checked){
-            $.post('/admin/mechanic/getChildren', params, function (data) {
-                var res = data.data;
-                if (data.code == 200) {
-                    var option = '';
-                    res.forEach(function(item,index){
-                        option += '<input type="checkbox" class="checkbox'+pid+'" name="position['+item.id+']" lay-skin="primary" title="'+item.title+'" value="'+item.id+'" />';
-                    });
-                    $('#children'+pid).html(option);
-                    var title = $(e).attr('title');
-                    $('#title'+pid).text(title+'子类');
-                    $('.fu'+pid).show();
-                    form.render();
-                }
-            }, 'json');
-        }else{
-            $('.checkbox'+pid).removeAttr('checked');
-            $('.fu'+pid).hide();
-            form.render();
-        }
-    }
 </script>
 
 </html>

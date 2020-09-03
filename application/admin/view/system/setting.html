@@ -34,7 +34,7 @@
             , id: 'test'
             , cols: [
                 [ //表头
-                     { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                     { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'type', title: '模块名称', width: '30%', }
                     , { field: 'update_time', title: '更新时间', width: '30%', }
                     , {

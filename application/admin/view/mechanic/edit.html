@@ -1,185 +1,182 @@
 {include file='public/head'}
+
 <body>
-	<style type="text/css" media="screen">
-		header {
-			color: black;
-		}
-	</style>
-	<div class="x-body">
-		<div class="layui-form">
-			<div class="layui-form-item">
-				<label class="layui-form-label">所属用户</label>
-				<div class="layui-input-inline">
-					<select name="uid" lay-verify="required" lay-search="">
-						<option value="">直接选择或搜索选择</option>
-						{volist name='member' id = 'vo'}
-						<option value="{$vo.uid}" {if condition="$vo.uid == $data.uid"}selected{/if}>{$vo.uname}</option>
-						{/volist}
-					</select>
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">用户名</label>
-				<div class="layui-input-block">
-					<input type="text" id="nickName" name="nickName" value="{$data.nickName}" lay-verify="required|nickName" autocomplete="off"
-						placeholder="请输入用户名" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">电&nbsp;&nbsp;&nbsp;话</label>
-				<div class="layui-input-block">
-					<input type="text" id="phone" name="phone" value="{$data.phone}" lay-verify="required|phone" autocomplete="off"
-						placeholder="请输入电话" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">装饰公司</label>
-				<div class="layui-input-inline">
-					<select name="company" lay-verify="required" lay-search="">
-						<option value="">直接选择或搜索选择</option>
-						{volist name='type4' id = 'vo'}
-						<option value="{$vo.id}" {if condition="$vo.id == $data.id"}selected{/if}>{$vo.nickName}</option>
-						{/volist}
-					</select>
-				</div>
-			</div>
-			<div class="layui-form-item zc_hide">
-				<label class="layui-form-label">毕业院校</label>
-				<div class="layui-input-block">
-					<input type="text" id="university" name="university" value="{$data.university}"  autocomplete="off"
-						placeholder="请输入毕业院校" class="layui-input">
-				</div>
-			</div>
-			{if $user['county'] == ''}
-			<div class="layui-form-item" id="region"> 
-				<label class="layui-form-label">地&nbsp;&nbsp;&nbsp;区</label>
-				<div class="layui-input-inline">
-					<select name="province" lay-filter="province" id="province" lay-verify="required">
-						<option value="">请选择省</option>
-						{volist name='province' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.province"}selected{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="city" lay-filter="city" id="city" lay-verify="required">
-                        <option value="">请选择市</option>
-                        {volist name='city' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.city"}selected{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="county" lay-filter="county" id="county" lay-verify="required">
-                        <option value="">请选择区/县</option>
-                        {volist name='county' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data.county"}selected disabled{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-			</div>
-			{else}
-				<input type="hidden" name="province" value="{$user['province']}" />
-				<input type="hidden" name="city" value="{$user['city']}" />
-				<input type="hidden" name="county" value="{$user['county']}" />
-			{/if}
-			<input type="hidden" value="{$data.id}" name="id" />
-			<div class="layui-form-item">
-				<div class="layui-input-block">
-					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
-					<button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
-				</div>
-			</div>
-		</div>
-	</div>
+    <style type="text/css" media="screen">
+        header {
+            color: black;
+        }
+        .fu22,.fu23,.fu24{
+            display: none;
+        }
+    </style>
+    <div class="x-body">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属用户</label>
+                <div class="layui-input-block">
+                    <select name="uid" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择</option>
+                        <option value="{$mechanic['uid']}" selected>{$mechanic['uname']}</option>
+                        {volist name='member' id = 'vo'}
+                        <option value="{$vo.id}">{$vo.uname}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">技工姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入技工姓名"
+                        class="layui-input" value="{$mechanic['name']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">技工等级</label>
+                <div class="layui-input-block">
+                    <select name="level" lay-verify="required">
+                        <option value="">请选择等级</option>
+                        {volist name='rank' id = 'vo'}
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $mechanic['level']"}selected{/if}>{$vo.type_title}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-block">
+                    <input type="number" name="mobile" lay-verify="required|phone|number" autocomplete="off"
+                        placeholder="请输入联系电话" class="layui-input" value="{$mechanic['mobile']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">服务理念</label>
+                <div class="layui-input-block">
+                    <input type="text" name="slogan" autocomplete="off" placeholder="请输入服务理念" class="layui-input" value="{$mechanic['slogan']}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">技工经验</label>
+                <div class="layui-input-block">
+                    {foreach $ages_attr as $key=>$vo}
+                    <input type="radio" name="ages"lay-skin="primary" value="{$vo['id']}" title="{$vo['title']}" {if condition="$vo['id'] == $mechanic['ages']"}checked{/if} />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">技工工种</label>
+                <div class="layui-input-block">
+                    {foreach $position_attr as $key=>$vo}
+                    <input type="checkbox" lay-filter="filter" name="position[{$vo['id']}]" lay-skin="primary" title="{$vo['title']}" value="{$vo['id']}" {in name="$vo['id']" value="$mechanic['position']"}checked{/in} />
+                    {/foreach}
+                </div>
+            </div>
+            <div class="layui-form-item fu fu22">
+                <label class="layui-form-label" id="title22"></label>
+                <div class="layui-input-block" id="children22">
+                </div>
+            </div>
+            <div class="layui-form-item fu fu23">
+                <label class="layui-form-label" id="title23"></label>
+                <div class="layui-input-block" id="children23">
+                </div>
+            </div>
+            <div class="layui-form-item fu fu24">
+                <label class="layui-form-label" id="title24"></label>
+                <div class="layui-input-block" id="children24">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">技工介绍</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" placeholder="请输入技工介绍" id="notice" name="content"
+                        style="width: 100%;height: 400px;">{$mechanic['content']}</textarea>
+                </div>
+            </div>
+            <input type="hidden" name="id" value="{$mechanic['id']}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+                    <button id="reset" type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </body>
 {include file='public/foot'}
+<script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
+<script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
 <script type="text/javascript">
-$(".zc_hide").hide();
-layui.use(['form','layer'], function(){
-  	var form = layui.form;
-  	var layer = layui.layer;
-	var type = {$type};
-	if(type == 1){
-		$(".zc_hide").show();
-	}
-  	form.verify({
-		/* name: function (value) {
-			if (value.length < 5) {
-				return '用户名至少得5个字符啊';
-			}
-		} */
-	});
-	/*
-	* 监听省份选择
-	*/
-	form.on('select(province)',function(data){
-        $.post('/api/region/index', { 
-            code: data.value,
-            type:2 
-        }, function(data){
-            var res = data.data;
-            if(data.code == 0){
-                if(res.length > 0){
-                    var option = '<option value="">请选择市</option>';
-                    res.forEach(function(v,i){
-                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
-                    });
-                    $('#city').html(option);
-                    $('#county').html('<option value="">请选择区/县</option>');
-                    form.render('select');
-                }
-            }else{
-                layer.msg(data.msg);
+    var form = {};
+    KindEditor.ready(function (K) {
+        notice = K.create('#notice', {
+            uploadJson: '/api/file/upload?type=article',
+            afterBlur: function(){
+                this.sync();
             }
-        },'json');
-	});
-	/*
-	* 监听城市选择
-	*/
-	form.on('select(city)',function(data){
-        $.post('/api/region/index', { 
-            code: data.value,
-            type:2 
-        }, function(data){
-            var res = data.data;
-            if(data.code == 0){
-                if(res.length > 0){
-                    var option = '<option value="">请选择区/县</option>';
-                    res.forEach(function(v,i){
-                        option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
-                    });
-                    $('#county').html(option);
-                    form.render('select');
-                }
-            }else{
-                layer.msg(data.msg);
+        });
+    });
+    layui.use(['form', 'layer', 'upload'], function () {
+        form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+        /**
+         * 监听工种选择
+        */
+        form.on('checkbox(filter)', function(data){
+            var pid = data.value;
+            var checked = data.elem.checked;
+            if(pid == 22 || pid == 23 || pid == 24){
+                getChildren(pid,checked,data.elem);
             }
-        },'json');
+        });
+		/**
+		 * 监听表单提交
+		 */
+        form.on('submit(toSubmit)', function (data) {
+            var params = data.field;
+            $.post('/admin/mechanic/mechanicEdit', params, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    layer.msg('修改成功', {
+                        icon: 1,
+                        time: 1000
+                    }, function () {
+                        x_admin_close();
+                        parent.location.reload();
+                    });
+                } else {
+                    layer.msg(data.msg);
+                }
+            }, 'json');
+            return false;
+        });
     });
     /**
-	 * 监听表单提交
-	*/
-	form.on('submit(toSubmit)',function(data){
-		var params = {};
-			params = data.field;
-			params.type = type;
-		$.post('/admin/mechanic/edit', params, function(data){
-            var res = data.data;
-            if(data.code == 200){
-                layer.msg('修改成功',{
-					icon:1,
-					time:1000
-				},function(){
-					x_admin_close();
-					parent.location.reload();
-				});
-            }else{
-                layer.msg(data.msg);
-            }
-		},'json');
-		return false;
-	});
-});
+     * 获取下级工种
+    */
+    function getChildren(pid,checked,e){
+        var params = {id:pid};
+        if(checked){
+            $.post('/admin/mechanic/getChildren', params, function (data) {
+                var res = data.data;
+                if (data.code == 200) {
+                    var option = '';
+                    res.forEach(function(item,index){
+                        option += '<input type="checkbox" class="checkbox'+pid+'" name="position['+item.id+']" lay-skin="primary" title="'+item.title+'" value="'+item.id+'" />';
+                    });
+                    $('#children'+pid).html(option);
+                    var title = $(e).attr('title');
+                    $('#title'+pid).text(title+'子类');
+                    $('.fu'+pid).show();
+                    form.render();
+                }
+            }, 'json');
+        }else{
+            $('.checkbox'+pid).removeAttr('checked');
+            $('.fu'+pid).hide();
+            form.render();
+        }
+    }
 </script>
+
 </html>

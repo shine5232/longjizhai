@@ -14,10 +14,10 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData2">
                     <i class="layui-icon layui-icon-delete"></i>撤销至分站
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加技工','mechanicAdd.html',800,500)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加工长','gongZhangAdd.html',800,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索','mechanicSearch.html',400,280)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索','earch.html',400,280)">
                     <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -39,26 +39,26 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/mechanic/index' //数据接口
+            , url: '/admin/gong_zhang/index' //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
             , cols: [
                 [ //表头
-                    { type: 'checkbox', fixed: 'left',width:'4%' }
+                    { type: 'checkbox', fixed: 'left',width:'5%' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'name', title: '技工', width: '11%' }
+                    , { field: 'name', title: '工长', width: '8%' }
                     , { field: 'type_title', title: '等级', width: '10%' }
                     , { field: 'company_name', title: '所属公司', width: '15%', }
                     , { field: 'mobile', title: '手机', width: '10%' }
-                    , { field: 'city', title: '城市', width: '13%' }
-                    , { field: 'create_time', title: '创建时间', width: '12%' }
-                    , { field: 'zong', title: '总站', width: '5%', }
-                    , { field: 'checked_title', title: '审核', width: '5%'}
+                    , { field: 'city', title: '城市', width: '10%' }
+                    , { field: 'create_time', title: '创建时间', width: '15%' }
+                    , { field: 'zong', title: '总站', width: '6%', }
+                    , { field: 'checked_title', title: '审核', width: '6%'}
                     , {
                         field: 'handle', title: '操作',width:'10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑技工\',\'/admin/mechanic/mechanicEdit?id=' + d.id+'\',800,480);">编辑</button>' +
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑工长\',\'/admin/gong_zhang/gongZhangEdit?id=' + d.id+'\',800,480);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
@@ -106,7 +106,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/mechanic/mechanicDel', { id: argument }, function (j) {
+                $.post('/admin/gong_zhang/gongZhangDel', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -123,7 +123,7 @@
     */
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/mechanic/mechanicDel', { id: id }, function (j) {
+            $.post('/admin/gong_zhang/gongZhangDel', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();
@@ -143,7 +143,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要批量操作吗？', function (index) {
-                $.post('/admin/mechanic/topOrDown', { id: argument,type:type }, function (j) {
+                $.post('/admin/gong_zhang/topOrDown', { id: argument,type:type }, function (j) {
                     if (j.code == 200) {
                         layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
                             location.reload();

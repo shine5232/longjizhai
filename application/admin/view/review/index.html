@@ -50,7 +50,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'uname', title: name, width: '15%' }
                     , { field: 'content', title: '评论内容', width: '15%' }
                     , { field: 'create_time', title: '评论时间', width: '15%', }

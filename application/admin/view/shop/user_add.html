@@ -51,7 +51,7 @@
             , cols: [
                 [ //表头
                     { type: 'radio',fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'nickname', title: '用户昵称', width: '25%', 
                         templet:function(d){
                             if(d.avatar){

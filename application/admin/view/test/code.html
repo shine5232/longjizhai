@@ -43,7 +43,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'company_name', title: '名称', width: '15%' }
                     , { field: 'company_tel', title: '联系电话', width: '10%' }
                     , { field: 'status', title: '是否已用', width: '10%',

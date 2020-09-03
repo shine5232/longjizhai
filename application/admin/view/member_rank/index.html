@@ -37,7 +37,7 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'rank_name', title: '等级标题' }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , { field: 'rank_sort', title: '排序', width: '15%', }

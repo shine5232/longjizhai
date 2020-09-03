@@ -251,6 +251,13 @@ function _getLevel($pid){
     return $data;
 }
 /**
+ * 根据当前工种获取子类
+ */
+function _getChildrenGong($pid){
+    $data = Db::name('member_attr')->where('pid',$pid)->field('id,title')->select();
+    return $data;
+}
+/**
  * api返回json数据
  */
 function json($data=array('code'=>0,'msg'=>'error','data'=>'')){

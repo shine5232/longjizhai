@@ -45,20 +45,20 @@
             , id: 'test'
             , cols: [
                 [ //表头
-                    { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left' }
-                    , { field: 'name', title: '公司名称', width: '15%' }
-                    , { field: 'short_name', title: '公司简称', width: '12%', }
+                    { type: 'checkbox', fixed: 'left', width: '5%' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '公司名称', width: '12%' }
+                    , { field: 'short_name', title: '公司简称', width: '10%', }
                     , { field: 'phone', title: '手机', width: '10%' }
                     , { field: 'city', title: '城市', width: '15%' }
-                    , { field: 'type_title', title: '等级', width: '10%' }
+                    , { field: 'type_title', title: '等级', width: '8%' }
                     , { field: 'create_time', title: '创建时间', width: '12%' }
-                    , { field: 'zong', title: '总站', width: '6%', }
+                    , { field: 'zong', title: '总站', width: '5%', }
+                    , { field: 'checked_title', title: '审核', width: '5%' }
                     , {
-                        field: 'handle', title: '操作',width:'10%',
+                        field: 'handle', title: '操作', width: '13%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑装饰公司\',\'/admin/company/edit?id=' + d.id+'\',800,480);">编辑</button>' +
-                                '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'公司团队\',\'/admin/company/team?company_id=' + d.id + '\',1000,480);">团队</button>' + '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑装饰公司\',\'/admin/company/edit?id=' + d.id + '\',800,480);">编辑</button>' + '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
@@ -84,14 +84,14 @@
                     data.forEach(function (v, i) {
                         ids.push(v.id);
                     });
-                    updateAll(ids,2);
+                    updateAll(ids, 2);
                     break;
                 case 'getCheckData2':
                     var data = checkStatus.data;
                     data.forEach(function (v, i) {
                         ids.push(v.id);
                     });
-                    updateAll(ids,3);
+                    updateAll(ids, 3);
                     break;
             };
         });
@@ -105,7 +105,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/company/delete', { id: argument }, function (j) {
+                $.post('/admin/company/companyDel', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -122,7 +122,7 @@
     */
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/company/delete', { id: id }, function (j) {
+            $.post('/admin/company/companyDel', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();
@@ -136,13 +136,13 @@
     /**
      * 批量推荐/撤销
     */
-    function updateAll(argument,type){
+    function updateAll(argument, type) {
         if (argument == '') {
             layer.msg('没有选中的数据', { icon: 5 });
         } else {
             argument = argument.toString();
             layer.confirm('确认要批量操作吗？', function (index) {
-                $.post('/admin/company/updateAll', { id: argument,type:type }, function (j) {
+                $.post('/admin/company/updateAll', { id: argument, type: type }, function (j) {
                     if (j.code == 200) {
                         layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -153,7 +153,7 @@
                 }, 'json');
             });
         }
-   }
+    }
 </script>
 
 </html>

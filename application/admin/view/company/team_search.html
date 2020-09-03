@@ -9,26 +9,24 @@
     <div class="x-body">
         <form class="layui-form" id='searchForm'>
             <div class="layui-form-item">
-                <label class="layui-form-label">关键词</label> 
+                <label class="layui-form-label">人员姓名</label>
                 <div class="layui-input-block">
-                    <input type="text" id="keywords" name="keywords" autocomplete="off"
-                        placeholder="请输入关键词" class="layui-input" value="" />
-                </div> 
+                    <input type="text" name="uname" autocomplete="off"
+                        placeholder="请输入人员姓名" class="layui-input" value="" />
+                </div>
             </div>
-            
-            <div class="layui-form-item Authen">
-                <label class="layui-form-label">账号类型</label>
-                <div class="layui-input-block">
-                    <select lay-filter="aihao" name="type" id='type'>
-                        <option value="">请选择类型</option>
+			<div class="layui-form-item">
+				<label class="layui-form-label">团队岗位</label>
+				<div class="layui-input-block">
+					<select name="type">
+						<option value="">请选择岗位类别</option> 
                         <option value="1">技工</option>
                         <option value="2">工长</option>
                         <option value="3">设计师</option>
-                        <option value="4">装饰公司</option>
-                        <option value="5">商家</option>
-                    </select>
-                </div>
+					</select>
+				</div>
             </div>
+            <input type="hidden" name="company_id" value="{$company_id}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="searchSubmit">提交</button>
@@ -40,15 +38,10 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
-    $('.Authen').hide();
-    if({$type} == 1){
-        $('.Authen').show();
-    }
     layui.use(['form', 'layer'], function () {
         var form = layui.form;
         var layer = layui.layer;
         form.on('submit(searchSubmit)', function (data) {
-            // console.log(data);return false;
             var index = layer.msg('查询中，请稍后...', {
                 icon: 16,
                 time: false,
@@ -58,8 +51,9 @@
                 x_admin_close();
                 parent.tableIns.reload({
                     where: { //设定异步数据接口的额外参数，任意设
-                        keywords: data.field.keywords,
-                        type: data.field.type
+                        type: data.field.type,
+                        uname:data.field.uname,
+                        company_id: data.field.company_id
                     }
                     , page: {
                         curr: 1 //重新从第 1 页开始
@@ -67,7 +61,7 @@
                 });
             }, 1000);
             return false;
-        });   
+        });
     });
 </script>
 
