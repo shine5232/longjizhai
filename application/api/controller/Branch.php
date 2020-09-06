@@ -1,12 +1,11 @@
 <?php
 namespace app\api\controller;
 
-use think\Controller;
 use think\Db;
 use think\Session;
 use think\Validate;
 
-class Branch extends Controller
+class Branch extends Main
 {
     protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
@@ -179,6 +178,35 @@ class Branch extends Controller
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = 'success';
             }
+        }
+        return json($this->ret);
+    }
+    /**
+     * 根据城市code获取分站名称
+     */
+    public function getBranch(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['county'])){
+                $this->ret['msg'] = '缺少参数county';
+                return json($this->ret);
+            }
+            if($post['county'] == '0'){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = '龙吉宅-总站';
+                return json($this->ret);
+            }else{
+                $where['county'] = $post['county'];
+            }
+            $data = Db::name('branch')->where($where)->value('branch_name');
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '暂无数据';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
         }
         return json($this->ret);
     }

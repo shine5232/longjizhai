@@ -50,9 +50,9 @@
             , id: 'test'
             , cols: [
                 [ //表头
-                    { type: 'radio',fixed: 'left',width:'5%' }
+                    { type: 'radio',fixed: 'left',width:'10%' }
                     , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'nickname', title: '用户昵称', width: '25%', 
+                    /* , { field: 'nickname', title: '用户昵称', width: '25%', 
                         templet:function(d){
                             if(d.avatar){
                                 var avatar = '<div class="avatar">'+
@@ -66,14 +66,10 @@
                             }
                             return avatar;
                         }
-                    }
-                    , { field: 'realname', title: '用户姓名', width: '20%' }
-                    , { field: 'mobile', title: '联系电话', width: '20%'}
-                    , { field: 'area', title: '所属地区', width: '20%',
-                        templet:function(d){
-                            return d.province_name+'-'+d.city_name+'-'+d.county_name;
-                        }
-                    }
+                    } */
+                    , { field: 'realname', title: '用户姓名', width: '30%' }
+                    , { field: 'mobile', title: '联系电话', width: '30%'}
+                    , { field: 'area', title: '所属地区', width: '20%'}
                 ]
             ]
         });

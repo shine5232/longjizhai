@@ -79,6 +79,12 @@
                         style="width: 100%;height: 400px;">{$goods_info['content']}</textarea>
                 </div>
             </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">推&nbsp;&nbsp;&nbsp;荐</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="hot" lay-skin="switch" lay-text="是|否" value="1" {if condition="$goods_info['hot'] == 1"}checked{/if}>
+                </div>
+            </div>
             <input type="hidden" name="id" value="{$goods_info['id']}" />
             <input type="hidden" name="thumb" value="{$goods_info['thumb']}" />
             <input type="hidden" name="cate_id" value="{$goods_info['cate_id']}" />

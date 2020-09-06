@@ -124,6 +124,12 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">推&nbsp;&nbsp;&nbsp;荐</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="hot" lay-skin="switch" lay-text="是|否" value="1" {if condition="$shop['hot'] == 1"}checked{/if}>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" name="sort" value="{$shop['sort']}"
@@ -205,6 +211,11 @@
         });
         form.on('submit(toSubmit)', function (data) {
             var params = data.field;
+            if(data.field.hot == undefined){
+                params.hot = 0;
+            }else{
+                params.hot = 1;
+            }
 			$.post('/admin/shop/shopEdit', params, function (data) {
 				var res = data.data;
 				if (data.code == 200) {

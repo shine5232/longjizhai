@@ -87,6 +87,7 @@ class Shop extends Main
                 'longitude' => $post['longitude'],
                 'latitude' => $post['latitude'],
                 'view_num' => $post['view_num'],
+                'hot'=>$post['hot'],
                 'collect_num' => $post['collect_num'],
                 'sort' => $post['sort'],
                 'square_logo' => $post['thumb1'],
@@ -124,6 +125,7 @@ class Shop extends Main
                 'city' => $post['city'],
                 'county' => $post['county'],
                 'level' => $post['level'],
+                'hot'=>$post['hot'],
                 'address' => $post['address'],
                 'shop_cate' => $post['shop_cate'],
                 'longitude' => $post['longitude'],
@@ -223,7 +225,7 @@ class Shop extends Main
                 $mobile = $this->request->param('mobile', '');
                 $page_start = ($page - 1) * $limit;
                 $where['a.subscribe'] = ['eq', 1];
-                $where['a.type'] = ['eq', 5];
+                //$where['a.type'] = ['eq', 5];
                 $where['a.locked'] = ['eq', 0];
                 if ($county) {
                     $where['a.county'] = ['eq', $county];
@@ -234,21 +236,19 @@ class Shop extends Main
                 if ($mobile) {
                     $where['a.mobile'] = ['eq', $mobile];
                 }
-                if ($nickname) {
+                /* if ($nickname) {
                     $where['b.nickname'] = ['like', "%$nickname%"];
-                }
+                } */
                 $data = Db::name('member')->alias('a')
-                    ->join('member_weixin b', 'b.openid = a.openid', 'INNER')
-                    ->join('region c', 'c.region_code = a.province', 'LEFT')
-                    ->join('region d', 'd.region_code = a.city', 'LEFT')
-                    ->join('region e', 'e.region_code = a.county', 'LEFT')
+                    //->join('member_weixin b', 'b.openid = a.openid', 'INNER')
                     ->where($where)
-                    ->field('a.id,a.mobile,a.realname,b.nickname,b.avatar,c.region_name as province_name,d.region_name as city_name,e.region_name as county_name')
+                    ->field('a.id,a.mobile,a.realname,a.area')
                     ->order('a.id DESC')
                     ->limit($page_start, $limit)
                     ->select();
+                //echo Db::name('member')->getLastSql();die;
                 $count = Db::name('member')->alias('a')
-                    ->join('member_weixin b', 'b.openid = a.openid', 'INNER')
+                    //->join('member_weixin b', 'b.openid = a.openid', 'INNER')
                     ->where($where)
                     ->count();
                 if ($data) {
@@ -260,9 +260,9 @@ class Shop extends Main
                 $id  = $this->request->get('id');
                 $shop = Db::name('shop')->alias('a')
                     ->join('member b', 'b.id = a.uid', 'LEFT')
-                    ->join('member_weixin c', 'c.openid = b.openid', 'LEFT')
+                    //->join('member_weixin c', 'c.openid = b.openid', 'LEFT')
                     ->where('a.id', $id)
-                    ->field('a.*,b.realname,b.mobile,c.nickname,c.avatar')
+                    ->field('a.*,b.realname,b.mobile')
                     ->find();
                 $this->assign('id', $id);
                 if ($shop['uid']) {

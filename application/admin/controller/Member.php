@@ -48,17 +48,11 @@ class Member extends Main
             if($user['county']){
                 $where .= " AND A.county = ".$user['county'];
             }
-            $sql1 = "SELECT A.*,B.region_name as county_name,C.region_name as city_name,D.region_name as province_name 
-                    FROM (
-                        SELECT A.*,B.rank_name FROM lg_member A
-                        INNER JOIN lg_member_rank B ON A.rank_id = B.id
-                        WHERE $where
-                        ORDER BY A.subor DESC,A.id DESC 
-                        limit $page_start, $limit
-                    ) A 
-                    LEFT JOIN lg_region B ON A.county = B.region_code 
-                    LEFT JOIN lg_region C ON B.region_superior_code = C.region_code 
-                    LEFT JOIN lg_region D ON C.region_superior_code = D.region_code ";
+            $sql1 = "SELECT A.*,B.rank_name FROM lg_member A
+                    INNER JOIN lg_member_rank B ON A.rank_id = B.id
+                    WHERE $where
+                    ORDER BY A.subor DESC,A.id DESC 
+                    limit $page_start, $limit";
             $sql2 = "SELECT COUNT(0) AS num FROM lg_member AS A WHERE $where";
             $data = Db::query($sql1);
             $count = Db::query($sql2);
