@@ -25,7 +25,8 @@
                     </td>
                     <td>{$vo.sort}</td>
                     <td>
-                        <!--<button type="button" class="btn btn-success">添加子栏目</button> <button type="button" class="btn btn-primary">编辑</button> <button type="button" class="btn btn-danger" onClick="delcfm('{:url(\'admin/menu/del\',[\'id\' => $vo[\'id\']])}','{$vo.title}')">删除</button>-->
+                        <button type="button" onclick="x_admin_show('添加子栏目','addChild.html?id={$vo.id}',500,460)"
+                                        class="layui-btn layui-btn-normal layui-btn-xs">子栏目</button>
                         <button type="button" onclick="x_admin_show('编辑栏目',
                                     'cateEdit.html?id={$vo.id}',500,460)" class="layui-btn layui-btn-xs">编辑
                         </button>

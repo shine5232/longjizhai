@@ -41,6 +41,38 @@ class article extends Main
         }
     }
     /**
+     * 添加子栏目
+     */
+    function addChild(){
+        $id  = $this->request->get('id');
+        if($id!==0){
+            $p_title = Db::name('article_cate')->where('id',$id)->value('title');
+        }else{
+            $p_title = '顶级栏目';
+        }
+        $this->assign('p_title',$p_title);
+        $this->assign('id',$id);
+        return  $this->fetch('child');
+    }
+    /**
+     * 添加子栏目数据处理
+     */
+    function childAdd(){
+        $post = $this->request->post();
+        $validate = validate('cate');
+        $res = $validate->check($post);
+		if($res!==true){
+			$this->error($validate->getError());
+		}else{
+			$cate = Db::name('article_cate')->where('id',$post['pid'])->field('level')->find();
+            if($cate){
+                $post['level'] = (int)$cate['level'] + 1;
+            }
+            Db::name('article_cate')->insert($post);
+            $this->success('添加成功');
+		}
+    }
+    /**
      * 文章管理-文章栏目编辑页面
      */
     public function cateEdit(){
@@ -151,7 +183,7 @@ class article extends Main
             }
             return json($this->ret);
         }else{
-            $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+            $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
             $cate = array2Level($cate);
             $this->assign('cate',$cate);
             return $this->fetch('article_add');
@@ -179,7 +211,7 @@ class article extends Main
         }else{
             $id  = $this->request->get('id');
             $article = Db::name('article')->where('id',$id)->find();
-            $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+            $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
             $cate = array2Level($cate);
             $this->assign('cate',$cate);
             $this->assign('article',$article);
@@ -190,7 +222,7 @@ class article extends Main
      * 文章管理-文章搜索页面
      */
     public function search(){
-        $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+        $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
         $cate = array2Level($cate);
         $this->assign('cate',$cate);
         return $this->fetch();

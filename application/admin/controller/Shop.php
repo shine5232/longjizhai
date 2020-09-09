@@ -225,7 +225,7 @@ class Shop extends Main
                 $mobile = $this->request->param('mobile', '');
                 $page_start = ($page - 1) * $limit;
                 $where['a.subscribe'] = ['eq', 1];
-                //$where['a.type'] = ['eq', 5];
+                $where['a.type'] = ['eq', 5];
                 $where['a.locked'] = ['eq', 0];
                 if ($county) {
                     $where['a.county'] = ['eq', $county];
