@@ -165,12 +165,8 @@ class Community extends Main
             return json($this->ret);
         } else {
             $id  = $this->request->get('id');
-            if($user['county']){
-                $where['province'] = $user['province'];
-                $where['city'] = $user['city'];
-                $where['county'] = $user['county'];
-            }
-            $data = Db::name('village')->where('id', $id)->where($where)->find();
+            $where['id'] = $id;
+            $data = Db::name('village')->where($where)->find();
             $province = _getRegion();
             $city = _getRegion($data['province']);
             $county = _getRegion($data['city'], false, true);
