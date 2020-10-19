@@ -8,9 +8,9 @@
 	<div class="x-body">
 		<div class="layui-form">
 			<div class="layui-form-item">
-				<label class="layui-form-label">标&nbsp;&nbsp;&nbsp;题</label>
+				<label class="layui-form-label">标&nbsp;&nbsp;&nbsp;题(不得超过22个字)</label>
 				<div class="layui-input-block">
-					<input type="text" id="title" name="title" lay-verify="required|branch_name" autocomplete="off"
+					<input type="text" id="title" name="title" lay-verify="required|titles" autocomplete="off"
 						placeholder="请输入公告标题" value="{$data.title}" class="layui-input">
 				</div>
 			</div>
@@ -53,11 +53,11 @@ layui.use(['form','layer'], function(){
   	var form = layui.form;
   	var layer = layui.layer;
   	form.verify({
-		/* name: function (value) {
-			if (value.length < 5) {
-				return '用户名至少得5个字符啊';
+		titles: function (value) {
+			if (value.length > 22) {
+				return '标题不得超过22个字符';
 			}
-		} */
+		}
 	});
 	
     /**

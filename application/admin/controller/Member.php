@@ -20,6 +20,7 @@ class Member extends Main
             $limit = $this->request->param('limit', 20, 'intval');
             $realname = $this->request->param('realname', '');
             $mobile = $this->request->param('mobile', '');
+            $uname = $this->request->param('uname', '');
             $province = $this->request->param('province', '');
             $city = $this->request->param('city', '');
             $county = $this->request->param('county', '');
@@ -31,6 +32,9 @@ class Member extends Main
             }
             if ($mobile) {
                 $where .= " AND A.mobile = '$mobile'";
+            }
+            if ($uname) {
+                $where .= " AND A.uname = '$uname'";
             }
             if ($province) {
                 $where .= " AND A.province = $province";
@@ -48,10 +52,11 @@ class Member extends Main
             if($user['county']){
                 $where .= " AND A.county = ".$user['county'];
             }
-            $sql1 = "SELECT A.*,B.rank_name FROM lg_member A
+            $sql1 = "SELECT A.*,B.rank_name,C.uname AS topname FROM lg_member A
                     INNER JOIN lg_member_rank B ON A.rank_id = B.id
+                    LEFT JOIN lg_member C ON A.superior_id = C.id
                     WHERE $where
-                    ORDER BY A.subor DESC,A.id DESC 
+                    ORDER BY A.id DESC 
                     limit $page_start, $limit";
             $sql2 = "SELECT COUNT(0) AS num FROM lg_member AS A WHERE $where";
             $data = Db::query($sql1);
@@ -93,7 +98,7 @@ class Member extends Main
     /**
      * 会员管理-编辑会员页面
      */
-    public function articleEdit()
+    public function edit()
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
@@ -112,12 +117,9 @@ class Member extends Main
             return json($this->ret);
         } else {
             $id  = $this->request->get('id');
-            $article = Db::name('article')->where('id', $id)->find();
-            $cate = Db::name('article_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-            $cate = array2Level($cate);
-            $this->assign('cate', $cate);
-            $this->assign('article', $article);
-            return $this->fetch('article_edit');
+            $member = Db::name('member')->where('id', $id)->find();
+            $this->assign('member', $member);
+            return $this->fetch('edit');
         }
     }
     /**

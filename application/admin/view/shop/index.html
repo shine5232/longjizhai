@@ -9,9 +9,11 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
+                {if $role_id <= '144'}
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
+                {/if}
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商家','shopAdd.html',820,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商家
                 </button>
@@ -46,15 +48,32 @@
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '商家名称', width: '15%' }
-                    , { field: 'cate_title', title: '所属分类', width: '15%' }
-                    , { field: 'citys', title: '所属城市', width: '15%',
+                    , { field: 'cate_title', title: '所属分类', width: '8%' }
+                    , { field: 'citys', title: '所属城市', width: '8%',
                         templet:function(d){
                             return d.province_name+'-'+d.city_name+'-'+d.county_name;
                         }
                     }
-                    , { field: 'realname', title: '所属用户', width: '10%'}
-                    , { field: 'mobile', title: '联系电话', width: '10%'}
-                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , { field: 'realname', title: '所属用户', width: '8%'}
+                    , { field: 'uname', title: '账号', width: '8%'}
+                    , { field: 'rank', title: '会员等级', width: '10%',
+                        templet:function(d){
+                            if(d.rank_id == '1'){
+                                return '银牌会员';
+                            }else if(d.rank_id == '2'){
+                                return '金牌会员';
+                            }else if(d.rank_id == '3'){
+                                return '钻石会员';
+                            }else{
+                                return '';
+                            }
+                        }
+                    }
+                    , { field: 'superior_id', title: '上级会员', width: '8%'}
+                    , { field: 'subor', title: '下级数量', width: '8%'}
+                    , { field: 'mobile', title: '联系电话', width: '8%'}
+                    , { field: 'create_time', title: '创建时间', width: '8%', }
+                    , { field: 'endtime', title: '终止时间', width: '8%', }
                     , {
                         field: 'handle', title: '操作',width: '20%',
                         templet: function (d) {

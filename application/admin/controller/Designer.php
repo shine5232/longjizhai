@@ -40,7 +40,7 @@ class Designer extends Main
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,
                         concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,
-                        E.uname,F.type_title
+                        E.uname,E.rank_id,F.type_title
                 FROM (
                     SELECT A.*,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,B.name AS company_name,
@@ -374,8 +374,9 @@ class Designer extends Main
                     ->join('article_cate g','a.cate_id = g.id','INNER')
                     ->join('region d','a.county = d.region_code','LEFT')
                     ->join('designer e','a.author = e.id','INNER')
+                    ->join('member f','e.uid = f.uid','INNER')
                     ->where($where)
-                    ->field('a.*,d.region_name as county_name,g.title as cate_title,e.name as author_name,CASE WHEN a.checked = 0 THEN "未审" WHEN a.checked = 1 THEN "通过" ELSE "未过" END AS checked_title')
+                    ->field('a.*,d.region_name as county_name,g.title as cate_title,e.name as author_name,CASE WHEN a.checked = 0 THEN "未审" WHEN a.checked = 1 THEN "通过" ELSE "未过" END AS checked_title,f.mobile,f.uname')
                     ->order('a.author DESC,a.sort ASC,a.id DESC')
                     ->limit($page_start, $limit)
                     ->select();
@@ -383,6 +384,7 @@ class Designer extends Main
                     ->join('article_cate g','a.cate_id = g.id','INNER')
                     ->join('designer e','a.author = e.id','INNER')
                     ->join('region d','a.county = d.region_code','LEFT')
+                    ->join('member f','e.uid = f.uid','INNER')
                     ->where($where)
                     ->count();
             if ($data) {

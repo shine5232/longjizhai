@@ -5,6 +5,7 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
+                {if $role_id <= '144'}
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
@@ -14,6 +15,7 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData2">
                     <i class="layui-icon layui-icon-delete"></i>撤销至分站
                 </button>
+                {/if}
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加设计师','designerAdd.html',800,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加
                 </button>
@@ -48,7 +50,19 @@
                     { type: 'checkbox', fixed: 'left',width:'4%' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '设计师', width: '8%' }
-                    , { field: 'type_title', title: '等级', width: '10%' }
+                    , { field: 'rank', title: '会员等级', width: '10%',
+                        templet:function(d){
+                            if(d.rank_id == '1'){
+                                return '银牌会员';
+                            }else if(d.rank_id == '2'){
+                                return '金牌会员';
+                            }else if(d.rank_id == '3'){
+                                return '钻石会员';
+                            }else{
+                                return '';
+                            }
+                        }
+                    }
                     , { field: 'company_name', title: '所属公司', width: '11%', }
                     , { field: 'mobile', title: '手机', width: '10%' }
                     , { field: 'city', title: '城市', width: '10%' }

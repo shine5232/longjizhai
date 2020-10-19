@@ -229,7 +229,15 @@ class check extends Main
             return $this->fetch('index');
         }
     }
-
+    public function lookArticle(){
+        $id = $this->request->get('id');
+        $article = Db::name('article')->where('id',$id)->find();
+        $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+        $cate = array2Level($cate);
+        $this->assign('cate',$cate);
+        $this->assign('article', $article);
+        return $this->fetch('look_article');
+    }
     public function cases()
     {
         if (request()->isAjax()) {

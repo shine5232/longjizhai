@@ -40,7 +40,7 @@ class GongZhang extends Main
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,
                         concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,
-                        E.uname,F.type_title
+                        E.uname,E.rank_id,F.type_title
                 FROM (
                     SELECT A.*,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,B.name AS company_name,

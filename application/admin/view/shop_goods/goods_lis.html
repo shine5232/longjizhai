@@ -19,9 +19,11 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
+                {if $role_id <= '144'}
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
+                {/if}
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html?shop_id={$shop_id}&cate_id={$cate_id}',820,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商品
                 </button>

@@ -5,12 +5,6 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
-                <!-- <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
-                    <i class="layui-icon layui-icon-delete"></i>批量删除
-                </button> -->
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索会员','search.html',800,500)">
                     <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
@@ -38,10 +32,11 @@
             , cols: [
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: 'ID', width: '6%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'id', title: '序号', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'uid', title: 'UID', width: '8%', }
                     , { field: 'uname', title: '账号', width: '8%', }
-                    , { field: 'realname', title: '姓名', width: '10%' }
-                    , { field: 'type', title: '类型',width:'8%',
+                    , { field: 'realname', title: '姓名', width: '8%' }
+                    , { field: 'type', title: '类型',width:'5%',
                         templet:function(d){
                             var type = '会员';
                             if(d.type==1){
@@ -60,21 +55,22 @@
                             return type;
                         }
                     }
-                    , { field: 'mobile', title: '电话',width:'10%' }
-                    , { field: 'rank_name', title: '等级', width: '8%'}
-                    , { field: 'point', title: '积分',width:'6%' }
-                    , { field: 'subor', title: '会员数', width: '6%' }
-                    , { field: 'area', title: '地区',width:'10%',
+                    , { field: 'mobile', title: '电话',width:'8%' }
+                    , { field: 'rank_name', title: '等级', width: '5%'}
+                    , { field: 'point', title: '积分',width:'5%' }
+                    , { field: 'area', title: '地区',width:'8%',
                         templet:function(d){
                             if(d.county){
-                                var area = d.province_name+'-'+d.city_name+'-'+d.county_name;
+                                var area = d.area;
                             }else{
                                 var area = '总站';
                             }
                             return area;
                         } 
                     }
-                    , { field: 'source', title: '来源', width: '10%',
+                    , { field: 'subor', title: '会员数', width: '6%' }
+                    , { field: 'topname', title: '上级会员', width: '6%' }
+                    , { field: 'source', title: '来源', width: '8%',
                         templet:function(d){
                             var source = 'PC端注册';
                             if(d.source == '1'){
@@ -89,13 +85,37 @@
                             return source;
                         }
                     }
-                    , { field: 'lastlogin', title: '最后登录',width:'10%' }
-                    , { field: 'loginip', title: '最后ip', width: '10%' }
-                    , { field: 'create_time', title: '注册时间', width: '10%' }
+                    , { field: 'lastlogin', title: '最后登录',width:'8%' }
+                    , { field: 'loginip', title: '最后ip', width: '8%' }
+                    , { field: 'create_time', title: '注册时间', width: '8%' }
+                    , { field: 'status', title: '状态', width: '5%',
+                        templet:function(d){
+                            if(d.status == '0'){
+                                return '正常';
+                            }else if(d.status == '1'){
+                                return '锁定';
+                            }else{
+                                return '禁言';
+                            }
+                        }
+                    }
+                    , { field: 'subscribe', title: '是否关注', width: '8%',
+                        templet:function(d){
+                            if(d.subscribe == '0'){
+                                return '未关注';
+                            }else if(d.subscribe == '1'){
+                                return '已关注';
+                            }else if(d.subscribe == '2'){
+                                return '扫码未关注';
+                            }else{
+                                return '取消关注';
+                            }
+                        }
+                    }
                     , {
                         field: 'handle', title: '操作', width: '10%',
                         templet: function (d) {
-                            var handle = /* '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑会员\',\'/admin/member/edit?id=' + d.id + '\',800,480);">编辑</button>' + */
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑会员\',\'/admin/member/edit?id=' + d.id + '\',800,480);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="x_admin_show(\'积分充值\',\'/admin/member/recharge?id=' + d.id + '\',480,480);">充值</button>' +
                                 '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'积分日志\',\'/admin/member/point?id=' + d.id + '\',900,500);">积分</button>';
                             return handle;

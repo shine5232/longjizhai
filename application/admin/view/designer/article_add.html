@@ -30,7 +30,7 @@
                     <select name="author" lay-verify="required" lay-search="">
 						<option value="">直接选择或搜索选择</option>
 						{volist name='designer' id = 'vo'}
-						<option value="{$vo.id}">{$vo.nickName}</option>
+						<option value="{$vo.id}">{$vo.name}</option>
 						{/volist}
 					</select>
                 </div>
@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">缩&nbsp;略&nbsp;&nbsp;图</label>
+                <label class="layui-form-label">缩&nbsp;略&nbsp;&nbsp;图(480px*360px)</label>
                 <div class="layui-input-block" style="display: flex;">
                     <button type="button" class="layui-btn upload-img">
                         <i class="layui-icon">&#xe67c;</i>缩略图

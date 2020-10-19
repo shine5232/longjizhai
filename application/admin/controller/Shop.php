@@ -49,7 +49,7 @@ class Shop extends Main
                 ->join('member e', 'e.id = a.uid', 'LEFT')
                 ->join('goods_cate f', 'f.id = a.shop_cate', 'LEFT')
                 ->where($where)
-                ->field('a.*,b.region_name as province_name,c.region_name as city_name,d.region_name as county_name,e.realname,e.mobile,f.title as cate_title')
+                ->field('a.*,b.region_name as province_name,c.region_name as city_name,d.region_name as county_name,e.realname,e.mobile,e.uname,e.subor,e.superior_id,e.rank_id,f.title as cate_title')
                 ->order('a.id DESC')
                 ->limit($page_start, $limit)
                 ->select();
@@ -61,6 +61,9 @@ class Shop extends Main
                 ->where($where)
                 ->count();
             if ($data) {
+                foreach($data as &$v){
+                    $v['superior_id'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
+                }
                 $this->ret['count'] = $count;
                 $this->ret['data'] = $data;
             }

@@ -16,6 +16,13 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-block">
+                    <input type="text" id="uname" name="uname" autocomplete="off"
+                        placeholder="请输入账号" class="layui-input" value="" />
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">联系电话</label>
                 <div class="layui-input-block">
                     <input type="text" id="mobile" name="mobile" autocomplete="off"
@@ -137,6 +144,7 @@
                         mobile: data.field.mobile,
                         province: data.field.province,
                         city: data.field.city,
+                        uname:data.field.uname,
                         county: data.field.county,
                         type: data.field.type
                     }

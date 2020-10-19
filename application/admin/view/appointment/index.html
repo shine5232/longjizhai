@@ -49,12 +49,13 @@
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '预约人', width: '8%' }
-                    , { field: 'appointmented_name', title: '预约技工', width: '8%' }
-                    , { field: 'appoint_time', title: '预约时间', width: '12%', }
-                    , { field: 'mobile', title: '预约电话', width: '12%', }
-                    , { field: 'content', title: '预约留言', width: '20%', }
+                    , { field: 'mobile', title: '预约电话', width: '10%', }
+                    , { field: 'appointmented_name', title: '预约'+name, width: '8%' }
+                    , { field: 'appointmented_mobile', title: name+'电话', width: '10%' }
+                    , { field: 'appoint_time', title: '预约时间', width: '15%', }
+                    , { field: 'content', title: '预约留言', width: '15%', }
                     , { field: 'status_name', title: '预约状态', width: '8%', }
-                    , { field: 'note', title: '备注', width: '15%', }
+                    , { field: 'note', title: '备注', width: '10%', }
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {

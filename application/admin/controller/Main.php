@@ -13,11 +13,14 @@ class Main extends Controller
     public function _initialize()
     {
         $username  = session('username');
+        $admin_id = Session::get('user_id');
         if (empty($username)) {
             $this->redirect('admin/user/login');
         }
         $this->checkAuth();
         $this->getMenu();
+        $role_id = Db::name('auth_group_access')->where('uid',$admin_id)->value('group_id');
+        $this->assign('role_id',$role_id);
     }
     /**
      * 权限检查

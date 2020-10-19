@@ -40,7 +40,7 @@ class Company extends Main
             $page_start = ($page - 1) * $limit;
             $sql = "SELECT A.*,
                         concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,
-                        E.uname,F.type_title
+                        E.uname,E.realname,E.subor,E.superior_id,E.rank_id,F.type_title
                 FROM (
                     SELECT A.*,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,
@@ -63,6 +63,9 @@ class Company extends Main
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
+                foreach($data as &$v){
+                    $v['superior_id'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
+                }
                 $this->ret['count'] = $count[0]['count'];
                 $this->ret['data'] = $data;
             }
