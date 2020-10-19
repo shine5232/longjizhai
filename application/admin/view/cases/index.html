@@ -5,6 +5,7 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
+                {if $role_id <= '144'}
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData" onclick="update('1')">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
@@ -14,6 +15,7 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData" onclick="update('3')">
                     <i class="layui-icon layui-icon-delete"></i>撤销至分站
                 </button>
+                {/if}
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
