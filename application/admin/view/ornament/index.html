@@ -1,0 +1,85 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/ornament/index' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: '序号', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'uid', title: '用户UID' , width: '8%'}
+                    , { field: 'uname', title: '用户账号' }
+                    , { field: 'name', title: '姓名',width:'8%' }
+                    , { field: 'mobile', title: '手机号',width:'10%' }
+                    , { field: 'area', title: '所属地区',width:'8%',
+                        templet: function (d) {
+                            return d.province_name + '-' + d.city_name + '-' + d.country_name;
+                        }
+                    }
+                    , { field: 'build_name', title: '小区名称',width:'8%' }
+                    , { field: 'build_time', title: '装修日期',width:'8%' }
+                    , { field: 'status', title: '状态',width:'8%',
+                        templet: function (d) {
+                            if(d.status == '0'){
+                                return '未处理';
+                            }else if(d.status == '1'){
+                                return '已处理';
+                            }else{
+                                return '';
+                            }
+                        }
+                    }
+                    , { field: 'create_time', title: '创建时间', width: '10%', }
+                    , {
+                        field: 'handle', title: '操作', width: '10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'查看\',\'/admin/ornament/look?id=' + d.id + '\',600,480);">查看</button>' +
+                                '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delNotice(' + d.id + ');">处理</button>';
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+    });
+    function delNotice(id) {
+        layer.confirm('确认要处理吗？', function (index) {
+            $.post('/admin/ornament/optat', { id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('处理成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('处理失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+</script>
+
+</html>

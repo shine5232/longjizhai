@@ -24,23 +24,22 @@ class notice extends Main
                 $where['title'] = ['like', "%$keywords%"];
             }
             $user = Session::get('user');
+            if($user['county']){
+                $where['province'] = $user['province'];
+                $where['city'] = $user['city'];
+                $where['county'] = $user['county'];
+            }
             $data = Db::name('notice')->alias('a')
                 ->join('region b', 'a.province = b.region_code', 'LEFT')
                 ->join('region c', 'a.city = c.region_code', 'LEFT')
                 ->join('region d', 'a.county = d.region_code', 'LEFT')
                 ->where($where)
-                ->where('province', $user['province'])
-                ->where('city', $user['city'])
-                ->where('county', $user['county'])
                 ->field('a.*,b.region_name as province_name,c.region_name as city_name,d.region_name as country_name')
                 ->order('a.create_time DESC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('notice')
                 ->where($where)
-                ->where('province', $user['province'])
-                ->where('city', $user['city'])
-                ->where('county', $user['county'])
                 ->count();
             foreach ($data as $k => $v) {
                 if ($v['county'] == 0 && $v['city'] == 0) {

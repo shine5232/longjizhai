@@ -1,0 +1,48 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+        <fieldset class="layui-elem-field">
+            <legend>需求信息</legend>
+            <div class="layui-field-box">
+                <table class="layui-table" lay-even="" >
+                    <tbody>
+                        <tr>
+                            <td>姓名：{$data.name}</td>
+                            <td>手机号：{$data.mobile}</td>
+                        </tr>
+                        <tr>
+                            <td>所属城市：{$data.province_name}-{$data.city_name}-{$data.country_name}</td>
+                            <td>小区名称：{$data.build_name}</td>
+                        </tr>
+                        <tr>
+                            <td>小区地址：{$data.build_addr}</td>
+                            <td>装修时间：{$data.build_time}</td>
+                        </tr>
+                        <tr>
+                            <td>房屋结构：{$data.home}</td>
+                            <td>装修风格：{$data.style}</td>
+                        </tr>
+                        <tr>
+                            <td>装修档次：{$data.level}</td>
+                            <td>装修预算：{$data.money}(元)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+	</div>
+</body>
+<style>
+    .layui-table td,.layui-table th{
+        text-align: left;
+    }
+</style>
+{include file='public/foot'}
+<script type="text/javascript">
+</script>
+</html>
