@@ -35,9 +35,7 @@ class cases extends Main
                     )A
                     LEFT JOIN lg_region B ON A.county = B.region_code
                     LEFT JOIN lg_region C ON B.region_superior_code = C.region_code
-                    LEFT JOIN lg_region D ON C.region_superior_code = D.region_code
-
-                    ";
+                    LEFT JOIN lg_region D ON C.region_superior_code = D.region_code";
                 // var_dump($sql);die;
                 $data = Db::query($sql);
             $count = Db::name('cases')->alias('A')

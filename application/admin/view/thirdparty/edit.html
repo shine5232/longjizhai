@@ -1,0 +1,64 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">机构名称</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="name" lay-verify="required" autocomplete="off"
+						placeholder="请输入机构名称" value="{$data.name}" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+                <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;态</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="status" lay-skin="switch" lay-text="开启|禁用" value="1" {if $data.status == 1}checked{/if} >
+                </div>
+            </div>
+			<input type="hidden" value="{$data.id}" name="id">
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+    /**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){
+		var params = {
+				name: data.field.name,
+				status: data.field.status,
+				id: data.field.id
+			};
+		$.post('/admin/thirdparty/edit', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+                layer.msg('修改成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>

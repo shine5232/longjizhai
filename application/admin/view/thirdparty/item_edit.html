@@ -1,0 +1,92 @@
+{include file='public/head'}
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+	</style>
+	<div class="x-body">
+		<div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属机构</label>
+                <div class="layui-input-block">
+                    <select name="party_id" lay-verify="required">
+                        <option value="">请选择</option>
+                        {volist name='party' id='vo'}
+                            <option value="{$vo.id}" {if condition="$vo['id'] == $data['party_id']"}selected{/if}>{$vo.name}</option>
+                         {/volist}
+                    </select>
+                </div>
+            </div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">成员名称</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="item_name" lay-verify="required" autocomplete="off"
+						placeholder="请输入成员名称" class="layui-input" value="{$data.item_name}">
+				</div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">链接地址</label>
+				<div class="layui-input-block">
+					<input type="text" id="url" name="item_url" lay-verify="required" autocomplete="off"
+						placeholder="请输入链接地址,如http://www.baidu.com" class="layui-input" value="{$data.item_url}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+                <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;态</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="status" lay-skin="switch" lay-text="开启|禁用" value="1" {if condition="$data['status'] == 1"}checked{/if}>
+                </div>
+            </div>
+            <div class="layui-form-item">
+				<label class="layui-form-label">排序</label>
+				<div class="layui-input-block">
+					<input type="text" id="sort" name="sort" lay-verify="required" autocomplete="off"
+						placeholder="请输入成员排序" class="layui-input" value="{$data.sort}">
+				</div>
+            </div>
+            <input type="hidden" name="id" value="{$data['id']}" />
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript"> 
+layui.use(['form','layer'], function(){
+  	var form = layui.form;
+  	var layer = layui.layer;
+	/**
+	 * 监听表单提交
+	*/
+	form.on('submit(toSubmit)',function(data){
+		var params = {
+				item_name: data.field.item_name,
+				status: data.field.status,
+                party_id:data.field.party_id,
+                item_url:data.field.item_url,
+                sort:data.field.sort,
+                id:data.field.id
+			};
+		$.post('/admin/thirdparty/itemEdit', params, function(data){
+            var res = data.data;
+            if(data.code == 200){
+				layer.msg('修改成功',{
+					icon:1,
+					time:1000
+				},function(){
+					x_admin_close();
+					parent.location.reload();
+				});
+            }else{
+                layer.msg(data.msg);
+            }
+		},'json');
+		return false;
+	});
+});
+</script>
+</html>
