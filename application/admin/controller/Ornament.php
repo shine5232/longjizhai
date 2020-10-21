@@ -17,7 +17,13 @@ class ornament extends Main
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $page_start = ($page - 1) * $limit;
+            $user = Session::get('user');
             $where['A.status'] = ['neq',2];
+            if($user['county']){
+                $where['A.province'] = $user['province'];
+                $where['A.city'] = $user['city'];
+                $where['A.county'] = $user['county'];
+            }
             $data = Db::name('ornament')->alias('A')
                 ->join('member B','A.uid = B.uid','INNER')
                 ->join('region C', 'A.province = C.region_code', 'LEFT')
@@ -50,6 +56,7 @@ class ornament extends Main
             ->join('region E', 'A.county = E.region_code', 'LEFT')->where('A.id', $id)
             ->field('A.*,B.uname,C.region_name as province_name,D.region_name as city_name,E.region_name as country_name')
             ->find();
+        
         return  $this->fetch('look', ['data' => $data]);
     }
     /**
