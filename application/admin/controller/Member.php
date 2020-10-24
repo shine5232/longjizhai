@@ -52,7 +52,7 @@ class Member extends Main
             if($user['county']){
                 $where .= " AND A.county = ".$user['county'];
             }
-            $sql1 = "SELECT A.*,B.rank_name,C.uname AS topname FROM lg_member A
+            $sql1 = "SELECT A.*,B.rank_name,C.uname AS topname,A.province AS province_name,A.city AS city_name,A.county AS county_name FROM lg_member A
                     INNER JOIN lg_member_rank B ON A.rank_id = B.id
                     LEFT JOIN lg_member C ON A.superior_id = C.id
                     WHERE $where
@@ -62,6 +62,11 @@ class Member extends Main
             $data = Db::query($sql1);
             $count = Db::query($sql2);
             if ($data) {
+                foreach($data as &$v){
+                    $v['province_name'] = Db::name('region')->where('region_code',$v['province'])->value('region_name');
+                    $v['city_name'] = Db::name('region')->where('region_code',$v['city'])->value('region_name');
+                    $v['county_name'] = Db::name('region')->where('region_code',$v['county'])->value('region_name');
+                }
                 $this->ret['count'] = $count[0]['num'];
                 $this->ret['data'] = $data;
             }
@@ -105,11 +110,7 @@ class Member extends Main
             $id = $post['id'];
             $post['update_time']  = date('Y-m-d H:i:s');
             unset($post['id']);
-            $admin_user = session('user');
-            if ($admin_user['county'] != null) {
-                $post['county'] = $admin_user['county'];
-            }
-            $db = Db::name('article')->where('id', $id)->update($post);
+            $db = Db::name('member')->where('id', $id)->update($post);
             if ($db) {
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = 'success';
@@ -118,6 +119,12 @@ class Member extends Main
         } else {
             $id  = $this->request->get('id');
             $member = Db::name('member')->where('id', $id)->find();
+            $province = _getRegion();
+            $city = _getRegion($member['province']);
+            $county = _getRegion($member['city'],false,true);
+            $this->assign('province', $province);
+            $this->assign('city', $city);
+            $this->assign('county', $county);
             $this->assign('member', $member);
             return $this->fetch('edit');
         }

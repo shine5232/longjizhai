@@ -11,24 +11,148 @@
 			height: 60px;
 			margin-left: 20px;
 		}
+        .layui-table td,.layui-table th{
+            text-align: left;
+        }
+        .layui-form-item{
+            margin-bottom: 0;
+        }
+        .layui-input-inline{
+            width: 100px !important;
+        }
     </style>
     <div class="x-body">
-        <div class="layui-form" id="mainForm" style="margin-right: 20px;">
-            <div class="layui-form-item">
-                <label class="layui-form-label">用户姓名</label>
-                <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="realname"
-                        placeholder="请输入用户姓名" type="text" value="{$member.realname}" />
+        <fieldset class="layui-elem-field">
+            <legend>用户信息</legend>
+            <div class="layui-field-box">
+                <div class="layui-form" id="mainForm">
+                    <table class="layui-table" lay-even="" >
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">用户UID</label>
+                                        <div class="layui-input-block">
+                                            <input autocomplete="off" class="layui-input" readonly value="{$member.uid}" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">用户账号</label>
+                                        <div class="layui-input-block">
+                                            <input autocomplete="off" class="layui-input" readonly value="{$member.uname}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">真实姓名</label>
+                                        <div class="layui-input-block">
+                                            <input autocomplete="off" class="layui-input" lay-verify="required" name="realname"
+                                                placeholder="请输入用户真实姓名" type="text" value="{$member.realname}" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">手机号码</label>
+                                        <div class="layui-input-block">
+                                            <input autocomplete="off" class="layui-input" lay-verify="required" name="mobile"
+                                                placeholder="请输入用户手机号码" type="text" value="{$member.mobile}" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">所属地区</label>
+                                        <div class="layui-input-inline">
+                                            <select name="province" lay-filter="province" id="province">
+                                                <option value="">请选择省</option>
+                                                {volist name='province' id='vo'}
+                                                <option value="{$vo.region_code}" {if condition="$vo.region_code == $member.province"}selected{/if}>{$vo.region_name}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                        <div class="layui-input-inline">
+                                            <select name="city" lay-filter="city" id="city">
+                                                <option value="">请选择市</option>
+                                                {volist name='city' id='vo'}
+                                                <option value="{$vo.region_code}" {if condition="$vo.region_code == $member.city"}selected{/if}>{$vo.region_name}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                        <div class="layui-input-inline">
+                                            <select name="county" lay-filter="county" id="county">
+                                                <option value="">请选择区/县</option>
+                                                {volist name='county' id='vo'}
+                                                <option value="{$vo.region_code}" {if condition="$vo.region_code == $member.county"}selected{/if}>{$vo.region_name}</option>
+                                                {/volist}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">会员类型</label>
+                                        <div class="layui-input-block">
+                                            <select name="type">
+                                                <option value="">请选择</option>
+                                                <option value="0" {if condition="$member.type == 0"}selected{/if}>会员</option>
+                                                <option value="1" {if condition="$member.type == 1"}selected{/if}>技工</option>
+                                                <option value="2" {if condition="$member.type == 2"}selected{/if}>工长</option>
+                                                <option value="3" {if condition="$member.type == 3"}selected{/if}>设计师</option>
+                                                <option value="4" {if condition="$member.type == 4"}selected{/if}>装饰公司</option>
+                                                <option value="5" {if condition="$member.type == 5"}selected{/if}>商家</option>
+                                                <option value="6" {if condition="$member.type == 6"}selected{/if}>业主</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">会员等级</label>
+                                        <div class="layui-input-block">
+                                            <select name="rank_id">
+                                                <option value="">请选择</option>
+                                                <option value="1" {if condition="$member.rank_id == 1"}selected{/if}>银牌会员</option>
+                                                <option value="2" {if condition="$member.rank_id == 2"}selected{/if}>金牌会员</option>
+                                                <option value="3" {if condition="$member.rank_id == 3"}selected{/if}>钻石会员</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">会员状态</label>
+                                        <div class="layui-input-block">
+                                            <select name="status">
+                                                <option value="">请选择</option>
+                                                <option value="0" {if condition="$member.status == 0"}selected{/if}>正常</option>
+                                                <option value="1" {if condition="$member.status == 1"}selected{/if}>锁定</option>
+                                                <option value="2" {if condition="$member.status == 2"}selected{/if}>禁言</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" name="id" value="{$member.id}" />
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <input type="hidden" name="id" value="{$member.id}" />
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
-                </div>
-            </div>
-        </div>
+        </fieldset>
     </div>
 </body>
 {include file='public/foot'}
@@ -37,12 +161,56 @@
 <script type="text/javascript">
     layui.use(['form', 'layer', 'upload'], function () {
         var form = layui.form,layer = layui.layer,upload = layui.upload;
+        /**
+        * 监听省份选择
+        */
+        form.on('select(province)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2 
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    var option = '<option value="">请选择市</option>';
+                    if(res.length > 0){
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                    }
+                    $('#city').html(option);
+                    $('#county').html('<option value="">请选择区/县</option>');
+                    form.render('select');
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
+        /**
+        * 监听城市选择
+        */
+        form.on('select(city)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2,
+                is_open:2
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    var option = '<option value="">请选择区/县</option>';
+                    if(res.length > 0){
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                    }
+                    $('#county').html(option);
+                    form.render('select');
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
         form.on('submit(toSubmit)', function (data) {
-            var params = {
-                id:data.field.id,
-				realname: data.field.realname,
-			};
-			$.post('/admin/member/edit', params, function (data) {
+			$.post('/admin/member/edit', data.field, function (data) {
 				var res = data.data;
 				if (data.code == 200) {
 					layer.msg('修改成功', {

@@ -45,7 +45,7 @@ class ornament extends Main
         }
     }
     /**
-     * 
+     * 第三方机构-访问查看
      */
     public function look(){
         $id  = $this->request->get('id');

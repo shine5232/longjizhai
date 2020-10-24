@@ -70,8 +70,9 @@ class Order extends Main
             $order['info'] = Db::name('order_info')->alias('A')
                 ->join('shop_goods B','B.id = A.shop_goods_id','INNER')
                 ->join('shop_goods_attr C','C.id = A.goods_attrs_id','INNER')
+                ->join('shop_goods_attr D','D.id = C.pid','INNER')
                 ->where('A.order_id',$id)
-                ->field('A.goods_num,B.name,B.unit,C.name AS attr_name,C.price,C.shop_price,C.thumb,C.specs')
+                ->field('A.goods_num,B.name,B.unit,C.name AS unint_name,C.price,C.shop_price,C.thumb,D.name AS attr_name')
                 ->select();
         }
         $this->assign('order',$order);

@@ -75,21 +75,15 @@ class ShopGoods extends Main
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
+            unset($post['cate'],$post['imgFile']);
+            $post['style'] = implode(',',$post['style']);
             $county = Db::name('shop')->where('id', $post['shop_id'])->value('county');
-            $insert = [
-                'name' => $post['name'],
-                'shop_id' => $post['shop_id'],
-                'county' => $county,
-                'keywords' => $post['keywords'],
-                'thumb' => $post['thumb'],
-                'hot'=>isset($post['hot'])?1:0,
-                'title' => $post['title'],
-                'unit' => $post['unit'],
-                'brand_id' => $post['brand_id'] > 0 ? $post['brand_id'] : '',
-                'cate_id' => $post['cate_id'],
-                'content' => $post['content'],
-                'create_time' => date('Y-m-d H:i:s')
-            ];
+            $insert = $post;
+            $insert['county'] = $county;
+            $insert['hot']=isset($post['hot'])?1:0;
+            $insert['online'] = isset($post['online']) ? $post['online'] : 0;
+            $insert['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
+            $insert['create_time'] = date('Y-m-d H:i:s');
             $db = Db::name('shop_goods')->insert($insert);
             if ($db) {
                 $this->ret['code'] = 200;
@@ -100,9 +94,11 @@ class ShopGoods extends Main
             $cate = _getGoodsCate(); //获取顶级分类
             $shop_id  = $this->request->get('shop_id');
             $cate_id  = $this->request->get('cate_id');
+            $self_cate = Db::name('shop_cate')->where(['shop_id'=>$shop_id,'status'=>1])->field('id,cate_name')->select();
             $this->assign('cate', $cate);
             $this->assign('cate_id', $cate_id);
             $this->assign('shop_id', $shop_id);
+            $this->assign('self_cate', $self_cate);
             return $this->fetch('goods_add');
         }
     }
@@ -114,18 +110,13 @@ class ShopGoods extends Main
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
-            $update = [
-                'name' => $post['name'],
-                'keywords' => $post['keywords'],
-                'thumb' => $post['thumb'],
-                'title' => $post['title'],
-                'unit' => $post['unit'],
-                'hot'=>isset($post['hot'])?1:0,
-                'brand_id' => $post['brand_id'] > 0 ? $post['brand_id'] : '',
-                'cate_id' => $post['cate_id'],
-                'content' => $post['content'],
-                'update_time' => date('Y-m-d H:i:s')
-            ];
+            unset($post['cate'],$post['id'],$post['imgFile']);
+            $post['style'] = implode(',',$post['style']);
+            $update = $post;
+            $update['hot']=isset($post['hot'])?1:0;
+            $update['online'] = isset($post['online']) ? $post['online'] : 0;
+            $update['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
+            $update['update_time'] = date('Y-m-d H:i:s');
             Db::name('shop_goods')->where('id', $id)->update($update);
             $this->ret['code'] = 200;
             $this->ret['msg'] = '修改成功';
@@ -156,10 +147,13 @@ class ShopGoods extends Main
                 ];
                 $brands = Db::name('brands')->where($where)->field('id,name')->select();
             }
+            $goods_info['style'] = explode(',',$goods_info['style']);
+            $self_cate = Db::name('shop_cate')->where(['shop_id'=>$goods_info['shop_id'],'status'=>1])->field('id,cate_name')->select();
             $this->assign('cate_id', $cate_id);
             $this->assign('cate', $cate);
             $this->assign('brands', $brands);
             $this->assign('goods_info', $goods_info);
+            $this->assign('self_cate', $self_cate);
             return $this->fetch('goods_edit');
         }
     }

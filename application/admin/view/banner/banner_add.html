@@ -25,6 +25,17 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">轮播位置</label>
+                <div class="layui-input-block">
+                    <select name="position_id" lay-verify="required">
+                        <option value="">请选择</option>
+                        {foreach $position as $key=>$vo}
+                        <option value="{$vo['id']}">{$vo['name']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">链接地址</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" name="url"
@@ -37,6 +48,10 @@
                     <button type="button" class="layui-btn upload-img">
                         <i class="layui-icon">&#xe67c;</i>轮播图
                     </button>
+                    <div style="color: #999;margin-left: 5px;">
+                        <p>(移动端:1000px*390px)</p>
+                        <p>(PC端:1000px*390px)</p>
+                    </div>
                     <img class="layui-upload-img" id="thumb" src="">
                 </div>
             </div>
@@ -69,6 +84,7 @@
 				title: data.field.title,
 				thumb: data.field.thumb,
 				sort: data.field.sort,
+                position_id:data.field.position_id,
 				url: data.field.url,
 			};
 			$.post('/admin/banner/bannerAdd', params, function (data) {

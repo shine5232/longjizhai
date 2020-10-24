@@ -71,10 +71,19 @@
                     }
                     , { field: 'cate_title', title: '所属分类', width: '25%'}
                     , { field: 'brand_name', title: '所属品牌', width: '15%'}
+                    , { field: 'online', title: '上下架',width:'8%',
+                        templet:function(d){
+                            if(d.online == '1'){
+                                return '上架';
+                            }else{
+                                return '下架';
+                            }
+                        }
+                    }
                     , {
                         field: 'handle', title: '操作',width: '20%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/unintList?id=' + d.id + '\',860,500);">规格</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }

@@ -47,6 +47,18 @@
                 {/foreach}
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">所属风格</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="style[1]" value="1" title="中式" lay-skin="primary"  <?php if(in_array(1,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[2]" value="2" title="欧式" lay-skin="primary" <?php if(in_array(2,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[3]" value="3" title="现代" lay-skin="primary" <?php if(in_array(3,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[4]" value="4" title="田园" lay-skin="primary" <?php if(in_array(4,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[5]" value="5" title="地中海" lay-skin="primary" <?php if(in_array(5,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[6]" value="6" title="东南亚" lay-skin="primary" <?php if(in_array(6,$goods_info['style'])){echo 'checked';} ?>>
+                    <input type="checkbox" name="style[7]" value="7" title="混搭" lay-skin="primary" <?php if(in_array(7,$goods_info['style'])){echo 'checked';} ?>>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">所属品牌</label>
                 <div class="layui-input-block">
                     <select lay-filter="brands" name="brand_id" id="brands_id">
@@ -77,6 +89,12 @@
                 <div class="layui-input-block">
                     <textarea class="layui-textarea" placeholder="请输入商品介绍" id="notice" name="content"
                         style="width: 100%;height: 400px;">{$goods_info['content']}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否上架</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" {if condition="$goods_info['online'] == 1"}checked{/if}>
                 </div>
             </div>
             <input type="hidden" name="id" value="{$goods_info['id']}" />

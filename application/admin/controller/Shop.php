@@ -91,6 +91,7 @@ class Shop extends Main
                 'latitude' => $post['latitude'],
                 'view_num' => $post['view_num'],
                 'hot'=>$post['hot'],
+                'kou'=>$post['kou'],
                 'collect_num' => $post['collect_num'],
                 'sort' => $post['sort'],
                 'square_logo' => $post['thumb1'],
@@ -129,6 +130,7 @@ class Shop extends Main
                 'county' => $post['county'],
                 'level' => $post['level'],
                 'hot'=>$post['hot'],
+                'kou'=>$post['kou'],
                 'address' => $post['address'],
                 'shop_cate' => $post['shop_cate'],
                 'longitude' => $post['longitude'],
@@ -288,5 +290,126 @@ class Shop extends Main
         $this->assign('id', $id);
         $this->assign('county', $shop['county']);
         return $this->fetch('search_user');
+    }
+    /**
+     * 商家管理-商品分类列表页
+     */
+    public function cateLis()
+    {
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $shop_id = $this->request->param('shop_id', '');
+            $where['shop_id'] = ['eq', $shop_id];
+            $where['status'] = ['neq', 2];
+            $data = Db::name('shop_cate')->where($where)->order('sort DESC,id DESC')->limit($page_start, $limit)->select();
+            $count = Db::name('shop_cate')->where($where)->count();
+            if ($data) {
+                $this->ret['count'] = $count;
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $shop_id  = $this->request->get('id');
+            $this->assign('shop_id', $shop_id);
+            return $this->fetch('cate_lis');
+        }
+    }
+    /**
+     * 商家管理-添加商品分类
+     */
+    public function cateAdd()
+    {
+        if(request()->isPost()){
+            $post = $this->request->post();
+            $status = isset($post['status'])?$post['status']:0;
+            $insert = $post;
+            $insert['status']=$status;
+            $insert['create_time']=date('Y-m-d H:i:s');
+            $res = Db::name('shop_cate')->insert($insert);
+            if ($res) {
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '添加成功';
+            }
+            return json($this->ret);
+        }else{
+            $shop_id  = $this->request->get('shop_id');
+            $this->assign('shop_id', $shop_id);
+            return $this->fetch('cate_add');
+        }
+    }
+    /**
+     * 商家管理-编辑商品分类
+     */
+    public function cateEdit(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            $id = $post['id'];
+            $status = isset($post['status'])?$post['status']:0;
+            $upd = $post;
+            $upd['status']=$status;
+            $upd['update_time']=date('Y-m-d H:i:s');
+            unset($upd['id']);
+            $res = Db::name('shop_cate')->where('id',$id)->update($upd);
+            if ($res) {
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '更新成功';
+            }
+            return json($this->ret);
+        }else{
+            $id = $this->request->get('id');
+            $cate = Db::name('shop_cate')->where('id',$id)->find();
+            $this->assign('cate',$cate);
+            return $this->fetch('cate_edit');
+        }
+    }
+    /**
+     * 商家管理-商品分类删除
+     */
+    public function cateDel()
+    {
+        $id = $this->request->post('id');
+        $ids = explode(',', $id);
+        $upd = [
+            'status'    =>  2,
+            'delete_time'   =>  date('Y-m-d H:i:s')
+        ];
+        if (count($ids) > 1) {
+            $res = Db::name('shop_cate')->where('id', 'in', $id)->update($upd);
+        } else {
+            $res = Db::name('shop_cate')->where('id', $ids[0])->update($upd);
+        }
+        if ($res) {
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = 'success';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 商家管理-商铺推送至推荐位
+     */
+    public function recommend(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            $status = isset($post['status'])?$post['status']:0;
+            $insert = $post;
+            $insert['status']=$status;
+            $insert['create_time']=date('Y-m-d H:i:s');
+            $res = Db::name('recommend_data')->insert($insert);
+            if ($res) {
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '添加成功';
+            }
+            return json($this->ret);
+        }else{
+            $shop_id  = $this->request->get('id');
+            $recommend = Db::name('recommend')->where('status',1)->select();
+            $province = _getRegion(); //获取省份数据
+            $this->assign('shop_id', $shop_id);
+            $this->assign('recommend', $recommend);
+            $this->assign('province', $province);
+            return $this->fetch('recommend');
+        }
     }
 }

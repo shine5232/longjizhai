@@ -13,9 +13,20 @@
     <div class="x-body">
         <div class="layui-form" style="margin-right: 20px;">
             <div class="layui-form-item">
-                <label class="layui-form-label">属性名称</label>
+                <label class="layui-form-label">规格名称</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" value="{$goods_attr['name']}" placeholder="请输入属性名称" type="text" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" value="{$goods_attr['name']}" placeholder="请输入规格名称" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属属性</label>
+                <div class="layui-input-block">
+                    <select name="pid" lay-verify="required">
+                        <option value="">请选择</option>
+                        {volist name='pid' id='vo'}
+                        <option value="{$vo.id}" {if condition="$vo.id == $goods_attr.pid"}selected{/if}>{$vo.name}</option>
+                        {/volist}
+                    </select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -99,7 +110,7 @@
         */
         form.on('submit(toSubmit)',function(data){
             var params = data.field;
-            $.post('/admin/shop_goods_attr/attrEdit', params, function(data){
+            $.post('/admin/goods/unintEdit', params, function(data){
                 var res = data.data;
                 if(data.code == 200){
                     layer.msg('修改成功',{

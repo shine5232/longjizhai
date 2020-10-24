@@ -104,7 +104,7 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">方形logo</label>
+                <label class="layui-form-label">方形logo(200px*200px)</label>
                 <div class="layui-input-block" style="display: flex;">
                     <button type="button" class="layui-btn layui-btn-sm upload-img" data-id="1">
                         <i class="layui-icon">&#xe67c;</i>选择图片
@@ -113,7 +113,7 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">矩形logo</label>
+                <label class="layui-form-label">矩形logo(200px*100px)</label>
                 <div class="layui-input-block" style="display: flex;">
                     <button type="button" class="layui-btn layui-btn-sm upload-img" data-id="2">
                         <i class="layui-icon">&#xe67c;</i>选择图片
@@ -122,9 +122,15 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">推&nbsp;&nbsp;&nbsp;荐</label>
+                <label class="layui-form-label">热门指数</label>
                 <div class="layui-input-block">
-                  <input type="checkbox" name="hot" lay-skin="switch" lay-text="是|否" value="1">
+                    <input autocomplete="off" class="layui-input" name="hot" placeholder="请输入热门指数" type="number" value="0" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">口碑指数</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="kou" placeholder="请输入口碑指数" type="number" value="0" />
                 </div>
             </div>
             <div class="layui-form-item">

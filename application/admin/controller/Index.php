@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller;
+use \think\Db;
 
 class Index extends Main
 {
@@ -20,6 +21,7 @@ class Index extends Main
 
     public function welcome()
     {
+        
         return $this->fetch();
     }
 

@@ -1,33 +1,32 @@
-{include file="public/head"}
-<style>
-    .logo-img{
-        width: 100px;
-        height: 30px;
-    }
-</style>
+{include file='public/head'}
 <body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+        .logo-img{
+            width: 50px;
+        }
+    </style>
     <div class="x-body">
-        <div class="layui-form">
-            <table id="demo" lay-filter="banner"></table>
-        </div>
+        <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
+                {if $role_id <= '144'}
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加轮播图','bannerAdd.html',800,480)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加轮播图
-                </button>
-                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
-                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                {/if}
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加规格','unintAdd.html?shop_goods_id={$shop_goods_id}',660,400)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加规格
                 </button>
             </div>
         </script>
     </div>
 </body>
-{include file="public/foot"}
-<script>
-    var tableIns;
+{include file='public/foot'}
+<script type="text/javascript">
+	var tableIns;
     layui.use(['laydate', 'form', 'table'], function () {
         var table = layui.table, laydate = layui.laydate, form = layui.form;
         /**
@@ -37,37 +36,33 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/banner/index' //数据接口
+            , url: '/admin/shop_goods_attr/unintList?shop_goods_id='+{$shop_goods_id} //数据接口
             , page: true //开启分页
             , limit: 20
-            , id: 'banner'
+            , id: 'test'
             , cols: [
                 [ //表头
-                    { type: 'checkbox', fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'title', title: '标题', width: '15%' }
-                    , { field: 'img', title: '轮播图', width: '20%',
-                        templet:function(d){
-                            return '<img class="logo-img" src="'+d.thumb+'"/>';
-                        }
-                    }
-                    , { field: 'position_name', title: '轮播位置', width: '15%' }
-                    , { field: 'area', title: '所属站点', width: '15%',
-                        templet:function(d){
-                            var can_used = '总站';
-                            if(d.county){
-                                can_used = d.province_name + '-' + d.city_name + '-' + d.county_name;
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: '序号', width: '8%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'id', title: 'ID', width: '8%' }
+                    , { field: 'name', title: '规格名称', width: '15%' }
+                    , { field: 'price', title: '市场价', width: '10%'}
+                    , { field: 'shop_price', title: '商铺价', width: '10%'}
+                    , { field: 'thumb',title: '缩略图', width:'15%',
+                        templet: function(d){
+                            if(d.thumb){
+                                var img = '<img src="__public__'+d.thumb+'" class="logo-img" />'
+                            }else{
+                                var img = '暂无缩略图';
                             }
-                            return can_used;
+                            return img;
                         }
                     }
-                    , { field: 'sort', title: '排序', width: '10%', }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',width: '10%',
+                        field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑轮播图\',\'/admin/banner/bannerEdit?id=' + d.id + '\',800,480);">编辑</button>'+
-                            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑规格\',\'/admin/shop_goods_attr/unintEdit?id=' + d.id + '\',660,400);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
@@ -77,7 +72,7 @@
         /**
          * 监听批量删除 
         */
-        table.on('toolbar(banner)', function (obj) {
+        table.on('toolbar(test)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
             var ids = [];
             switch (obj.event) {
@@ -100,7 +95,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/banner/bannerDel', { id: argument }, function (j) {
+                $.post('/admin/shop_goods_attr/deleteAttr', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -117,7 +112,7 @@
     */
     function delUser(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/banner/bannerDel', { id: id }, function (j) {
+            $.post('/admin/shop_goods_attr/deleteAttr', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();
@@ -129,5 +124,4 @@
         });
     }
 </script>
-
 </html>

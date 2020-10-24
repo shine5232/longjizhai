@@ -44,12 +44,11 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'name', title: '属性名称', width: '10%' }
+                    , { field: 'name', title: '属性名称', width: '15%' }
                     , { field: 'price', title: '市场价', width: '10%'}
                     , { field: 'shop_price', title: '商铺价', width: '10%'}
-                    , { field: 'specs', title: '属性规格', width: '10%'}
                     , { field: 'unit', title: '单位名称', width: '10%'}
-                    , { field: 'thumb',title: '缩略图', width:'10%',
+                    , { field: 'thumb',title: '缩略图', width:'15%',
                         templet: function(d){
                             if(d.thumb){
                                 var img = '<img src="__public__'+d.thumb+'" class="logo-img" />'
@@ -63,8 +62,7 @@
                     , {
                         field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/shop_goods_attr/attrEdit?id=' + d.id + '\',860,500);">编辑</button>'+
-                            '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/shop_goods_attr/attrEdit?id=' + d.id + '\',860,500);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }

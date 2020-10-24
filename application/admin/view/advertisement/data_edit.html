@@ -1,0 +1,241 @@
+{include file='public/head'}
+
+<body>
+    <style media="screen" type="text/css">
+        header {
+            color: black;
+        }
+
+        .layui-upload-img{
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+    </style>
+    <div class="x-body">
+        <div class="layui-form" id="mainForm" style="margin-right: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="title"
+                        placeholder="请输入标题" type="text" value="{$data.title}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">广告位置</label>
+                <div class="layui-input-block">
+                    <select name="advertisement_id" lay-verify="required">
+                        <option value="">请选择</option>
+                        {foreach $advertisement as $key=>$vo}
+                        <option value="{$vo['id']}" {if condition="$vo['id'] == $data['advertisement_id']"}selected{/if}>{$vo['name']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属地区</label>
+                <div class="layui-input-inline">
+					<select name="province" lay-filter="province" id="province" lay-verify="required">
+						<option value="">请选择省</option>
+						{volist name='province' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['province']"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="city" lay-filter="city" id="city" lay-verify="required">
+                        <option value="">请选择市</option>
+                        {volist name='city' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['city']"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select name="county" lay-filter="county" id="county" lay-verify="required">
+                        <option value="">请选择区/县</option>
+                        {volist name='county' id='vo'}
+						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['county']"}selected{/if}>{$vo.region_name}</option>
+						{/volist}
+					</select>
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">链接地址</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="url"
+                        placeholder="请输入链接地址" type="text" value="{$data.url}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-block" style="display: flex;">
+                    <button type="button" class="layui-btn upload-img">
+                        <i class="layui-icon">&#xe67c;</i>轮播图
+                    </button>
+                    <div style="color: #999;margin-left: 5px;">
+                        <p>(移动端:200px*100px)</p>
+                        <p>(PC端:200px*100px)</p>
+                    </div>
+                    <img class="layui-upload-img" id="thumb" src="{$data.img}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">有效期(不选:永久有效)</label>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" name="start_time" class="layui-input" id="test5" placeholder="请选择开始时间" value="{$data.start_time}" />
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" name="end_time" class="layui-input" id="test6" placeholder="请选择结束时间" value="{$data.end_time}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排&nbsp;&nbsp;&nbsp;&nbsp;序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" name="sort"
+                        placeholder="排序数值越大排列越靠前" type="text" value="{$data.sort}" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="status" lay-skin="switch" lay-text="正常|禁用" value="1" {if condition="$data.status == 1"}checked{/if} >
+                  </div>
+            </div>
+            <input type="hidden" name="img" value="{$data.img}" />
+            <input type="hidden" name="id" value="{$data.id}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+    layui.use(['form', 'layer', 'upload','laydate'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload,laydate = layui.laydate;
+        laydate.render({
+            elem: '#test5'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+        laydate.render({
+            elem: '#test6'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+        /**
+        * 监听省份选择
+        */
+        form.on('select(province)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2 
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    if(res.length > 0){
+                        var option = '<option value="">请选择市</option>';
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                        $('#city').html(option);
+                        $('#county').html('<option value="">请选择区/县</option>');
+                        form.render('select');
+                    }
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
+        /**
+        * 监听城市选择
+        */
+        form.on('select(city)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2,
+                is_open:2,
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    if(res.length > 0){
+                        var option = '<option value="">请选择区/县</option>';
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                        $('#county').html(option);
+                        form.render('select');
+                    }
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
+        form.on('submit(toSubmit)', function (data) {
+            if(data.field.img == ''){
+                layer.msg('请选择图片',{icon:5,time:1000});
+                return false;
+            }
+            var params = {
+                id:data.field.id,
+				title: data.field.title,
+				img: data.field.img,
+                advertisement_id:data.field.advertisement_id,
+                province:data.field.province,
+                city:data.field.city,
+                county:data.field.county,
+				sort: data.field.sort,
+				url: data.field.url,
+                status:data.field.status,
+                start_time:data.field.start_time,
+                end_time:data.field.end_time,
+			};
+			$.post('/admin/advertisement/dataEdit', params, function (data) {
+				var res = data.data;
+				if (data.code == 200) {
+					layer.msg('修改成功', {
+						icon: 1,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				} else {
+					layer.msg('修改失败', {
+						icon: 5,
+						time: 1000
+					}, function () {
+						x_admin_close();
+						parent.location.reload();
+					});
+				}
+			}, 'json');
+        });
+        var uploadInst = upload.render({
+            elem: '.upload-img',
+            url: '/api/file/upload?type=brands',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                obj.preview(function (index, file, result) {
+                    $('#thumb').attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    $("input[name='img']").val(res.url);
+                    $('#thumb').show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    });
+</script>
+
+</html>

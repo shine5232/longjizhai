@@ -36,9 +36,9 @@
                             </tr>
                             <tr>
                                 <td class="title">订单金额：</td>
-                                <td class="cont">{$order['money']}</td>
+                                <td class="cont">&yen;{$order['money']}</td>
                                 <td class="title">支付金额：</td>
-                                <td class="cont">{$order['pay_money']}</td>
+                                <td class="cont">&yen;{$order['pay_money']}</td>
                             </tr>
                             <tr>
                                 <td class="title">积分抵扣：</td>
@@ -116,10 +116,10 @@
                                 <td>{$v['name']}</td>
                                 <td><img class="logo-img" src="__public__{$v['thumb']}" alt=""></td>
                                 <td>{$v['attr_name']}</td>
-                                <td>{$v['goods_num']}</td>
-                                <td>{$v['shop_price']}</td>
-                                <td>{$v['specs']} {$v['unit']}</td>
-                                <td>{$v['goods_num']*$v['shop_price']}</td>
+                                <td>{$v['goods_num']} {$v['unit']}</td>
+                                <td>&yen;{$v['shop_price']}</td>
+                                <td>{$v['unint_name']}</td>
+                                <td>&yen;{$v['goods_num']*$v['shop_price']}</td>
                             </tr>
                             {/foreach}
                         </tbody>
