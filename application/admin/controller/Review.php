@@ -3,7 +3,7 @@
 namespace app\admin\controller;
 
 use \think\Db;
-use app\admin\model\ReviewUser as ReviewModel;
+use app\admin\model\CommentUser as CommentUserModel;
 
 class Review extends Main
 {
@@ -21,20 +21,19 @@ class Review extends Main
             $page_start = ($page - 1) * $limit;
             $where = '';
             if ($is_reply == 1) {
-                $where = ' AND reply IS NOT NULL';
+                $where = ' AND replay IS NOT NULL';
             } else {
-                $where = ' AND reply IS NULL';
+                $where = ' AND replay IS NULL';
             }
             $sql = "SELECT A.content,A.create_time,B.uname,A.id
-                FROM lg_review_user A 
+                FROM lg_comment_user A 
                 INNER JOIN lg_member B on A.uid = B.id
-                WHERE A.type = " . $type . $where . "
+                WHERE B.type = " . $type . $where . "
                 ORDER BY A.id DESC
                 limit $page_start,$limit";
             // var_dump($sql);die;
             $data = Db::query($sql);
-            $sql1 = "SELECT COUNT(1) AS count FROM lg_review_user A 
-        WHERE A.type = " . $type . $where;
+            $sql1 = "SELECT COUNT(1) AS count FROM lg_comment_user A  INNER JOIN lg_member B on A.uid = B.id WHERE B.type = " . $type . $where;
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
@@ -54,11 +53,10 @@ class Review extends Main
         if(request()->isPost()){
             $post =  $this->request->post();
             $id = $post['id'];
-            $ReviewModel = new ReviewModel;
+            $post['replay_time'] = date('Y-m-d H:i:s');
+            $CommentUserModel = new CommentUserModel;
             // save方法第二个参数为更新条件
-            $res = $ReviewModel->save($post, ['id', $id]);
-            // var_dump(Db::name('review_user')->getLastSql());
-            // die;
+            $res = $CommentUserModel->save($post, ['id', $id]);
             if ($res) {
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = 'success';
@@ -67,17 +65,16 @@ class Review extends Main
         }else{
             $id  = $this->request->get('id');
             // var_dump($id);
-            $data = Db::name('review_user')
+            $data = Db::name('comment_user')
                 ->field('a.*,b.uname')
                 ->alias('a')
-                ->join('member b', 'a.uid = b.id')
+                ->join('member b', 'a.uid = b.id','INNER')
                 ->where('a.id', $id)
                 ->find();
-            // var_dump(db::name('review_user')->getLastSql());die;
-            $img = explode(',', $data['review_img']);
+            $img = Db::name('comment_user_img')->where('comment_user_id',$id)->field('comment_img')->select();
             $this->assign('data', $data);
             $this->assign('img', $img);
-            if (!$data['reply']) {
+            if (!$data['replay']) {
                 return $this->fetch('reply');
             }
             return $this->fetch('detail');

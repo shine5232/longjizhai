@@ -5,7 +5,6 @@ use think\Db;
 
 class BroadCast extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
      * 根据城市获取公告信息
      */

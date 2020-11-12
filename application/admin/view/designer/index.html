@@ -50,22 +50,10 @@
                     { type: 'checkbox', fixed: 'left',width:'4%' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'name', title: '设计师', width: '8%' }
-                    , { field: 'rank', title: '会员等级', width: '10%',
-                        templet:function(d){
-                            if(d.rank_id == '1'){
-                                return '银牌会员';
-                            }else if(d.rank_id == '2'){
-                                return '金牌会员';
-                            }else if(d.rank_id == '3'){
-                                return '钻石会员';
-                            }else{
-                                return '';
-                            }
-                        }
-                    }
+                    , { field: 'rank_name', title: '会员等级', width: '10%',}
                     , { field: 'company_name', title: '所属公司', width: '11%', }
                     , { field: 'mobile', title: '手机', width: '10%' }
-                    , { field: 'city', title: '城市', width: '10%' }
+                    , { field: 'area', title: '城市', width: '10%' }
                     , { field: 'school', title: '毕业院校', width: '10%' }
                     , { field: 'create_time', title: '创建时间', width: '12%' }
                     , { field: 'zong', title: '总站', width: '5%', }

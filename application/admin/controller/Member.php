@@ -54,7 +54,7 @@ class Member extends Main
             }
             $sql1 = "SELECT A.*,B.rank_name,C.uname AS topname,A.province AS province_name,A.city AS city_name,A.county AS county_name FROM lg_member A
                     INNER JOIN lg_member_rank B ON A.rank_id = B.id
-                    LEFT JOIN lg_member C ON A.superior_id = C.id
+                    LEFT JOIN lg_member C ON A.superior_id = C.uid
                     WHERE $where
                     ORDER BY A.id DESC 
                     limit $page_start, $limit";
@@ -110,6 +110,46 @@ class Member extends Main
             $id = $post['id'];
             $post['update_time']  = date('Y-m-d H:i:s');
             unset($post['id']);
+            $type = $post['type'];
+            $has = false;
+            if($type == '1'){
+                $has = Db::name('mechanic')->where('uid',$id)->find();
+            }elseif($type == '2'){
+                $has = Db::name('gongzhang')->where('uid',$id)->find();
+            }elseif($type == '3'){
+                $has = Db::name('designer')->where('uid',$id)->find();
+            }elseif($type == '4'){
+                $has = Db::name('company')->where('uid',$id)->find();
+            }elseif($type == '5'){
+                $has = Db::name('shop')->where('uid',$id)->find();
+            }
+            if($has){
+                $this->ret['msg'] = '该类型下账号已存在';
+                return json($this->ret);
+            }else{
+                $mechanic = [
+                    'uid'       =>  $id,
+                    'province'  =>  $post['province'],
+                    'city'      =>  $post['city'],
+                    'county'    =>  $post['county'],
+                    'name'      =>  $post['realname'],
+                    'mobile'    =>  $post['mobile'],
+                    'create_time'=> date('Y-m-d H:i:s'),
+                ];
+                if($type == '1'){
+                    Db::name('mechanic')->insert($mechanic);
+                }elseif($type == '2'){
+                    Db::name('gongzhang')->insert($mechanic);
+                }elseif($type == '3'){
+                    Db::name('designer')->insert($mechanic);
+                }elseif($type == '4'){
+                    Db::name('company')->insert($mechanic);
+                }elseif($type == '5'){
+                    unset($mechanic['name']);
+                    $mechanic['user']=$post['realname'];
+                    Db::name('shop')->insert($mechanic);
+                }
+            }
             $db = Db::name('member')->where('id', $id)->update($post);
             if ($db) {
                 $this->ret['code'] = 200;

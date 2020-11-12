@@ -38,12 +38,8 @@
             id: 'test',
             cols: [
                 [ //表头
+                    {field: 'id', title: '序号', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}},
                     {
-                        field: 'region_id',
-                        title: 'ID',
-                        width: '10%',
-                        fixed: 'left'
-                    }, {
                         field: 'region_name',
                         title: '省份',
                         width: '30%'

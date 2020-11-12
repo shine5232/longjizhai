@@ -52,23 +52,11 @@
                     , { field: 'name', title: '公司名称', width: '8%' }
                     , { field: 'short_name', title: '公司简称', width: '8%', }
                     , { field: 'uname', title: '账号', width: '8%', }
-                    , { field: 'rank', title: '会员等级', width: '10%',
-                        templet:function(d){
-                            if(d.rank_id == '1'){
-                                return '银牌会员';
-                            }else if(d.rank_id == '2'){
-                                return '金牌会员';
-                            }else if(d.rank_id == '3'){
-                                return '钻石会员';
-                            }else{
-                                return '';
-                            }
-                        }
-                    }
+                    , { field: 'rank_name', title: '会员等级', width: '10%',}
                     , { field: 'superior_id', title: '上级会员', width: '8%'}
                     , { field: 'subor', title: '下级数量', width: '8%'}
                     , { field: 'phone', title: '手机', width: '8%' }
-                    , { field: 'city', title: '城市', width: '8%' }
+                    , { field: 'area', title: '城市', width: '8%' }
                     , { field: 'create_time', title: '创建时间', width: '8%' }
                     , { field: 'endtime', title: '截止时间', width: '8%' }
                     , { field: 'zong', title: '总站', width: '5%', }

@@ -110,7 +110,7 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=3' + '\',400,240);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'查看案例\',\'/admin/check/lookCases?id=' + d.id + '\',800,440);">查看</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=3' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -245,7 +245,7 @@
                     , {
                         field: 'handle', title: '操作',width:'10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=8' + '\',400,240);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'查看个人信息\',\'/admin/check/lookUser?id=' + d.id + '&type=8' + '\',800,440);">查看</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=8' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }

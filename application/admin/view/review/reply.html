@@ -14,7 +14,7 @@
 	<div class="x-body">
 		<div class="layui-form">
 			<div class="layui-form-item">
-				<label class="layui-form-label">技工</label>
+				<label class="layui-form-label">被评人员</label>
 				<div class="layui-input-block">
 					<input id="uname" name="uname" autocomplete="off" value="{$data.uname}"
 						class="layui-input" disabled="disabled" />
@@ -31,15 +31,15 @@
 			<div class="layui-form-item logo">
 				<label class="layui-form-label">评论图片</label>
 				{volist name='img' id='vo'}
-					<div class="layui-input-inline" style="display: flex;">
-						<img class="layui-upload-img" id="logo_img" src="{$vo}" />
+					<div class="layui-input-inline" style="display: flex;width: 80px;">
+						<img class="layui-upload-img" id="logo_img" src="{$vo.comment_img}" />
 					</div>
 				{/volist}
 			</div>
 			<div class="layui-form-item">
                 <label class="layui-form-label">回复内容</label>
                 <div class="layui-input-block">
-                    <textarea class="layui-textarea" placeholder="请输入公告内容" id="reply" name="reply"
+                    <textarea class="layui-textarea" placeholder="请输入公告内容" id="reply" name="replay"
                         style="width: 100%;height: 400px;"></textarea>
                 </div>
             </div>	
@@ -75,7 +75,7 @@ KindEditor.ready(function (K) {
 		form.on('submit(toSubmit)', function (data) {
 			var params = {
 				id: data.field.id,
-				reply:data.field.reply
+				replay:data.field.replay
 			};
 			$.post('/admin/review/reply', params, function (data) {
 				var res = data.data;

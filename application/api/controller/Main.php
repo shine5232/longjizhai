@@ -8,6 +8,7 @@ use think\Session;
 
 class Main extends Controller
 {
+    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
      * 解决跨域问题
      */

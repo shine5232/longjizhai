@@ -1,0 +1,111 @@
+{include file="public/head"}
+<style>
+    .upload-img{
+        width: 80px;
+        cursor: pointer;
+    }
+    .title{
+        background: #eee;
+        width: 100px;
+        text-align: right !important;
+    }
+    .cont,.option-title{
+        text-align: left !important;
+    }
+    .layui-input-block{
+        margin-left:0 !important;
+    }
+    .layui-layer-content{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<body>
+    <div class="x-body">
+        <div class="layui-form">
+            <table class="layui-table">
+                <tbody>
+                    <tr>
+                        <td class="title">案例 ID：</td>
+                        <td class="cont">{$cases['id']}</td>
+                        <td class="title">案例标题：</td>
+                        <td class="cont">{$cases['case_title']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">所属地区：</td>
+                        <td class="cont">{$cases['area']}</td>
+                        <td class="title">所属小区：</td>
+                        <td class="cont">{$cases['village_name']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">小区户型：</td>
+                        <td class="cont">{$cases['home']}</td>
+                        <td class="title">装修风格：</td>
+                        <td class="cont">
+                            {if $cases['style'] == '1'}中式
+                            {elseif $cases['style'] == '2'}欧式
+                            {elseif $cases['style'] == '3'}现代
+                            {elseif $cases['style'] == '4'}田园
+                            {elseif $cases['style'] == '5'}地中海
+                            {elseif $cases['style'] == '6'}东南亚
+                            {elseif $cases['style'] == '7'}混搭
+                            {/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="title">案例位置：</td>
+                        <td class="cont">{$cases['position']}</td>
+                        <td class="title">装修价位：</td>
+                        <td class="cont">{$cases['price']}</td>
+                    </tr>
+                    <tr>
+                        <td class="title">上传人员：</td>
+                        <td class="cont">{$cases['realname']}【{$cases['uname']}】</td>
+                        <td class="title">创建时间：</td>
+                        <td class="cont">{$cases['create_time']}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="layui-table">
+                <tbody>
+                    <tr>
+                        <td class="title">案例主图：</td>
+                        <td class="cont" colspan="3">
+                            <img class="upload-img" src="{$cases['thumb']}" onclick="show_img(this)" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="title">案例图片：</td>
+                        <td class="cont" colspan="3">
+                            {foreach $cases_img as $v}
+                            <img class="upload-img" src="{$v.img}" style="margin-right: 10px;" onclick="show_img(this)"/>
+                            {/foreach}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        form.render();
+    });
+    function show_img(e){
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['80%', '80%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div><img src="' + $(e).attr('src') + '" /></div>'
+        });
+    }   
+</script>
+</html>

@@ -28,7 +28,7 @@ class Appointment extends Main
             }
             $sql = "SELECT CASE WHEN A.status = 0 THEN '未处理' WHEN A.status = 1 THEN '预约成功' ELSE '预约失败' END AS status_name,A.status ,A.note,A.name,A.id,B.uname AS appointmented_name,B.mobile AS appointmented_mobile,A.mobile,A.appoint_time,A.content
                 FROM lg_appointment A 
-                INNER JOIN lg_member B ON A.appointmented_uid = B.uid 
+                INNER JOIN lg_member B ON A.appointmented_uid = B.id 
                 WHERE B.type = " . $type . $where . "
                 ORDER BY A.id DESC
                 limit $page_start,$limit";

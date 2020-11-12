@@ -110,6 +110,18 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == '1'){//审核通过
+                        $user = Db::name('cases')->where('id',$id)->field('user_id,type')->find();
+                        if($user['type'] == '1'){//技工
+                            Db::name('mechanic')->where('uid',$user['user_id'])->setInc('case_num',1);
+                        }elseif($user['type'] == '2'){//工长
+                            Db::name('gongzhang')->where('uid',$user['user_id'])->setInc('case_num',1);
+                        }elseif($user['type'] == '3'){//设计师
+                            Db::name('designer')->where('uid',$user['user_id'])->setInc('case_num',1);
+                        }elseif($user['type'] == '4'){//装饰公司
+                            Db::name('company')->where('uid',$user['user_id'])->setInc('case_num',1);
+                        }
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }
@@ -229,6 +241,9 @@ class check extends Main
             return $this->fetch('index');
         }
     }
+    /**
+     * 查看文章详情
+     */
     public function lookArticle(){
         $id = $this->request->get('id');
         $article = Db::name('article')->where('id',$id)->find();
@@ -238,6 +253,43 @@ class check extends Main
         $this->assign('article', $article);
         return $this->fetch('look_article');
     }
+    /**
+     * 查看个人信息
+     */
+    public function lookUser(){
+        $id = $this->request->get('id');
+        $type = $this->request->get('type');
+        die;
+        $article = Db::name('article')->where('id',$id)->find();
+        $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+        $cate = array2Level($cate);
+        $this->assign('cate',$cate);
+        $this->assign('article', $article);
+        return $this->fetch('look_user');
+    }
+    
+    /**
+     * 查看案例
+     */
+    public function lookCases(){
+        $id = $this->request->get('id');
+        $cases = Db::name('cases')->alias('A')
+            ->join('village B','B.id = A.area_id','INNER')
+            ->join('member C','C.id = A.user_id','INNER')
+            ->join('cases_attr D','D.id = A.home_id','INNER')
+            ->join('cases_attr E','E.id = A.position_id','INNER')
+            ->join('cases_attr F','F.id = A.price_id','INNER')
+            ->where(['A.id'=>$id])
+            ->field('A.id,A.case_title,A.area,A.create_time,A.type,A.style,A.thumb,B.village_name,C.uname,C.realname,D.title AS home,E.title AS position,F.title AS price')->find();
+        $cases_img = Db::name('case_img')->where(['case_id'=>$cases['id']])
+            ->order(['sort' => 'DESC', 'id' => 'ASC'])->field('id,img')->select();
+        $this->assign('cases_img',$cases_img);
+        $this->assign('cases', $cases);
+        return $this->fetch('look_cases');
+    }
+    /**
+     * 案例审核
+     */
     public function cases()
     {
         if (request()->isAjax()) {
@@ -258,19 +310,19 @@ class check extends Main
                     FROM (
                         SELECT A.id,A.user_id,A.case_title,A.create_time
                         FROM lg_cases A
-                        WHERE  deleted = 0 AND checked = 0 $where
+                        WHERE  A.deleted = 0 AND A.checked = 0 $where
                         ORDER BY id DESC
                         LIMIT $page_start,$limit
                     )A
-                    INNER JOIN lg_member B ON A.user_id = B.uid
+                    INNER JOIN lg_member B ON A.user_id = B.id
 
                     ";
             // var_dump($sql);die;
             $data = Db::query($sql);
             $sql2 = "SELECT count(1) AS count
                         FROM lg_cases A  
-                        INNER JOIN lg_member B ON A.user_id = B.uid
-                        WHERE  A.deleted = 0 AND checked = 0 $where";
+                        INNER JOIN lg_member B ON A.user_id = B.id
+                        WHERE  A.deleted = 0 AND A.checked = 0 $where";
             $count = Db::query($sql2);
             if ($data) {
                 $this->ret['count'] = $count[0]['count'];
@@ -282,7 +334,6 @@ class check extends Main
             return $this->fetch('index');
         }
     }
-
     public function join()
     {
         if (request()->isAjax()) {

@@ -43,20 +43,15 @@ class Shop extends Main
                 $where['a.county'] = ['eq', $user['county']];
             }
             $data = Db::name('shop')->alias('a')
-                ->join('region b', 'b.region_code = a.province', 'LEFT')
-                ->join('region c', 'c.region_code = a.city', 'LEFT')
-                ->join('region d', 'd.region_code = a.county', 'LEFT')
                 ->join('member e', 'e.id = a.uid', 'LEFT')
+                ->join('member_rank g','g.id = e.rank_id','LEFT')
                 ->join('goods_cate f', 'f.id = a.shop_cate', 'LEFT')
                 ->where($where)
-                ->field('a.*,b.region_name as province_name,c.region_name as city_name,d.region_name as county_name,e.realname,e.mobile,e.uname,e.subor,e.superior_id,e.rank_id,f.title as cate_title')
+                ->field('a.*,e.area,e.realname,e.mobile,e.uname,e.subor,e.superior_id,e.rank_id,f.title as cate_title,g.rank_name')
                 ->order('a.id DESC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop')->alias('a')
-                ->join('region b', 'b.region_code = a.province', 'LEFT')
-                ->join('region c', 'c.region_code = a.city', 'LEFT')
-                ->join('region d', 'd.region_code = a.county', 'LEFT')
                 ->join('member e', 'e.id = a.uid', 'LEFT')
                 ->where($where)
                 ->count();

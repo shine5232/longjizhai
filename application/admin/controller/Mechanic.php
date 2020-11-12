@@ -40,9 +40,7 @@ class Mechanic extends Main
                 $where .= " AND A.county =" . $user['county'];
             }
             $page_start = ($page - 1) * $limit;
-            $sql = "SELECT A.*,
-                        concat(B.region_name,'-',C.region_name,'-',D.region_name) AS city,
-                        E.uname,E.rank_id,F.type_title
+            $sql = "SELECT A.*,E.uname,E.area,F.rank_name
                 FROM (
                     SELECT A.*,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,B.name AS company_name,
@@ -52,12 +50,8 @@ class Mechanic extends Main
                     ORDER BY id DESC
                     limit $page_start,$limit
                 ) A 
-                INNER JOIN lg_region B ON A.province = B.region_code
-                INNER JOIN lg_region C ON A.city = C.region_code
-                INNER JOIN lg_region D ON A.county = D.region_code
                 INNER JOIN lg_member E ON A.uid = E.id
-                INNER JOIN lg_member_type F ON A.level = F.id";
-            // var_dump($sql);die;
+                INNER JOIN lg_member_rank F ON E.rank_id = F.id";
             $data = Db::query($sql);
             $sql1 = "SELECT COUNT(1) AS count FROM lg_mechanic A 
                     INNER JOIN lg_member B ON A.uid = B.uid

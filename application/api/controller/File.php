@@ -4,7 +4,7 @@ namespace app\api\controller;
 use think\Controller;
 use files\Image;
 
-class File extends Controller
+class File extends Main
 {
     /**
      * 文件上传
@@ -48,6 +48,22 @@ class File extends Controller
             return json(array('error' => 1,'msg'=>'上传失败'));
         }
     }
-
+    public function uploadFile(){
+        $file = $this->request->file('file');
+        $data = $this->request->post();
+        if(isset($data['type'])){
+            if($data['type'] == 'cases'){
+                $src = '/uploads/cases';
+            }
+        }else{
+            $src = '/uploads/ping';
+        }
+        $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
+        if($info){
+            $url = '/public'.$src.'/'.$info->getSaveName();
+            return json(array('code' => 200, 'data' => ['url'=>$url],'msg'=>'上传成功'));
+        }
+        return json(array('error' => 0,'msg'=>'上传失败'));
+    }
 }
 

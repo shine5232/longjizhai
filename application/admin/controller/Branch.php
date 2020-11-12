@@ -245,7 +245,7 @@ class Branch extends Controller
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $page_start = ($page - 1) * $limit;
-            $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id . " LIMIT " . $page_start . "," . $limit;
+            $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id . " ORDER BY A.region_sort DESC LIMIT " . $page_start . "," . $limit;
             $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id;
             $data = Db::query($sql);
             $count = Db::query($sql2);
@@ -281,6 +281,9 @@ class Branch extends Controller
                 $res['region_code'] = $region_code + 1;
                 $res['region_short_name'] = $post['region_name'];
                 $res['region_superior_code'] = $post['city'];
+                $res['region_sort'] = $post['region_sort'];
+                $res['self_defined'] = 1;
+                $res['region_level'] = 3;
                 $db = Db::name('region')->insert($res);
                 if ($db) {
                     $this->ret['code'] = 200;

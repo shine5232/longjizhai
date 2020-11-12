@@ -7,8 +7,6 @@ use wechat\Wechat as weixin;
 
 class Wechat extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
-
     /**
      * 微信授权获取用户信息
      */
@@ -25,7 +23,24 @@ class Wechat extends Main
                 $where['A.openid'] = ['eq',$data['openid']];
                 $res = Db::name('member_weixin')->alias('A')
                         ->join('member B','A.openid = B.openid','LEFT')
-                        ->where($where)->field('A.*,B.*,A.id AS wxid')->find();
+                        ->where($where)->field('A.*,B.*,A.id AS wxid,A.openid AS openids,A.sex AS sexs')->find();
+                $res['uper'] = Db::name('member')->where('uid',$res['superior_id'])->value('uname');
+                if($res['type'] == '1'){
+                    $res['typer'] = '技工';
+                }else if($res['type'] == '2'){
+                    $res['typer'] = '工长';
+                }else if($res['type'] == '3'){
+                    $res['typer'] = '设计师';
+                }else if($res['type'] == '4'){
+                    $res['typer'] = '装饰公司';
+                }else if($res['type'] == '5'){
+                    $res['typer'] = '商家';
+                }else if($res['type'] == '6'){
+                    $res['typer'] = '业主';
+                }else{
+                    $res['typer'] = '会员';
+                }
+                $res['get_point'] = _getSignPoint(time(),$res['sign_time'],$res['max_time'],$res['sign_fres']);
                 $this->ret['data'] = $res;
                 $this->ret['code'] = 200;
             }else{

@@ -1,11 +1,10 @@
 <?php
 namespace app\api\controller;
 
-use think\Controller;
+use think\Db;
 
-class GoodsCate extends Controller
+class GoodsCate extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
      * 获取商品分类信息
      */

@@ -6,7 +6,6 @@ use aliyun\Send;
 
 class SendMsg extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
      * 发送短信验证码
      */

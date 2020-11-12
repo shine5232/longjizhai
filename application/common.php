@@ -149,6 +149,13 @@ function getClientIP()
     return $ip;
 }
 /**
+ * 获取当前服务器域名
+ */
+function _getServerName(){
+    $server_url = $_SERVER['SERVER_NAME']?"http://".$_SERVER['SERVER_NAME']:"http://".$_SERVER['HTTP_HOST'];
+    return $server_url;
+}
+/**
  * 获取 IP  地理位置
  * 淘宝IP接口
  * @Return: array
@@ -177,14 +184,14 @@ function _getRegion($parent_code=false,$is_open = false,$all=false){
     if($parent_code){
         $where['region_superior_code'] = $parent_code;
         if($all){
-            $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->select();
+            $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name,is_open')->order('region_sort DESC')->select();
         }else{
             if($is_open){
                 $where['is_open'] = 1;
-                $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->select();
+                $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->order('region_sort DESC')->select();
             }else{
                 $where['is_open'] = 0;
-                $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->select();
+                $data = Db::name('region')->where($where)->field('region_id,region_code,region_name,region_short_name')->order('region_sort DESC')->select();
             }
         }
     }else{
@@ -281,3 +288,181 @@ function _paramArrayToStr($param){
     $str = rtrim($str,'&');
     return $str;
 }
+/**
+ * 计算签到获得积分
+ */
+function _getSignPoint($new_time,$sign_time,$max_time,$sign_fres){
+    if($new_time  > ( $max_time + 86400 )){//超过1天再次签到
+        $point = 1;
+    }else{
+        if($new_time < $max_time){//24小时之内再次签到
+            $point = 0;
+        }else{
+            if($sign_fres == '5'){
+                $point = 1;
+            }else{
+                $point = $sign_fres + 1;
+            }
+        }
+    }
+    return $point;
+}
+/**
+ * 记录用户积分数据
+ */
+function _saveUserPoint($uid,$point,$type,$from,$msg){
+    if($type == 0){
+        $point = '-'.$point;
+    }
+    $insert = [
+        'uid'=>$uid,
+        'point' => $point,
+        'point_from' => $from,
+        'remark' => $msg,
+        'create_time'=>date('Y-m-d H:i:s'),
+    ];
+    $res = Db::name('point_log')->insert($insert);
+    return $res;
+}
+/**
+ * 更新用户积分
+ */
+function _updatePoint($uid,$point,$type){
+    $points = Db::name('member')->where('id',$uid)->value('point');
+    if($type == 0){
+        $upd['point'] = $points - $point;
+    }else{
+        $upd['point'] = $points + $point;
+    }
+    $res = Db::name('member')->where('id',$uid)->update($upd);
+    return $res;
+}
+/**
+ * 检查用户账号是否存在
+ */
+function _checkUserAccount($uname){
+    $user = Db::name('member')->where('uname',$uname)->find();
+    if($user){
+        return true;
+    }else{
+        return false;
+    }
+}
+/**
+ * 更新用户下级数量
+ */
+function _updateSubor($uid,$type){
+    $subor = Db::name('member')->where('id',$uid)->value('subor');
+    if($type == 0){
+        $upd['subor'] = $subor - 1;
+    }else{
+        $upd['subor'] = $subor + 1;
+    }
+    $res = Db::name('member')->where('id',$uid)->update($upd);
+    return $res;
+}
+/**
+ * 更新预约数量
+ */
+function _updateAppointNum($type,$uid,$num){
+    if($type == 'mechanic'){
+        $mechanic = Db::name('mechanic')->where('uid',$uid)->field('yuyue_num')->find();
+        $yuyue_new = (int)$mechanic['yuyue_num'] + $num;
+        $upd = [
+            'yuyue_num' => $yuyue_new,
+        ];
+        return Db::name('mechanic')->where('uid',$uid)->update($upd);
+    }elseif($type == 'gongzhang'){
+        $gongzhang = Db::name('gongzhang')->where('uid',$uid)->field('yuyue_num')->find();
+        $yuyue_new = (int)$gongzhang['yuyue_num'] + $num;
+        $upd = [
+            'yuyue_num' => $yuyue_new,
+        ];
+        return Db::name('gongzhang')->where('uid',$uid)->update($upd);
+    }elseif($type == 'designer'){
+        $designer = Db::name('designer')->where('uid',$uid)->field('yuyue_num')->find();
+        $yuyue_new = (int)$designer['yuyue_num'] + $num;
+        $upd = [
+            'yuyue_num' => $yuyue_new,
+        ];
+        return Db::name('designer')->where('uid',$uid)->update($upd);
+    }
+}
+/**
+ * 更新评价得分
+ */
+function _updateScore($type,$uid,$score1=0,$score2=0,$score3=0,$score4=0,$score5=0){
+    if($type == 'mechanic'){
+        $mechanic = Db::name('mechanic')->where('uid',$uid)->field('score,score1,score2,score3')->find();
+        $score1_new = (int)$mechanic['score1'] + (int)$score1;
+        $score2_new = (int)$mechanic['score2'] + (int)$score2;
+        $score3_new = (int)$mechanic['score3'] + (int)$score3;
+        $score_new = $score1_new + $score2_new + $score3_new;
+        $upd = [
+            'score' => $score_new,
+            'score1'=> $score1_new,
+            'score2'=> $score2_new,
+            'score3'=> $score3_new,
+        ];
+        return Db::name('mechanic')->where('uid',$uid)->update($upd);
+    }elseif($type == 'gongzhang'){
+        $gongzhang = Db::name('gongzhang')->where('uid',$uid)->field('score,score1,score2,score3')->find();
+        $score1_new = (int)$gongzhang['score1'] + (int)$score1;
+        $score2_new = (int)$gongzhang['score2'] + (int)$score2;
+        $score3_new = (int)$gongzhang['score3'] + (int)$score3;
+        $score_new = $score1_new + $score2_new + $score3_new;
+        $upd = [
+            'score' => $score_new,
+            'score1'=> $score1_new,
+            'score2'=> $score2_new,
+            'score3'=> $score3_new,
+        ];
+        return Db::name('gongzhang')->where('uid',$uid)->update($upd);
+    }elseif($type == 'designer'){
+        $designer = Db::name('designer')->where('uid',$uid)->field('score,score1,score2,score3')->find();
+        $score1_new = (int)$designer['score1'] + (int)$score1;
+        $score2_new = (int)$designer['score2'] + (int)$score2;
+        $score3_new = (int)$designer['score3'] + (int)$score3;
+        $score_new = $score1_new + $score2_new + $score3_new;
+        $upd = [
+            'score' => $score_new,
+            'score1'=> $score1_new,
+            'score2'=> $score2_new,
+            'score3'=> $score3_new,
+        ];
+        return Db::name('designer')->where('uid',$uid)->update($upd);
+    }
+}
+/**
+ * 更新评论数量
+ */
+function _updateCommentNum($type,$uid,$num){
+    if($type == 'mechanic'){
+        $mechanic = Db::name('mechanic')->where('uid',$uid)->field('comments')->find();
+        $comments_new = (int)$mechanic['comments'] + $num;
+        $upd = [
+            'comments' => $comments_new,
+        ];
+        return Db::name('mechanic')->where('uid',$uid)->update($upd);
+    }elseif($type == 'gongzhang'){
+        $gongzhang = Db::name('gongzhang')->where('uid',$uid)->field('comments')->find();
+        $comments_new = (int)$gongzhang['comments'] + $num;
+        $upd = [
+            'comments' => $comments_new,
+        ];
+        return Db::name('gongzhang')->where('uid',$uid)->update($upd);
+    }elseif($type == 'designer'){
+        $designer = Db::name('designer')->where('uid',$uid)->field('comments')->find();
+        $comments_new = (int)$designer['comments'] + $num;
+        $upd = [
+            'comments' => $comments_new,
+        ];
+        return Db::name('designer')->where('uid',$uid)->update($upd);
+    }
+}
+/**
+ * 更新案例数量
+ */
+/**
+ * 更新收藏数量
+ */

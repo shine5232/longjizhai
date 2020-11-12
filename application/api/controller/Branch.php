@@ -7,7 +7,6 @@ use think\Validate;
 
 class Branch extends Main
 {
-    protected $ret = ['code'=>0,'msg'=>"",'count'=>0,'data'=>[]];
     /**
      * 分站列表数据
      */

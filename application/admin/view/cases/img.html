@@ -1,5 +1,14 @@
 {include file="public/head"}
-
+<style>
+    .upload-img{
+        cursor: pointer;
+    }
+    .layui-layer-content{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
 <body>
     <div class="x-body">
         <table id="demo" lay-filter="test"></table>
@@ -39,7 +48,7 @@
                         , { field: 'img', title: '图片', width: '30%' ,
                             templet:function(d){
                                 if(d.img){
-                                    var img = '<img src="__public__'+d.img+'" class="logo-img" />';
+                                    var img = '<img src="'+d.img+'" class="upload-img" onclick="show_img(this)" />';
                                 }else{
                                     var img = '暂无图片';
                                 }
@@ -98,7 +107,18 @@
             },'json');
         });
     }
-    
+    function show_img(e){
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['80%', '80%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div><img src="' + $(e).attr('src') + '" /></div>'
+        });
+    }  
    
 </script>
 
