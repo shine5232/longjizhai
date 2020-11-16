@@ -1,5 +1,17 @@
 {include file="public/head"}
-
+<style>
+    .logo-img{
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    .layui-layer-content{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
 <body>
     <div class="x-body">
         <table id="demo" lay-filter="test"></table>
@@ -42,13 +54,16 @@
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'uname', title: '申请人', width: '8%' }
                     , { field: 'type', title: '认证类型', width: '8%' }
-                    , { field: 'region', title: '所属城市', width: '12%', }
+                    , { field: 'area', title: '所属城市', width: '12%', }
                     , { field: 'create_time', title: '申请时间', width: '12%', }
                     , { field: 'credentials_code', title: '证件号', width: '15%', }
-                    , { field: 'credentials_img', title: '证件图片', width: '15%', 
+                    , { field: 'credentials_img1', title: '证件图片', width: '15%', 
                         templet:function(d){
-                                if(d.credentials_img){
-                                    var credentials_img = '<img src="__public__'+d.credentials_img+'" class="logo-img" />';
+                                if(d.credentials_img1){
+                                    var credentials_img = '<img src="'+d.credentials_img1+'" class="logo-img" onclick="show_img(this)" />';
+                                    if(d.credentials_img2){
+                                        credentials_img += '<img src="'+d.credentials_img2+'" class="logo-img" onclick="show_img(this)" />';
+                                    }
                                 }else{
                                     var credentials_img = '暂无图片';
                                 }
@@ -191,7 +206,7 @@
                     , {
                         field: 'handle', title: '操作',width:'10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=6' + '\',400,240);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'查看个人信息\',\'/admin/check/lookUser?id=' + d.id + '&type=6' + '\',800,440);">查看</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=6' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -218,7 +233,7 @@
                     , {
                         field: 'handle', title: '操作',width:'10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=7' + '\',400,240);">审核</button>' ;
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'查看个人信息\',\'/admin/check/lookUser?id=' + d.id + '&type=7' + '\',800,440);">查看</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'审核\',\'/admin/check/edit?id=' + d.id +'&type=7' + '\',400,240);">审核</button>' ;
                             return handle;
                         }
                     }
@@ -255,6 +270,18 @@
        }
         
     });
+    function show_img(e){
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['80%', '80%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div><img src="' + $(e).attr('src') + '" /></div>'
+        });
+    }   
 </script>
 
 </html>

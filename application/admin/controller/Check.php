@@ -33,25 +33,17 @@ class check extends Main
                 $where .= ' AND A.province = '.$user['province'].' AND A.city = '.$user['city'].' AND A.county = '.$user['county'];
             }
             // var_dump($where);die;
-            $sql = "SELECT A.*,CASE WHEN B.region_name IS NULL THEN '总站' ELSE CONCAT(D.region_name,'-',C.region_name,'-',B.region_name) END AS region 
-                    FROM (
-                        SELECT B.uname,credentials_code,credentials_img,CASE WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师'WHEN  A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' END AS type,A.create_time,A.id,B.county,A.uid
+            $sql = "SELECT A.type,B.uname,A.credentials_code,A.credentials_img1,A.credentials_img2,B.area,CASE WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师'WHEN  A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' END AS type,A.create_time,A.id,B.county,A.uid
                         FROM lg_authenticate A
-                        INNER JOIN lg_member B ON A.uid = B.uid
+                        INNER JOIN lg_member B ON A.uid = B.id
                         WHERE  A.status = 0 $where
                         ORDER BY A.id DESC
-                        LIMIT $page_start,$limit
-                    )A
-                    LEFT JOIN lg_region B ON A.county = B.region_code
-                    LEFT JOIN lg_region C ON B.region_superior_code = C.region_code
-                    LEFT JOIN lg_region D ON C.region_superior_code = D.region_code
-
-                    ";
-            // var_dump($sql);die;
+                        LIMIT $page_start,$limit";
+            //var_dump($sql);die;
             $data = Db::query($sql);
             $sql2 = "SELECT count(1) AS count
                         FROM lg_authenticate A  
-                        INNER JOIN lg_member B ON A.uid = B.uid
+                        INNER JOIN lg_member B ON A.uid = B.id
                         WHERE  A.status = 0 $where";
             $count = Db::query($sql2);
             if ($data) {
@@ -81,6 +73,7 @@ class check extends Main
 
             }
             if ($type == 1) {
+                $uid = $this->request->get('uid');
                 $res = Db::name('authenticate')
                     ->where('id', $id)
                     ->update($post);
@@ -90,7 +83,10 @@ class check extends Main
                     if ($post['checked'] == 1) {
                         $set = Db::name('settings')->where('id = 2')->find();
                         $data =  unserialize($set['val']);
-                        Db::name('member')->where('uid', $uid)->setInc('point', $data['card']);
+                        _updatePoint($uid,$data['card'],1);
+                        $msg = '实名认证：奖励积分';
+                        _saveUserPoint($uid,$data['card'],1,'4',$msg);
+                        Db::name('member')->where('id',$uid)->update(['authed'=>1]);
                     }
                 }
                 return json($this->ret);
@@ -113,13 +109,13 @@ class check extends Main
                     if($post['checked'] == '1'){//审核通过
                         $user = Db::name('cases')->where('id',$id)->field('user_id,type')->find();
                         if($user['type'] == '1'){//技工
-                            Db::name('mechanic')->where('uid',$user['user_id'])->setInc('case_num',1);
+                            _updateCasesNum('mechanic',$user['user_id'],1);
                         }elseif($user['type'] == '2'){//工长
-                            Db::name('gongzhang')->where('uid',$user['user_id'])->setInc('case_num',1);
+                            _updateCasesNum('gongzhang',$user['user_id'],1);
                         }elseif($user['type'] == '3'){//设计师
-                            Db::name('designer')->where('uid',$user['user_id'])->setInc('case_num',1);
+                            _updateCasesNum('designer',$user['user_id'],1);
                         }elseif($user['type'] == '4'){//装饰公司
-                            Db::name('company')->where('uid',$user['user_id'])->setInc('case_num',1);
+                            _updateCasesNum('company',$user['user_id'],1);
                         }
                     }
                     $this->ret['code'] = 200;
@@ -259,15 +255,47 @@ class check extends Main
     public function lookUser(){
         $id = $this->request->get('id');
         $type = $this->request->get('type');
-        die;
-        $article = Db::name('article')->where('id',$id)->find();
-        $cate = Db::name('article_cate')->where('status',1)->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
-        $cate = array2Level($cate);
-        $this->assign('cate',$cate);
-        $this->assign('article', $article);
+        $where['A.id'] = $id;
+        if($type == '6'){
+            $data = Db::name('designer')->alias('A')
+                ->join('member B','B.id = A.uid','LEFT')
+                ->where($where)->field('B.id,B.thumb,B.type_lock,B.avatar_lock,B.city_lock,B.area,B.uname,A.name,A.mobile,A.create_time')
+                ->find();
+        }else if($type == '7'){
+            $data = Db::name('gongzhang')->alias('A')
+                ->join('member B','B.id = A.uid','LEFT')
+                ->where($where)->field('B.id,B.thumb,B.type_lock,B.avatar_lock,B.city_lock,B.area,B.uname,A.name,A.mobile,A.create_time')
+                ->find();
+        }else if($type == '8'){
+            $data = Db::name('mechanic')->alias('A')
+                ->join('member B','B.id = A.uid','LEFT')
+                ->where($where)->field('B.id,B.thumb,B.type_lock,B.avatar_lock,B.city_lock,B.area,B.uname,A.name,A.mobile,A.create_time')
+                ->find();
+        }
+        $this->assign('type',$type);
+        $this->assign('data', $data);
         return $this->fetch('look_user');
     }
-    
+    /**
+     * 修改用户锁定状态
+     */
+    public function updateStatus(){
+        $id = $this->request->param('id');
+        $type = $this->request->param('type');
+        $test = Db::name('member')->where('id', $id)->find();
+        $data = [];
+        if ($test) {
+            $data = [
+                $type        =>  $test[$type] == 0 ? 1 : 0,
+                'update_time'   =>  date('Y-m-d H:i:s')
+            ];
+        }
+        $result = Db::name('member')->where('id', $id)->update($data);
+        if ($result) {
+            $this->ret['code'] = 200;
+        }
+        return json($this->ret);
+    }
     /**
      * 查看案例
      */

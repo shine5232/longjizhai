@@ -44,7 +44,7 @@ class Company extends Main
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,
                         CASE WHEN A.checked = 0 THEN '未审' WHEN A.checked = 1 THEN '通过' ELSE '未过' END AS checked_title
                         FROM lg_company A
-                    WHERE A.deleted = 0 " . $where . "
+                    WHERE A.deleted = 0  AND A.checked = 1" . $where . "
                     ORDER BY id DESC
                     limit $page_start,$limit
                 ) A 

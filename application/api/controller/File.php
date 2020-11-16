@@ -48,12 +48,19 @@ class File extends Main
             return json(array('error' => 1,'msg'=>'上传失败'));
         }
     }
+    /**
+     * 移动端图片上传
+     */
     public function uploadFile(){
         $file = $this->request->file('file');
         $data = $this->request->post();
         if(isset($data['type'])){
             if($data['type'] == 'cases'){
                 $src = '/uploads/cases';
+            }else if($data['type'] == 'avatar'){
+                $src = '/uploads/avatar';
+            }else if($data['type'] == 'auths'){
+                $src = '/uploads/auths';
             }
         }else{
             $src = '/uploads/ping';

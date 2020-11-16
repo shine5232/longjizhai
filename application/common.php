@@ -351,15 +351,12 @@ function _checkUserAccount($uname){
 /**
  * 更新用户下级数量
  */
-function _updateSubor($uid,$type){
-    $subor = Db::name('member')->where('id',$uid)->value('subor');
-    if($type == 0){
-        $upd['subor'] = $subor - 1;
-    }else{
-        $upd['subor'] = $subor + 1;
+function _updateSubor($uid,$type=false){
+    if($type){//减去
+        return Db::name('member')->where(['id'=>$uid])->setDec('subor',1);
+    }else{//增加
+        return Db::name('member')->where(['id'=>$uid])->setInc('subor',1);
     }
-    $res = Db::name('member')->where('id',$uid)->update($upd);
-    return $res;
 }
 /**
  * 更新预约数量
@@ -436,33 +433,154 @@ function _updateScore($type,$uid,$score1=0,$score2=0,$score3=0,$score4=0,$score5
 /**
  * 更新评论数量
  */
-function _updateCommentNum($type,$uid,$num){
-    if($type == 'mechanic'){
-        $mechanic = Db::name('mechanic')->where('uid',$uid)->field('comments')->find();
-        $comments_new = (int)$mechanic['comments'] + $num;
-        $upd = [
-            'comments' => $comments_new,
-        ];
-        return Db::name('mechanic')->where('uid',$uid)->update($upd);
-    }elseif($type == 'gongzhang'){
-        $gongzhang = Db::name('gongzhang')->where('uid',$uid)->field('comments')->find();
-        $comments_new = (int)$gongzhang['comments'] + $num;
-        $upd = [
-            'comments' => $comments_new,
-        ];
-        return Db::name('gongzhang')->where('uid',$uid)->update($upd);
-    }elseif($type == 'designer'){
-        $designer = Db::name('designer')->where('uid',$uid)->field('comments')->find();
-        $comments_new = (int)$designer['comments'] + $num;
-        $upd = [
-            'comments' => $comments_new,
-        ];
-        return Db::name('designer')->where('uid',$uid)->update($upd);
+function _updateCommentNum($model,$uid,$num,$type=false){
+    if($type){//减去
+        return Db::name($model)->where(['uid'=>$uid])->setDec('comments',$num);
+    }else{//增加
+        return Db::name($model)->where(['uid'=>$uid])->setInc('comments',$num);
     }
 }
 /**
  * 更新案例数量
  */
+function _updateCasesNum($model,$uid,$num,$type=false){
+    if($type){//减去
+        return Db::name($model)->where(['uid'=>$uid])->setDec('case_num',$num);
+    }else{//增加
+        return Db::name($model)->where(['uid'=>$uid])->setInc('case_num',$num);
+    }
+}
 /**
  * 更新收藏数量
  */
+function _updateCollectNum($model,$uid,$num,$type=false){
+    if($type){//减去
+        return Db::name($model)->where(['uid'=>$uid])->setDec('collect_num',$num);
+    }else{//增加
+        return Db::name($model)->where(['uid'=>$uid])->setInc('collect_num',$num);
+    }
+}
+/**
+ * 根据用户id获取积分排行名次(100以外用100+表示)
+ */
+function _getMyPointsRank($uid){
+    $rank = '100+';
+    $where = [
+        'status'=>['neq',1],
+        'subscribe'=>1,
+    ];
+    $data = Db::name('member')->where($where)->field('id,point')->order('point DESC')->limit(0,100)->select();
+    if($data){
+        foreach($data as $key=>$v){
+            if($v['id'] == $uid){
+                $rank = $key+1;
+                break;
+            }
+        }
+    }
+    return $rank;
+}
+/**
+ * 根据用户id获取会员排行榜名次(100以外用100+表示)，统计以一级会员数量为基础
+ */
+function _getMyUsersRank($uid){
+    $rank = '100+';
+    $where = [
+        'status'=>['neq',1],
+        'subscribe'=>1,
+    ];
+    $data = Db::name('member')->where($where)->field('id,subor')->order('subor DESC')->limit(0,100)->select();
+    if($data){
+        foreach($data as $key=>$v){
+            if($v['id'] == $uid){
+                $rank = $key+1;
+                break;
+            }
+        }
+    }
+    return $rank;
+}
+/**
+ * 根据openid获取用户数据
+ */
+function _getUserInfoByOpenid($openid){
+    $where['A.openid'] = ['eq',$openid];
+    $res = Db::name('member_weixin')->alias('A')
+            ->join('member B','A.openid = B.openid','LEFT')
+            ->where($where)->field('A.*,B.*,A.id AS wxid,A.openid AS openids,A.sex AS sexs')->find();
+    $res['uper'] = Db::name('member')->where('uid',$res['superior_id'])->value('uname');
+    if($res['type'] == '1'){
+        $res['typer'] = '技工';
+    }else if($res['type'] == '2'){
+        $res['typer'] = '工长';
+    }else if($res['type'] == '3'){
+        $res['typer'] = '设计师';
+    }else if($res['type'] == '4'){
+        $res['typer'] = '装饰公司';
+    }else if($res['type'] == '5'){
+        $res['typer'] = '商家';
+    }else if($res['type'] == '6'){
+        $res['typer'] = '业主';
+    }else{
+        $res['typer'] = '会员';
+    }
+    $res['thumb'] = _getServerName().$res['thumb'];
+    //今日可获得的签到积分
+    $res['get_point'] = _getSignPoint(time(),$res['sign_time'],$res['max_time'],$res['sign_fres']);
+    //积分排行榜名次
+    $res['point_rank'] = _getMyPointsRank($res['id']);
+    //会员排行榜名次
+    $res['users_rank'] = _getMyUsersRank($res['id']);
+    return $res;
+}
+/**
+ * 根据用户uid获取下级会员数据
+ */
+function _getMyUsersByUid($uid,$first=0,$page_start=0,$limit=10){
+    $where = [
+        'A.status' => ['neq',1],
+        'A.subscribe' => 1,
+    ];
+    if($first == 1){//一级会员
+        $where['A.superior_id'] = $uid;
+    }
+    if($first == 2){//二级会员
+        $where['A.superior2_id'] = $uid;
+    }
+    if($first == 3){//三级会员
+        $where['A.superior3_id'] = $uid;
+    }
+    $data = Db::name('member')->alias('A')
+        ->join('member_weixin B','B.openid = A.openid','INNER')
+        ->where($where)->field("A.id,A.subor,A.superior_id,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
+    if($data){
+        foreach($data as $key=>$v){
+            $data[$key]['uper'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
+        }
+    }
+    return $data;
+}
+/**
+ * 根据城市id获取同城会员数据
+ */
+function _getUsersByCounty($uid,$county,$page_start=0,$limit=10){
+    $where = [
+        'A.status' => ['neq',1],
+        'A.subscribe' => 1,
+        'A.uid' => ['neq',$uid],
+    ];
+    if($county){
+        $where['A.county'] = $county;
+    }else{
+        $where['A.county'] = ['eq',null];
+    }
+    $data = Db::name('member')->alias('A')
+        ->join('member_weixin B','B.openid = A.openid','INNER')
+        ->where($where)->field("A.id,A.subor,A.superior_id,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
+    if($data){
+        foreach($data as $key=>$v){
+            $data[$key]['uper'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
+        }
+    }
+    return $data;
+}

@@ -16,30 +16,8 @@ class Member extends Main
                 $this->ret['msg'] = '缺少参数openid';
                 return json($this->ret);
             }
-            $openid = $post['openid'];
-            $where['A.openid'] = ['eq',$openid];
-            $data = Db::name('member_weixin')->alias('A')
-                    ->join('member B','A.openid = B.openid','LEFT')
-                    ->where($where)->field('A.*,B.*,A.id AS wxid,A.openid AS openids,A.sex AS sexs')->find();
+            $data = _getUserInfoByOpenid($post['openid']);
             if($data){
-                $data['uper'] = Db::name('member')->where('uid',$data['superior_id'])->value('uname');
-                if($data['type'] == '1'){
-                    $data['typer'] = '技工';
-                }else if($data['type'] == '2'){
-                    $data['typer'] = '工长';
-                }else if($data['type'] == '3'){
-                    $data['typer'] = '设计师';
-                }else if($data['type'] == '4'){
-                    $data['typer'] = '装饰公司';
-                }else if($data['type'] == '5'){
-                    $data['typer'] = '商家';
-                }else if($data['type'] == '6'){
-                    $data['typer'] = '业主';
-                }else{
-                    $data['typer'] = '会员';
-                }
-                //今日可获得的签到积分
-                $data['get_point'] = _getSignPoint(time(),$data['sign_time'],$data['max_time'],$data['sign_fres']);
                 $this->ret['code'] = 200;
                 $this->ret['data'] = $data;
             }else{
@@ -188,7 +166,13 @@ class Member extends Main
                 'uid'   =>  $post['wxid'],
                 'sex'   =>  $post['sex'],
                 'source' => $post['pid']>0?4:2,
+                'city_lock'=>1,
+                'type_lock'=>1,
             ];
+            if($type<=3){
+                $insert['avatar_lock'] = 1;
+                $insert['thumb'] = $post['fileLists'][0];
+            }
             $member_id = Db::name('member')->insertGetId($insert);
             if($member_id){
                 _updatePoint($member_id,10,1);
@@ -461,5 +445,193 @@ class Member extends Main
 			}
 		}
 		return $img;
-	}
+    }
+    /**
+     * 获取会员排行榜(前100名)
+     */
+    public function getUsersRank(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            if($page_start <= 10){
+                $data = _getMyUsersByUid($post['uid'],0,$page_start,$limit);
+                if($data){
+                    $this->ret['code'] = 200;
+                    $this->ret['data'] = $data;
+                }else{
+                    $this->ret['msg'] = '获取失败';
+                }
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取我的会员数据
+     */
+    public function getMyUserLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['type']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            $type = (int)$post['type'] + 1;
+            $data = _getMyUsersByUid($post['uid'],$type,$page_start,$limit);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 根据用户uid统计一级、二级、三级会员总数
+     */
+    public function getMyUsersCount(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $data['one'] = $data['two'] = $data['three'] = 0;
+            $where1 = [
+                'superior_id'=>$post['uid'],
+                'status'=>['neq',1],
+                'subscribe'=>1
+            ];
+            $data['one'] = Db::name('member')->where($where1)->count();//一级会员数量
+            $where2 = [
+                'superior2_id'=>$post['uid'],
+                'status'=>['neq',1],
+                'subscribe'=>1
+            ];
+            $data['two'] = Db::name('member')->where($where2)->count();//二级会员数量
+            $where3 = [
+                'superior3_id'=>$post['uid'],
+                'status'=>['neq',1],
+                'subscribe'=>1
+            ];
+            $data['three'] = Db::name('member')->where($where3)->count();//三级会员数量
+            $this->ret['code'] = 200;
+            $this->ret['data'] = $data;
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取同城会员数据
+     */
+    public function getCityUsersLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['county']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            $data = _getUsersByCounty($post['uid'],$post['county'],$page_start,$limit);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 更新技工、工长、设计师头像
+     */
+    public function updateUserThumb(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['fileLists'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $upd = [
+                'thumb' => $post['fileLists'][0],
+                'avatar_lock' => 1,
+            ];
+            $data = Db::name('member')->where('id',$post['uid'])->update($upd);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 会员认证
+     */
+    public function userCertification(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['img1']) || !isset($post['img2'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $insert = [
+                'uid'   =>  $post['uid'],
+                'type'  =>  $post['type'],
+                'province'  =>  $post['province'],
+                'city'      =>  $post['city'],
+                'county'    =>  $post['county'],
+                'credentials_code'  =>  $post['card_num'],
+                'credentials_img1' => $post['img1'],
+                'credentials_img2' => $post['img2'],
+                'create_time'   =>  date('Y-m-d H:i:s'),
+            ];
+            $authenticate = Db::name('authenticate')->where('uid',$post['uid'])->value('id');
+            if($authenticate){
+                $upd = [
+                    'county'    =>  $post['county'],
+                    'credentials_code'  =>  $post['card_num'],
+                    'credentials_img1' => $post['img1'],
+                    'credentials_img2' => $post['img2'],
+                    'update_time'   =>  date('Y-m-d H:i:s'),
+                    'checked'   =>  0,
+                ];
+                $data = Db::name('authenticate')->where('uid',$post['uid'])->update($upd);
+            }else{
+                $data = Db::name('authenticate')->insert($insert);
+            }
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
 }
