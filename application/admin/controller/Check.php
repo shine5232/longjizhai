@@ -377,7 +377,7 @@ class check extends Main
             $sql = "
                         SELECT *
                         FROM lg_joining A
-                        WHERE  checked = 0 $where
+                        WHERE  checked >= 0 $where
                         ORDER BY id DESC
                         LIMIT $page_start,$limit
                    

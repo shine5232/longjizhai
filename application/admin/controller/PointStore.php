@@ -5,27 +5,22 @@ namespace app\admin\controller;
 use \think\Db;
 use \think\Reuquest;
 
-class ShopGoods extends Main
+class PointStore extends Main
 {
     protected $ret = ['code' => 0, 'msg' => "", 'count' => 0, 'data' => []];
     /**
-     * 商家管理-商品列表页面
+     * 积分商城-商品列表页面
      */
     public function goodsLis()
     {
         if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
-            $shop_id = $this->request->param('shop_id', '');
-            $cate_id = $this->request->param('cate_id', '');
-            $name = $this->request->param('name', '');
             $brand_id = $this->request->param('brand_id', '');
+            $name = $this->request->param('name', '');
             $page_start = ($page - 1) * $limit;
-            $where['a.shop_id'] = ['eq', $shop_id];
             $where['a.status'] = ['eq', 0];
-            if ($cate_id) {
-                $where['a.cate_id'] = ['eq', $cate_id];
-            }
+            $where['a.cate'] = ['eq', 8];
             if ($brand_id) {
                 $where['a.brand_id'] = ['eq', $brand_id];
             }
@@ -35,7 +30,7 @@ class ShopGoods extends Main
             $data = Db::name('shop_goods')->alias('a')
                 ->join('brands b', 'b.id = a.brand_id', 'LEFT')
                 ->where($where)
-                ->field('a.id,a.name,a.thumb,a.online,a.cate,a.title,b.name as brand_name')
+                ->field('a.id,a.name,a.thumb,a.online,a.cate,a.title,a.points,b.name as brand_name')
                 ->order('a.id DESC')
                 ->limit($page_start, $limit)
                 ->select();
@@ -62,31 +57,23 @@ class ShopGoods extends Main
         }
     }
     /**
-     * 商家管理-商品搜索页面
+     * 积分商城-商品搜索页面
      */
     public function searchGoods()
     {
-        $cate_id  = $this->request->get('cate_id');
-        $cate = _getGoodsCate(); //获取顶级分类
-        $this->assign('cate', $cate);
-        $this->assign('cate_id', $cate_id);
         return $this->fetch('search_goods');
     }
     /**
-     * 商家管理-商品添加页面
+     * 积分商城-商品添加页面
      */
     public function goodsAdd()
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
-            $cate_id = implode(',',$post['cate_id']);
-            unset($post['cate_id'],$post['imgFile']);
-            $post['style'] = implode(',',$post['style']);
-            $county = Db::name('shop')->where('id', $post['shop_id'])->value('county');
+            unset($post['imgFile']);
             $insert = $post;
-            $insert['cate_id'] = $cate_id;
-            $insert['county'] = $county;
-            $insert['hot']=isset($post['hot'])?1:0;
+            $insert['cate'] = $insert['cate_id'] = $post['cate'];
+            $insert['county'] = 0;
             $insert['online'] = isset($post['online']) ? $post['online'] : 0;
             $insert['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
             $insert['create_time'] = date('Y-m-d H:i:s');
@@ -97,30 +84,31 @@ class ShopGoods extends Main
             }
             return json($this->ret);
         } else {
-            $cate = _getGoodsCate(); //获取顶级分类
-            $shop_id  = $this->request->get('shop_id');
-            $cate_id  = $this->request->get('cate_id');
-            $self_cate = Db::name('shop_cate')->where(['shop_id'=>$shop_id,'status'=>1])->field('id,cate_name')->select();
-            $this->assign('cate', $cate);
-            $this->assign('cate_id', $cate_id);
-            $this->assign('shop_id', $shop_id);
-            $this->assign('self_cate', $self_cate);
+            //根据分类获取品牌数据
+            $brands_id = Db::name('goods_cate')->where('status', 1)->where('id',8)->value('brands');
+            $brands = [];
+            if ($brands_id) {
+                $where = [
+                    'id' => ['in', $brands_id],
+                    'status' => 0
+                ];
+                $brands = Db::name('brands')->where($where)->field('id,name')->select();
+            }
+            $this->assign('brands', $brands);
             return $this->fetch('goods_add');
         }
     }
     /**
-     * 商家管理-商品编辑页面
+     * 积分商城-商品编辑页面
      */
     public function goodsEdit()
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
-            $cate_id = implode(',',$post['cate_id']);
-            unset($post['cate_id'],$post['id'],$post['imgFile']);
-            $post['style'] = implode(',',$post['style']);
+            unset($post['id'],$post['imgFile']);
             $update = $post;
-            $update['cate_id'] = $cate_id;
+            $insert['cate'] = $insert['cate_id'] = $post['cate'];
             $update['hot']=isset($post['hot'])?1:0;
             $update['online'] = isset($post['online']) ? $post['online'] : 0;
             $update['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
@@ -132,19 +120,6 @@ class ShopGoods extends Main
         } else {
             $shop_goods_id  = $this->request->get('id');
             $goods_info = Db::name('shop_goods')->where('id', $shop_goods_id)->find();
-            //根据当前分类获取上级所有分类
-            $pid = $goods_info['cate'];
-            $cate_id = [$goods_info['cate']];
-            $cate = [];
-            while ($pid != 0) {
-                $pid = _getGoodsCate($pid, true);
-                if ($pid != 0) {
-                    $cate_id[] = $pid;
-                }
-                $cate[] = _getGoodsCate($pid);
-            }
-            $cate_id = array_reverse($cate_id);
-            $cate = array_reverse($cate);
             //根据分类获取品牌数据
             $brands_id = Db::name('goods_cate')->where('status', 1)->where('id', $goods_info['cate'])->value('brands');
             $brands = [];
@@ -155,18 +130,13 @@ class ShopGoods extends Main
                 ];
                 $brands = Db::name('brands')->where($where)->field('id,name')->select();
             }
-            $goods_info['style'] = explode(',',$goods_info['style']);
-            $self_cate = Db::name('shop_cate')->where(['shop_id'=>$goods_info['shop_id'],'status'=>1])->field('id,cate_name')->select();
-            $this->assign('cate_id', $cate_id);
-            $this->assign('cate', $cate);
             $this->assign('brands', $brands);
             $this->assign('goods_info', $goods_info);
-            $this->assign('self_cate', $self_cate);
             return $this->fetch('goods_edit');
         }
     }
     /**
-     * 商家管理-商品删除
+     * 积分商城-商品删除
      */
     public function deleteGoods()
     {

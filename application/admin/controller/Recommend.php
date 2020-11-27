@@ -138,8 +138,10 @@ class Recommend extends Main
             $post = $this->request->post();
             $id = $post['id'];
             $status = isset($post['status'])?$post['status']:0;
+            $is_zong = isset($post['is_zong'])?$post['is_zong']:0;
             $upd = $post;
             $upd['status']=$status;
+            $upd['is_zong']=$is_zong;
             $upd['update_time']=date('Y-m-d H:i:s');
             unset($upd['id']);
             $res = Db::name('recommend_data')->where('id',$id)->update($upd);

@@ -47,19 +47,19 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'name', title: '商家名称', width: '15%' }
-                    , { field: 'cate_title', title: '所属分类', width: '8%' }
-                    , { field: 'area', title: '所属城市', width: '8%',}
-                    , { field: 'realname', title: '所属用户', width: '8%'}
+                    , { field: 'name', title: '商家名称', width: '10%' }
+                    , { field: 'cate_title', title: '所属分类', width: '7%' }
+                    , { field: 'area', title: '所属城市', width: '7%',}
+                    , { field: 'realname', title: '所属用户', width: '7%'}
                     , { field: 'uname', title: '账号', width: '8%'}
-                    , { field: 'rank_name', title: '会员等级', width: '10%',}
-                    , { field: 'superior_id', title: '上级会员', width: '8%'}
-                    , { field: 'subor', title: '下级数量', width: '8%'}
+                    , { field: 'rank_name', title: '会员等级', width: '7%',}
+                    , { field: 'superior_id', title: '上级会员', width: '7%'}
+                    , { field: 'subor', title: '下级数量', width: '7%'}
                     , { field: 'mobile', title: '联系电话', width: '8%'}
                     , { field: 'create_time', title: '创建时间', width: '8%', }
                     , { field: 'endtime', title: '终止时间', width: '8%', }
                     , {
-                        field: 'handle', title: '操作',width: '20%',
+                        field: 'handle', title: '操作',width:'25%',
                         templet: function (d) {
                             var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商家商品\',\'/admin/shop_goods/goodsLis?id=' + d.id + '\',1000,500);">商品</button>';
                             if(d.realname){
@@ -67,7 +67,7 @@
                             }else{
                                 var type = '绑定用户';
                             }
-                            handle +='<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\''+type+'\',\'/admin/shop/userAdd?id=' + d.id + '\',800,500);">用户</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品分类\',\'/admin/shop/cateLis?id=' + d.id + '\',1000,580);">分类</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商家\',\'/admin/shop/shopEdit?id=' + d.id + '\',800,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '\',800,580);">推送</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            handle +='<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\''+type+'\',\'/admin/shop/userAdd?id=' + d.id + '\',800,500);">用户</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品分类\',\'/admin/shop/cateLis?id=' + d.id + '\',1000,580);">分类</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商家\',\'/admin/shop/shopEdit?id=' + d.id + '\',800,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商家推送\',\'/admin/shop/recommend?id=' + d.id + '\',800,580);">推送</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }

@@ -455,9 +455,9 @@ function _updateCasesNum($model,$uid,$num,$type=false){
  */
 function _updateCollectNum($model,$uid,$num,$type=false){
     if($type){//减去
-        return Db::name($model)->where(['uid'=>$uid])->setDec('collect_num',$num);
+        return Db::name($model)->where(['user_id'=>$uid])->setDec('collect_num',$num);
     }else{//增加
-        return Db::name($model)->where(['uid'=>$uid])->setInc('collect_num',$num);
+        return Db::name($model)->where(['user_id'=>$uid])->setInc('collect_num',$num);
     }
 }
 /**

@@ -36,9 +36,9 @@
                             </tr>
                             <tr>
                                 <td class="title">订单金额：</td>
-                                <td class="cont">&yen;{$order['money']}</td>
+                                <td class="cont">{if $order['cate'] != 8}&yen;{$order['money']}{else}{$order.money} 积分{/if}</td>
                                 <td class="title">支付金额：</td>
-                                <td class="cont">&yen;{$order['pay_money']}</td>
+                                <td class="cont">{if $order['cate'] != 8}&yen;{$order['pay_money']}{else}{$order.pay_money} 积分{/if}</td>
                             </tr>
                             <tr>
                                 <td class="title">积分抵扣：</td>

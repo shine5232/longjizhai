@@ -40,9 +40,17 @@ class File extends Main
                 }else{
                     return json(array('error'=>1,'msg'=>'文件格式不合法'));
                 }
+            }else if($type == 'video'){
+                //视频上传
+                $src = '/uploads/video';
+                $info = $file->validate(['ext' => 'mp4'])->move(ROOT_PATH . 'public' . $src);
             }
             if($info){
-                $url = '/public'.$src.'/'.$info->getSaveName();
+                if($type == 'article' || $type == 'goods'){
+                    $url = _getServerName().'/public'.$src.'/'.$info->getSaveName();
+                }else{
+                    $url = '/public'.$src.'/'.$info->getSaveName();
+                }
                 return json(array('error' => 0, 'url' => $url,'msg'=>'上传成功'));
             }
             return json(array('error' => 1,'msg'=>'上传失败'));

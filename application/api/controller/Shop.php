@@ -166,4 +166,47 @@ class Shop extends Main
         }
         return json($this->ret);
     }
+    /**
+     * 手机端获取推荐商家数据
+     */
+    public function getRecommendShopLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['county']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            if($post['county']){
+                $where['A.county'] = $post['county'];
+            }else{
+                $where['A.is_zong'] = 1;
+            }
+            $where['A.status'] = 1;
+            $where['A.recommend_id'] = 1;
+            $end_time = date('Y-m-d H:i:s');
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            $data = Db::name('recommend_data')->alias('A')
+                ->join('shop B','B.id = A.object_id','INNER')
+                ->where($where)
+                ->where("A.end_time >= '".$end_time."' OR A.end_time = '' OR B.endtime = ''")
+                ->field('A.object_id AS id,A.img')
+                ->order('A.sort DESC')
+                ->limit($page_start, $limit)
+                ->select();
+            if($data){
+                foreach($data as &$v){
+                    $v['img'] = _getServerName().$v['img'];
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '暂无数据';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
 }

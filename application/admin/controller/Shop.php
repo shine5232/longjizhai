@@ -388,8 +388,10 @@ class Shop extends Main
         if(request()->isPost()){
             $post = $this->request->post();
             $status = isset($post['status'])?$post['status']:0;
+            $is_zong = isset($post['is_zong'])?$post['is_zong']:0;
             $insert = $post;
             $insert['status']=$status;
+            $insert['is_zong']=$is_zong;
             $insert['create_time']=date('Y-m-d H:i:s');
             $res = Db::name('recommend_data')->insert($insert);
             if ($res) {

@@ -28,14 +28,14 @@ class Order extends Main
                 $and = " AND B.uname = '$uname'";
             }
             $data = Db::name('order')->alias('A')
-                ->join('member B','B.uid = A.uid '.$and,'INNER')
-                ->join('shop C','C.id = A.shop_id','INNER')
+                ->join('member B','B.id = A.uid '.$and,'INNER')
+                ->join('shop C','C.id = A.shop_id','LEFT')
                 ->where($where)
                 ->field('A.*,B.uname,C.name AS shop_name')
                 ->order('A.id DESC')->limit($page_start, $limit)->select();
             $count = Db::name('order')->alias('A')
                 ->join('member B','B.uid = A.uid '.$and,'INNER')
-                ->join('shop C','C.id = A.shop_id','INNER')
+                ->join('shop C','C.id = A.shop_id','LEFT')
                 ->where($where)->count();
             if ($data) {
                 $this->ret['count'] = $count;
@@ -61,8 +61,8 @@ class Order extends Main
     public function detail(){
         $id = $this->request->get('id');
         $order = Db::name('order')->alias('A')
-            ->join('member B','B.uid = A.uid ','INNER')
-            ->join('shop C','C.id = A.shop_id','INNER')
+            ->join('member B','B.id = A.uid ','INNER')
+            ->join('shop C','C.id = A.shop_id','LEFT')
             ->join('member_address D','D.id = A.address_id','INNER')
             ->field('A.*,B.uname,C.name AS shop_name,D.province,D.city,D.county,D.address,D.mobile,D.name AS get_name')
             ->where('A.id',$id)->find();

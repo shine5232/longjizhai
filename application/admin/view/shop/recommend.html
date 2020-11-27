@@ -95,7 +95,14 @@
                     <input type="checkbox" name="status" lay-skin="switch" lay-text="正常|禁用" value="1" >
                   </div>
             </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否总站</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="is_zong" lay-skin="switch" lay-text="是|否" value="1" >
+                  </div>
+            </div>
             <input type="hidden" name="img" value="" />
+            <input type="hidden" name="object_id" value="{$shop_id}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-filter="toSubmit" lay-submit="" style="margin-left: 33%">提交</button>
@@ -175,12 +182,14 @@
 				title: data.field.title,
 				img: data.field.img,
                 recommend_id:data.field.recommend_id,
+                object_id:data.field.object_id,
 				sort: data.field.sort,
                 province:data.field.province,
                 city:data.field.city,
                 county:data.field.county,
 				url: data.field.url,
                 status:data.field.status,
+                is_zong:data.field.is_zong,
                 start_time:data.field.start_time,
                 end_time:data.field.end_time,
 			};

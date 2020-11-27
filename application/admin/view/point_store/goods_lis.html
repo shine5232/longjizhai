@@ -24,13 +24,13 @@
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
                 {/if}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html?shop_id={$shop_id}&cate_id={$cate_id}',820,500)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html',820,500)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商品
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索商品','searchGoods.html?cate_id={$cate_id}',900,360)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索商品','searchGoods.html',900,360)">
                     <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
             </div>
@@ -39,7 +39,7 @@
 </body>
 {include file="public/foot"}
 <script>
-    var tableIns,shop_id = {$shop_id};
+    var tableIns;
     layui.use(['laydate', 'form', 'table'], function () {
         var table = layui.table, laydate = layui.laydate, form = layui.form;
         /**
@@ -49,7 +49,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/shop_goods/goodsLis?shop_id='+shop_id //数据接口
+            , url: '/admin/point_store/goodsLis' //数据接口
             , page: true //开启分页
             , limit: 10
             , id: 'test'
@@ -71,6 +71,7 @@
                     }
                     , { field: 'cate_title', title: '所属分类', width: '10%'}
                     , { field: 'brand_name', title: '所属品牌', width: '10%'}
+                    , { field: 'points', title: '所需积分', width: '10%'}
                     , { field: 'online', title: '上下架',width:'8%',
                         templet:function(d){
                             if(d.online == '1'){
@@ -83,7 +84,7 @@
                     , {
                         field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/unintList?id=' + d.id + '\',860,500);">规格</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '\',800,580);">推送</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/unintList?id=' + d.id + '\',860,500);">规格</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/point_store/goodsEdit?id=' + d.id + '\',900,480);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }
@@ -116,7 +117,7 @@
         } else {
             argument = argument.toString();
             layer.confirm('确认要全部删除吗？', function (index) {
-                $.post('/admin/shop_goods/deleteGoods', { id: argument }, function (j) {
+                $.post('/admin/point_store/deleteGoods', { id: argument }, function (j) {
                     if (j.code == 200) {
                         layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                             location.reload();
@@ -133,7 +134,7 @@
     */
     function delGoods(id) {
         layer.confirm('确认要删除吗？', function (index) {
-            $.post('/admin/shop_goods/deleteGoods', { id: id }, function (j) {
+            $.post('/admin/point_store/deleteGoods', { id: id }, function (j) {
                 if (j.code == 200) {
                     layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
                         location.reload();

@@ -170,8 +170,10 @@ class Member extends Main
                 'type_lock'=>1,
             ];
             if($type<=3){
-                $insert['avatar_lock'] = 1;
-                $insert['thumb'] = $post['fileLists'][0];
+                if(isset($post['fileLists']) && count($post['fileLists'])){
+                    $insert['avatar_lock'] = 1;
+                    $insert['thumb'] = $post['fileLists'][0];
+                }
             }
             $member_id = Db::name('member')->insertGetId($insert);
             if($member_id){
@@ -628,6 +630,44 @@ class Member extends Main
                 $this->ret['data'] = $data;
             }else{
                 $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 申请加盟
+     */
+    public function addJoining(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['name']) || !isset($post['mobile']) || !isset($post['county']) || !isset($post['code'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $code = cache('code_'.$post['mobile']);
+            if($code != $post['code']){
+                $this->ret['msg'] = '验证码不正确';
+                return json($this->ret);
+            }
+            cache('code_'.$post['mobile'],'');
+            $insert = [
+                'name'   =>  $post['name'],
+                'mobile'  =>  $post['mobile'],
+                'company' => $post['company'],
+                'province'  =>  $post['province'],
+                'city'      =>  $post['city'],
+                'county'    =>  $post['county'],
+                'area'    =>  $post['area'],
+                'create_time'   =>  date('Y-m-d H:i:s'),
+            ];
+            $data = Db::name('joining')->insert($insert);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '提交申请，等待审核';
+            }else{
+                $this->ret['msg'] = '提交失败';
             }
         }else{
             $this->ret['msg'] = '请求方式错误';

@@ -19,17 +19,6 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">所属分类</label>
-                <div class="layui-input-inline select select1">
-                    <select lay-filter="cate" name="cate_id[]" data-id="1" disabled>
-                        <option value="">请选择</option>
-                        {volist name='cate' id='vo'}
-                            <option value="{$vo.id}" {if condition="$vo.id == $cate_id"}selected{/if}>{$vo.title}</option>
-                         {/volist}
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">所属品牌</label>
                 <div class="layui-input-block">
                     <select lay-filter="brands" name="brand_id" id="brands_id">
@@ -48,8 +37,8 @@
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
-    var form = {},cate_id = {$cate_id};
-    getChildrenCate(cate_id,1);
+    var form = {};
+    getBrands(8);
     layui.use(['form', 'layer'], function () {
         form = layui.form;
         var layer = layui.layer;
@@ -63,7 +52,6 @@
                 x_admin_close();
                 parent.tableIns.reload({
                     where: { //设定异步数据接口的额外参数，任意设
-                        cate_id: cate_id,
                         brand_id: data.field.brand_id,
                         name:data.field.name
                     }
@@ -73,24 +61,6 @@
                 });
             }, 1000);
             return false;
-        });
-        /**
-        * 监听分类选择
-        */
-        form.on('select(cate)',function(data){
-            var id = $(data.elem).data('id');
-            if (data.value == 0 || data.value == '') {
-                var select = $('div').find('.select');
-                select.each(function(i,v){
-                    if(i+1 > id){
-                        $(v).remove();
-                    }
-                });
-                return false;
-            }
-            cate_id = data.value;
-            getBrands(cate_id);
-            getChildrenCate(cate_id,id);
         });
     });  
     $("#reset").on("click",function(){ window.location.reload();});
@@ -116,37 +86,6 @@
                 form.render('select');
             }, 'json');
         }
-    }
-    /**
-     * 获取子分类
-    */
-    function getChildrenCate(pid,id){
-        $.post('/api/goods_cate/index', {
-            pid: pid,
-            type: 2,
-        }, function (data) {
-            var res = data.data;
-            if (data.code == 200) {
-                if (res.length > 0) {
-                    var ids = parseInt(id) + 1;
-                    var html_t = '<div class="layui-input-inline select select'+ids+'">'+
-                                    '<select lay-filter="cate" name="cate_id[]" data-id="'+ids+'">';
-                    var option = '<option value="">请选择</option>';
-                    res.forEach(function (v, i) {
-                        option += '<option value="' + v.id + '">' + v.title + '</option>';
-                    });
-                    var html = html_t + option + '</select></div>';
-                    var select = $('div').find('.select');
-                    select.each(function(i,v){
-                        if(i+1 > id){
-                            $(v).remove();
-                        }
-                    });
-                    $('.select' + id).after(html);
-                    form.render('select');
-                }
-            }
-        }, 'json');
     }
 </script>
 

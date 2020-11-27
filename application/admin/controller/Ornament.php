@@ -9,7 +9,7 @@ class ornament extends Main
 {
     protected $ret = ['code' => 0, 'msg' => "", 'count' => 0, 'data' => []];
     /**
-     * 装修需求-需求统计
+     * 装修需求-需求列表
      */
     public function index()
     {
@@ -25,15 +25,12 @@ class ornament extends Main
                 $where['A.county'] = $user['county'];
             }
             $data = Db::name('ornament')->alias('A')
-                ->join('member B','A.uid = B.uid','INNER')
-                ->join('region C', 'A.province = C.region_code', 'LEFT')
-                ->join('region D', 'A.city = D.region_code', 'LEFT')
-                ->join('region E', 'A.county = E.region_code', 'LEFT')
+                ->join('member B','A.uid = B.id','INNER')
                 ->where($where)->order('A.id DESC')->limit($page_start, $limit)
-                ->field('A.*,B.uname,C.region_name as province_name,D.region_name as city_name,E.region_name as country_name')
+                ->field('A.*,B.uname')
                 ->select();
             $count = Db::name('ornament')->alias('A')
-                ->join('member B','A.uid = B.uid','INNER')
+                ->join('member B','A.uid = B.id','INNER')
                 ->where($where)->count();
             if ($data) {
                 $this->ret['count'] = $count;
@@ -45,27 +42,15 @@ class ornament extends Main
         }
     }
     /**
-     * 第三方机构-访问查看
+     * 装修需求-查看需求
      */
     public function look(){
         $id  = $this->request->get('id');
         $data = Db::name('ornament')->alias('A')
-            ->join('member B','A.uid = B.uid','INNER')
-            ->join('region C', 'A.province = C.region_code', 'LEFT')
-            ->join('region D', 'A.city = D.region_code', 'LEFT')
-            ->join('region E', 'A.county = E.region_code', 'LEFT')->where('A.id', $id)
-            ->field('A.*,B.uname,C.region_name as province_name,D.region_name as city_name,E.region_name as country_name')
+            ->join('member B','A.uid = B.id','INNER')->where('A.id', $id)
+            ->field('A.*,B.uname')
             ->find();
         
         return  $this->fetch('look', ['data' => $data]);
-    }
-    /**
-     * 第三方机构-访问搜索
-     */
-    public function searchCount()
-    {
-        $where = ['status'=>['neq',2]];
-        $party = Db::name('thirdparty')->where($where)->order('id DESC')->select();
-        return $this->fetch('search_count',['party'=>$party]);
     }
 }

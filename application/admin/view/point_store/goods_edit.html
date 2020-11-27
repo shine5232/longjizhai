@@ -34,42 +34,6 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">所属分类</label>
-                {foreach $cate as $key=>$vo}
-                <div class="layui-input-inline select select{$key+1}">
-                    <select lay-filter="cate" name="cate_id[]" data-id="{$key+1}">
-                        <option value="">请选择</option>
-                        {foreach $vo as $k=>$v}
-                            <option value="{$v['id']}" {if condition="$v['id'] == $cate_id[$key]"}selected{/if}>{$v['title']}</option>
-                         {/foreach}
-                    </select>
-                </div>
-                {/foreach}
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">商铺分类</label>
-                <div class="layui-input-inline">
-                    <select name="self_cate_id"  lay-verify="required">
-                        <option value="">请选择</option>
-                        {volist name='self_cate' id='vo'}
-                            <option value="{$vo.id}" {if condition="$vo['id'] == $goods_info['self_cate_id']"}selected{/if}>{$vo.cate_name}</option>
-                         {/volist}
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属风格</label>
-                <div class="layui-input-block">
-                    <input type="checkbox" name="style[1]" value="1" title="中式" lay-skin="primary"  <?php if(in_array(1,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[2]" value="2" title="欧式" lay-skin="primary" <?php if(in_array(2,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[3]" value="3" title="现代" lay-skin="primary" <?php if(in_array(3,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[4]" value="4" title="田园" lay-skin="primary" <?php if(in_array(4,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[5]" value="5" title="地中海" lay-skin="primary" <?php if(in_array(5,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[6]" value="6" title="东南亚" lay-skin="primary" <?php if(in_array(6,$goods_info['style'])){echo 'checked';} ?>>
-                    <input type="checkbox" name="style[7]" value="7" title="混搭" lay-skin="primary" <?php if(in_array(7,$goods_info['style'])){echo 'checked';} ?>>
-                </div>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">所属品牌</label>
                 <div class="layui-input-block">
                     <select lay-filter="brands" name="brand_id" id="brands_id">
@@ -96,16 +60,9 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">上传视频</label>
-                    <button type="button" class="layui-btn cover" id="control_video_button">上传视频</button>
-                    <button type="button" class="layui-btn layui-btn-danger cover" id="control_video_del" onclick="deleteVideo()" {if $goods_info['video'] == ''}style="display: none"{/if}>删除视频</button>
-                    <input type="hidden" id="control_video" value="{$goods_info['video']}" name="video"/>
-            </div>
-            <div class="layui-form-item" id="player" {if $goods_info['video'] == ''}style="display: none;"{/if}>
-                <label class="layui-form-label"></label>
+                <label class="layui-form-label">所需积分</label>
                 <div class="layui-input-block">
-                    <video controls="controls" id="control_video_demo" src="{$goods_info['video']}" style="width: 50%;">
-                    </video>
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="points" placeholder="请输入商品所需积分" type="text" value="{$goods_info['points']}"/>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -129,7 +86,7 @@
             </div>
             <input type="hidden" name="id" value="{$goods_info['id']}" />
             <input type="hidden" name="thumb" value="{$goods_info['thumb']}" />
-            <input type="hidden" name="cate" value="{$goods_info['cate']}" />
+            <input type="hidden" name="cate" value="8" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
@@ -148,7 +105,6 @@
 <script type="text/javascript" src="__static__/kindeditor/kindeditor-all.js"></script>
 <script type="text/javascript" src="__static__/kindeditor/lang/zh-CN.js"></script>
 <script type="text/javascript">
-    var cate_id = '';
     var form = {};
     KindEditor.ready(function (K) {
         notice = K.create('#notice', {
@@ -186,116 +142,8 @@
             error: function (index, upload) {
                 // 上传失败
             }
-        });
-        /**
-         * 视频上传 
-         */
-        var uploadVideo = upload.render({
-            elem: '#control_video_button', //绑定元素
-            url: "/api/file/upload?type=video",//上传接口
-            accept: 'video',
-            field: 'imgFile',
-            before: function(obj){
-                //预读本地文件示例，不支持ie8
-                obj.preview(function(index, file, result){
-                    //$('#control_video_demo').attr('src', result); //图片链接（base64）
-                    //$('#control_video_demo').css('display','block');
-                    $('#control_video_del').css('display','inline');
-                });
-            },
-            done: function(res){
-                layer.msg(res.msg);
-                if(res.error == 0){
-                    $('#player').show();
-                    $('#control_video_demo').attr('src','http://longjizhai.harus.icu'+res.url).show();
-                    //$('#video_source');
-                    $("#control_video").val(res.url);
-                }else{
-                    return layer.msg('上传失败');
-                }
-            },
-            error: function(res){
-                console.log(res);
-            }
-        });
-        /**
-        * 监听分类选择
-        */
-        form.on('select(cate)',function(data){
-            var id = $(data.elem).data('id');
-            if (data.value == 0 || data.value == '') {
-                var select = $('div').find('.select');
-                select.each(function(i,v){
-                    if(i+1 > id){
-                        $(v).remove();
-                    }
-                });
-                return false;
-            }
-            cate_id = data.value;
-            $('input[name="cate"]').val(cate_id);
-            getBrands(data.value);
-            $.post('/api/goods_cate/index', {
-                pid: data.value,
-                type: 2,
-            }, function (data) {
-                var res = data.data;
-                if (data.code == 200) {
-                    if (res.length > 0) {
-                        var ids = parseInt(id) + 1;
-                        var html_t = '<div class="layui-input-inline select select'+ids+'">'+
-                                        '<select lay-filter="cate" name="cate_id[]" data-id="'+ids+'">';
-                        var option = '<option value="">请选择</option>';
-                        res.forEach(function (v, i) {
-                            option += '<option value="' + v.id + '">' + v.title + '</option>';
-                        });
-                        var html = html_t + option + '</select></div>';
-                        var select = $('div').find('.select');
-                        select.each(function(i,v){
-                            if(i+1 > id){
-                                $(v).remove();
-                            }
-                        });
-                        $('.select' + id).after(html);
-                        form.render('select');
-                    }
-                }
-            }, 'json');
         }); 
-    }); 
-    /**
-     * 获取当前分类绑定的品牌数据
-    */
-    function getBrands(cate_id){
-        if(cate_id){
-            $.post('/api/goods_cate/getBrands', {
-            cate_id: cate_id,
-        }, function (data) {
-            var option = '<option value="0">请选择</option>';
-            var res = data.data;
-            if (data.code == 200) {
-                if (res.length > 0) {
-                    res.forEach(function (v, i) {
-                        option += '<option value="' + v.id + '">' + v.name + '</option>';
-                    });
-                    
-                }
-            }
-            $('#brands_id').html(option);
-            form.render('select');
-        }, 'json');
-        }
-    }
-    /**
-     * 删除视频
-     */
-    function deleteVideo(){
-        $('#player').hide();
-        $('#control_video_demo').attr('src','').hide();
-        //$('#video_source');
-        $("#control_video").val('');
-        $('#control_video_del').hide();
-    }
+    });
 	$(document).ready(function(){ 
 	     var options = {
 		      type:'post',           //post提交

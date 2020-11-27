@@ -101,6 +101,12 @@
                     <input type="checkbox" name="status" lay-skin="switch" lay-text="正常|禁用" value="1" {if condition="$data.status == 1"}checked{/if} >
                   </div>
             </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否总站</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="is_zong" lay-skin="switch" lay-text="是|否" value="1" {if condition="$data.is_zong == 1"}checked{/if} >
+                  </div>
+            </div>
             <input type="hidden" name="img" value="{$data.img}" />
             <input type="hidden" name="id" value="{$data.id}" />
             <div class="layui-form-item">
@@ -189,6 +195,7 @@
 				sort: data.field.sort,
 				url: data.field.url,
                 status:data.field.status,
+                is_zong:data.field.is_zong,
                 start_time:data.field.start_time,
                 end_time:data.field.end_time,
 			};
