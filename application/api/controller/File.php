@@ -28,6 +28,10 @@ class File extends Main
                 //商品上传
                 $src = '/uploads/goods';
                 $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
+            }else if($type == 'goodsimg'){
+                //商品上传
+                $src = '/uploads/goodsimg';
+                $info = $file->validate(['ext' => 'jpg,png,jpeg,bmp'])->move(ROOT_PATH . 'public' . $src);
             }else if($type == 'thumb'){
                 //缩略图上传
                 $src = '/uploads/thumb';
@@ -35,7 +39,7 @@ class File extends Main
                 if($info){
                     $url = ROOT_PATH.'/public'.$src.'/'.$info->getSaveName();
                     $Image = new Image();
-                    $Image->resizeimage($url,150,150,0,$url);
+                    $Image->resizeimage($url,430,430,0,$url);
                     return json(array('error' => 0, 'url' => $src.'/'.$info->getSaveName(),'msg'=>'上传成功'));
                 }else{
                     return json(array('error'=>1,'msg'=>'文件格式不合法'));

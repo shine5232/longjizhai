@@ -84,7 +84,7 @@
                     , {
                         field: 'handle', title: '操作',width: '10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑推荐内容\',\'/admin/recommend/dataEdit?id=' + d.id + '\',800,480);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑推荐内容\',\'/admin/recommend/dataEdit?id=' + d.id + '\',800,480,true);">编辑</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }

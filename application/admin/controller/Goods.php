@@ -172,25 +172,25 @@ class Goods extends Main
         return json($this->ret);
     }
     /**
-     * 商品管理-属性列表页面
+     * 商品管理-规格列表页面
      */
     public function goodsAttr(){
         if(request()->isAjax()){
-            $goods_id = $this->request->get('goods_id');
             $page = $this->request->param('page',1,'intval');
             $limit = $this->request->param('limit',20,'intval');
+            $goods_id = $this->request->get('goods_id','');
             $page_start = ($page - 1) * $limit;
             $where['a.status'] = ['eq',0];
+            $where['a.pid'] = ['eq', 0];
             $where['a.goods_id'] = ['eq',$goods_id];
             $data = Db::name('shop_goods_attr')->alias('a')
-                ->join('goods_info b','b.id = a.goods_id','INNER')
                 ->where($where)
-                ->field('a.*,b.unit')
+                ->field('a.*')
                 ->order('a.id DESC')
                 ->limit($page_start,$limit)
                 ->select();
             $count = Db::name('shop_goods_attr')->alias('a')
-                ->join('goods_info b','b.id = a.goods_id','INNER')
+                ->join('shop_goods b','b.id = a.goods_id','INNER')
                 ->where($where)
                 ->count();
             if($data){
@@ -199,13 +199,13 @@ class Goods extends Main
             }
             return json($this->ret);
         }else{
-            $id  = $this->request->get('id');
+            $id  = $this->request->get('goods_id');
             $this->assign('id',$id);
             return $this->fetch('goods_attr');
         }
     }
     /**
-     * 商品管理-属性添加页面
+     * 商品管理-规格添加页面
      */
     public function attrAdd(){
         if (request()->isPost()){
@@ -216,6 +216,7 @@ class Goods extends Main
                 'shop_price'=>$post['shop_price'],
                 'specs'=>$post['specs'],
                 'thumb'=>$post['thumb'],
+                'unit' => $post['unit'],
                 'paytype'=>isset($post['paytype'])?$post['paytype']:0,
                 'pay_one'=>$post['pay_one'],
                 'pay_two'=>$post['pay_two'],
@@ -237,7 +238,7 @@ class Goods extends Main
         }
     }
     /**
-     * 商品管理-属性编辑页面
+     * 商品管理-规格编辑页面
      */
     public function attrEdit(){
         if (request()->isPost()){
@@ -249,6 +250,7 @@ class Goods extends Main
                 'shop_price'=>$post['shop_price'],
                 'specs'=>$post['specs'],
                 'thumb'=>$post['thumb'],
+                'unit' => $post['unit'],
                 'paytype'=>isset($post['paytype'])?$post['paytype']:0,
                 'pay_one'=>$post['pay_one'],
                 'pay_two'=>$post['pay_two'],
@@ -268,7 +270,7 @@ class Goods extends Main
         }
     }
     /**
-     * 商品管理-属性删除
+     * 商品管理-规格删除
      */
     public function deleteAttr(){
         $id = $this->request->post('id');
@@ -289,22 +291,20 @@ class Goods extends Main
         return json($this->ret);
     }
     /**
-     * 商家管理-商品规格列表页面
+     * 商家管理-商品属性列表页面
      */
     public function unintList()
     {
         if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
-            $shop_goods_id = $this->request->param('shop_goods_id', '');
+            $pid = $this->request->param('pid', '');
             $page_start = ($page - 1) * $limit;
             $where['a.status'] = ['eq', 0];
-            $where['a.goods_id'] = ['eq', $shop_goods_id];
-            $where['a.pid'] = ['neq', 0];
+            $where['a.pid'] = ['eq', $pid];
             $data = Db::name('shop_goods_attr')->alias('a')
-                ->join('shop_goods b', 'b.id = a.goods_id', 'INNER')
                 ->where($where)
-                ->field('a.*,b.unit')
+                ->field('a.*')
                 ->order('a.id DESC')
                 ->limit($page_start, $limit)
                 ->select();
@@ -318,8 +318,8 @@ class Goods extends Main
             }
             return json($this->ret);
         } else {
-            $shop_goods_id  = $this->request->get('id');
-            $this->assign('shop_goods_id', $shop_goods_id);
+            $pid  = $this->request->get('pid');
+            $this->assign('pid', $pid);
             return $this->fetch('goods_unint');
         }
     }
@@ -330,18 +330,22 @@ class Goods extends Main
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
+            $goods_id = Db::name('shop_goods_attr')->where('id',$post['pid'])->value('goods_id');
             $insert = [
                 'name' => $post['name'],
                 'price' => $post['price'],
                 'shop_price' => $post['shop_price'],
                 'pid'=>$post['pid'],
                 'thumb' => $post['thumb'],
+                'yun' => $post['yun'],
+                'ku' => $post['ku'],
+                'unit' => $post['unit'],
                 'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,
                 'pay_one' => $post['pay_one'],
                 'pay_two' => $post['pay_two'],
                 'pay_three' => $post['pay_three'],
                 'online' => isset($post['online']) ? $post['online'] : 0,
-                'goods_id' => $post['goods_id'],
+                'goods_id' => $goods_id,
                 'create_time' => date('Y-m-d H:i:s')
             ];
             $db = Db::name('shop_goods_attr')->insert($insert);
@@ -351,9 +355,7 @@ class Goods extends Main
             }
             return json($this->ret);
         } else {
-            $goods_id = $this->request->get('shop_goods_id');
-            $pid = Db::name('shop_goods_attr')->where(['goods_id'=>$goods_id,'pid'=>0])->field('id,name')->select();
-            $this->assign('goods_id', $goods_id);
+            $pid = $this->request->get('pid');
             $this->assign('pid', $pid);
             return $this->fetch('unint_add');
         }
@@ -371,7 +373,9 @@ class Goods extends Main
                 'price' => $post['price'],
                 'shop_price' => $post['shop_price'],
                 'thumb' => $post['thumb'],
-                'pid'=>$post['pid'],
+                'yun' => $post['yun'],
+                'ku' => $post['ku'],
+                'unit' => $post['unit'],
                 'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,
                 'pay_one' => $post['pay_one'],
                 'pay_two' => $post['pay_two'],
@@ -386,10 +390,7 @@ class Goods extends Main
         } else {
             $id  = $this->request->get('id');
             $goods_attr = Db::name('shop_goods_attr')->where('id', $id)->find();
-            $pid = Db::name('shop_goods_attr')->where(['goods_id'=>$goods_attr['goods_id'],'pid'=>0])->field('id,name')->select();
             $this->assign('goods_attr', $goods_attr);
-            $this->assign('pid', $pid);
-            $this->assign('goods_id', $goods_attr['goods_id']);
             return $this->fetch('unint_edit');
         }
     }

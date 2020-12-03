@@ -674,4 +674,80 @@ class Member extends Main
         }
         return json($this->ret);
     }
+    /**
+     * 获取我的搜索历史
+     */
+    public function mySearchLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $where = [
+                'uid' => $post['uid'],
+                'status' => 0,
+            ];
+            $data = Db::name('member_search')->where($where)->order('id DESC')->limit(0,15)->select();
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 清空我的搜索历史
+     */
+    public function emptyMySearch(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $upd = [
+                'status'    =>  1,
+                'delete_time' => date('Y-m-d H:i:s'),
+                'update_time' => date('Y-m-d H:i:s')
+            ];
+            $data = Db::name('member_search')->where('uid',$post['uid'])->update($upd);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '操作成功';
+            }else{
+                $this->ret['msg'] = '操作失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 添加搜索记录
+     */
+    public function addMySearch(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['keywords']) || !isset($post['type'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $post['create_time'] = date('Y-m-d H:i:s');
+            $data = Db::name('member_search')->insert($post);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '操作成功';
+            }else{
+                $this->ret['msg'] = '操作失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
 }

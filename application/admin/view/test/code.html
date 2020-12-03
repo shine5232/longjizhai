@@ -11,7 +11,7 @@
         </div>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-danger layui-btn-sm" onclick="x_admin_show('添加二维码','codeAdd.html',800,500)">
+                <button class="layui-btn layui-btn-danger layui-btn-sm" onclick="x_admin_show('添加二维码','codeAdd.html',800,500,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加二维码
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -81,7 +81,7 @@
                     , {
                         field: 'handle', title: '操作',width: '11%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑二维码\',\'/admin/test/codeEdit?id=' + d.id + '\',800,500);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑二维码\',\'/admin/test/codeEdit?id=' + d.id + '\',800,500,true);">编辑</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="download(' + d.id + ');">下载</button>';
                             return handle;
                         }

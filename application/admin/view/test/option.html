@@ -14,7 +14,7 @@
                 <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加题目','optionAdd.html?test_id={$test_id}',500,300)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加题目','optionAdd.html?test_id={$test_id}',500,300,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加题目
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -80,7 +80,7 @@
                     , {
                         field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑题目\',\'/admin/test/optionEdit?id=' + d.id + '\',500,300);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑题目\',\'/admin/test/optionEdit?id=' + d.id + '\',500,300,true);">编辑</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }

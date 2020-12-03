@@ -74,8 +74,8 @@
                     , {
                         field: 'handle', title: '操作',width: '20%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/goods/goodsImg?id=' + d.id + '\',1000,500);">相册</button>'+
-                            '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/goods/goodsAttr?id=' + d.id + '\',1000,500);">属性</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/goods/unintList?id=' + d.id + '\',860,500);">规格</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/goods/goodsEdit?id=' + d.id + '\',800,480);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/goods/goodsImg?id=' + d.id + '\',1000,500,true);">相册</button>'+
+                            '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/goods/goodsAttr?goods_id=' + d.id + '\',1000,500,true);">规格</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '&type=1\',800,580,true);">推送</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/goods/goodsEdit?id=' + d.id + '\',800,480,true);">编辑</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }

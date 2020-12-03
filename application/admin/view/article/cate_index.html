@@ -2,7 +2,7 @@
 
 <body>
     <div class="x-body">
-        <button class="layui-btn layui-btn-sm " onclick="x_admin_show('添加栏目','cateAdd.html',500,460)"></i>添加栏目</button>
+        <button class="layui-btn layui-btn-sm " onclick="x_admin_show('添加栏目','cateAdd.html',500,460,true)"></i>添加栏目</button>
         <button onclick="javascript:location.reload()" class="layui-btn layui-btn-sm">刷新</button>
         <span class="x-right" style="line-height:40px">共有数据:<i class="i_count">{$count}</i>条</span>
 
@@ -25,10 +25,10 @@
                     </td>
                     <td>{$vo.sort}</td>
                     <td>
-                        <button type="button" onclick="x_admin_show('添加子栏目','addChild.html?id={$vo.id}',500,460)"
+                        <button type="button" onclick="x_admin_show('添加子栏目','addChild.html?id={$vo.id}',500,460,true)"
                                         class="layui-btn layui-btn-normal layui-btn-xs">子栏目</button>
                         <button type="button" onclick="x_admin_show('编辑栏目',
-                                    'cateEdit.html?id={$vo.id}',500,460)" class="layui-btn layui-btn-xs">编辑
+                                    'cateEdit.html?id={$vo.id}',500,460,true)" class="layui-btn layui-btn-xs">编辑
                         </button>
                         <button type="button" onClick="deleteAuthRule({$vo.id})"
                             class="layui-btn layui-btn-xs layui-btn-danger">删除</button>

@@ -19,20 +19,9 @@
     <div class="x-body">
         <div class="layui-form" style="margin-right: 20px;">
             <div class="layui-form-item">
-                <label class="layui-form-label">规格名称</label>
+                <label class="layui-form-label">属性名称</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入规格名称" type="text" />
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属属性</label>
-                <div class="layui-input-block">
-                    <select name="pid" lay-verify="required">
-                        <option value="">请选择</option>
-                        {volist name='pid' id='vo'}
-                        <option value="{$vo.id}">{$vo.name}</option>
-                        {/volist}
-                    </select>
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入属性名称" type="text" />
                 </div>
             </div>
             <div class="layui-form-item">
@@ -45,6 +34,24 @@
                 <label class="layui-form-label">平台价</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" lay-verify="required" name="shop_price" placeholder="请输入平台价" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">运费(0为商家包邮)</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="yun" placeholder="请输入运费" type="number" value="0"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">库存</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="ku" placeholder="请输入库存" type="number" value="0"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">单位名称</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="unit" placeholder="请输入单位名称" type="text" value=""/>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -83,13 +90,19 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort" placeholder="数值越大越靠前" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">是否上架</label>
                 <div class="layui-input-block">
                   <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" checked>
                 </div>
             </div>
             <input type="hidden" name="thumb" value="" />
-            <input type="hidden" name="goods_id" value="{$goods_id}" />
+            <input type="hidden" name="pid" value="{$pid}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">

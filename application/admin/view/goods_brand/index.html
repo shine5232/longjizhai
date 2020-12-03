@@ -14,7 +14,7 @@
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
                 {/if}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加品牌','brandsAdd.html',800,500)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加品牌','brandsAdd.html',800,500,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加品牌
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -62,7 +62,7 @@
                     , {
                         field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑品牌\',\'/admin/goods_brand/brandsEdit?id=' + d.id + '\',800,480);">编辑</button>' +
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑品牌\',\'/admin/goods_brand/brandsEdit?id=' + d.id + '\',800,480,true);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }

@@ -115,9 +115,9 @@
                     , {
                         field: 'handle', title: '操作', width: '10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑会员\',\'/admin/member/edit?id=' + d.id + '\',900,480);">编辑</button>' +
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑会员\',\'/admin/member/edit?id=' + d.id + '\',900,480,true);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="x_admin_show(\'积分充值\',\'/admin/member/recharge?id=' + d.id + '\',480,480);">充值</button>' +
-                                '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'积分日志\',\'/admin/member/point?id=' + d.id + '\',900,500);">积分</button>';
+                                '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'积分日志\',\'/admin/member/point?id=' + d.id + '\',900,500,true);">积分</button>';
                             return handle;
                         }
                     }

@@ -50,7 +50,7 @@
               <td>{$vo.last_login_ip}</td>
 	            <td>
 
-  <button class="layui-btn layui-btn-xs" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',800,480)">编辑</button>
+  <button class="layui-btn layui-btn-xs" onclick="x_admin_show('编辑用户','edit.html?id={$vo.id}',800,480,true)">编辑</button>
                 {if condition="$vo.id != 1"}
                  <button onclick="delUser(this,{$vo.id})" class="layui-btn layui-btn-xs layui-btn-danger">删除</button>
                 {/if}

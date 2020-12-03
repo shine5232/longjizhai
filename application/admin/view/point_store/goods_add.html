@@ -70,6 +70,19 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">上传视频</label>
+                    <button type="button" class="layui-btn cover" id="control_video_button">上传视频</button>
+                    <button type="button" class="layui-btn layui-btn-danger cover" id="control_video_del" onclick="deleteVideo()" style="display: none">删除视频</button>
+                    <input type="hidden" id="control_video" value="" name="video"/>
+            </div>
+            <div class="layui-form-item" id="player" style="display: none;">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <video controls="controls" id="control_video_demo" style="width: 50%;display: none">
+                    </video>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">商品介绍</label>
                 <div class="layui-input-block">
                     <textarea class="layui-textarea" placeholder="请输入商品介绍" id="notice" name="content"
@@ -146,7 +159,48 @@
                 // 上传失败
             }
         });
+        /**
+         * 视频上传 
+         */
+         var uploadVideo = upload.render({
+            elem: '#control_video_button', //绑定元素
+            url: "/api/file/upload?type=video",//上传接口
+            accept: 'video',
+            field: 'imgFile',
+            before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    //$('#control_video_demo').attr('src', result); //图片链接（base64）
+                    //$('#control_video_demo').css('display','block');
+                    $('#control_video_del').css('display','inline');
+                });
+            },
+            done: function(res){
+                layer.msg(res.msg);
+                if(res.error == 0){
+                    $('#player').show();
+                    $('#control_video_demo').attr('src','http://longjizhai.harus.icu'+res.url).show();
+                    //$('#video_source');
+                    $("#control_video").val(res.url);
+                }else{
+                    return layer.msg('上传失败');
+                }
+            },
+            error: function(res){
+                console.log(res);
+            }
+        });
     });
+    /**
+     * 删除视频
+     */
+     function deleteVideo(){
+        $('#player').hide();
+        $('#control_video_demo').attr('src','').hide();
+        //$('#video_source');
+        $("#control_video").val('');
+        $('#control_video_del').hide();
+    }
 	$(document).ready(function(){ 
 	     var options = {
 		      type:'post',           //post提交

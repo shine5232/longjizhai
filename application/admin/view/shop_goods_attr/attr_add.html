@@ -19,9 +19,9 @@
     <div class="x-body">
         <div class="layui-form" style="margin-right: 20px;">
             <div class="layui-form-item">
-                <label class="layui-form-label">属性名称</label>
+                <label class="layui-form-label">规格名称</label>
                 <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入属性名称" type="text" />
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="name" placeholder="请输入规格名称" type="text" />
                 </div>
             </div>
             <div class="layui-form-item">
@@ -34,6 +34,12 @@
                 <label class="layui-form-label">平台价</label>
                 <div class="layui-input-block">
                     <input autocomplete="off" class="layui-input" lay-verify="required" name="shop_price" placeholder="请输入平台价" type="number" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">单位名称</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="unit" placeholder="请输入单位名称" type="text" value=""/>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -69,6 +75,12 @@
                     <div class="layui-input-block">
                         <input autocomplete="off" class="layui-input pay_type" name="pay_three" placeholder="请输入三批占比" type="number" value="" />
                     </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort" placeholder="数值越大越靠前" type="number" />
                 </div>
             </div>
             <div class="layui-form-item">

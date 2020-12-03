@@ -16,6 +16,18 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">推荐类型</label>
+                <div class="layui-input-block">
+                    <select name="type" lay-verify="required">
+                        <option value="">请选择</option>
+                        <option value="1" {if condition="$recommend['type'] == 1"}selected{/if}>商品</option>
+                        <option value="2" {if condition="$recommend['type'] == 2"}selected{/if}>商家</option>
+                        <option value="3" {if condition="$recommend['type'] == 3"}selected{/if}>案例</option>
+                        <option value="4" {if condition="$recommend['type'] == 4"}selected{/if}>文章</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
                     <input type="checkbox" name="status" lay-skin="switch" lay-text="正常|禁用" value="1" {if condition="$recommend['status'] == 1"}checked{/if} >

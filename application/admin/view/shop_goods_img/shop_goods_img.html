@@ -18,7 +18,7 @@
                 </button>
                 {/if}
                 {if $count < 5}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加图片','imgAdd.html?shop_goods_id={$id}',860,500)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加图片','imgAdd.html?shop_goods_id={$id}',860,500,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加图片
                 </button>
                 {/if}
@@ -39,7 +39,7 @@
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
             , url: '/admin/shop_goods_img/goodsImg?shop_goods_id='+{$id} //数据接口
-            , page: true //开启分页
+            , page: false //开启分页
             , limit: 20
             , id: 'test'
             , cols: [

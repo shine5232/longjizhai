@@ -173,6 +173,16 @@ class check extends Main
                 }
                 return json($this->ret);
             }
+            if ($type == 9) {
+                $res = Db::name('shop')
+                    ->where('id', $id)
+                    ->update($post);
+                if ($res) {
+                    $this->ret['code'] = 200;
+                    $this->ret['msg'] = 'success';
+                }
+                return json($this->ret);
+            }
         } else {
             $id = $this->request->get('id');
             $type = $this->request->get('type');
@@ -270,6 +280,11 @@ class check extends Main
             $data = Db::name('mechanic')->alias('A')
                 ->join('member B','B.id = A.uid','LEFT')
                 ->where($where)->field('B.id,B.thumb,B.type_lock,B.avatar_lock,B.city_lock,B.area,B.uname,A.name,A.mobile,A.create_time')
+                ->find();
+        }else if($type == '9'){
+            $data = Db::name('shop')->alias('A')
+                ->join('member B','B.id = A.uid','LEFT')
+                ->where($where)->field('B.id,B.thumb,B.type_lock,B.avatar_lock,B.city_lock,B.area,B.uname,A.user AS name,A.mobile,A.create_time')
                 ->find();
         }
         $this->assign('type',$type);
@@ -504,6 +519,33 @@ class check extends Main
             return json($this->ret);
         } else {
             $this->assign('type', 8);
+            return $this->fetch('index');
+        }
+    }
+    /**
+     * 商家审核
+     */
+    public function shop(){
+        if (request()->isAjax()) {
+            $page = $this->request->param('page', 1, 'intval');
+            $limit = $this->request->param('limit', 20, 'intval');
+            $page_start = ($page - 1) * $limit;
+            $keywords = $this->request->param('keywords', '');
+            $where = '';
+            if ($keywords) {
+                $where .= " AND (A.name LIKE '%" . $keywords . "%' OR A.name LIKE '%" . $keywords . "%' OR A.mobile = '" . $keywords . "')";
+            }
+            $sql = "SELECT A.*,B.region_name FROM lg_shop A LEFT JOIN lg_region B ON B.region_code = A.county WHERE A.checked = 0 AND A.deleted = 0 $where ORDER BY id DESC LIMIT $page_start,$limit";
+            $data = Db::query($sql);
+            $sql2 = "SELECT count(1) AS count FROM lg_shop A WHERE  checked = 0 AND deleted = 0 $where";
+            $count = Db::query($sql2);
+            if ($data) {
+                $this->ret['count'] = $count[0]['count'];
+                $this->ret['data'] = $data;
+            }
+            return json($this->ret);
+        } else {
+            $this->assign('type', 9);
             return $this->fetch('index');
         }
     }

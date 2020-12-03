@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">商品主图(360px*360px)</label>
+                <label class="layui-form-label">商品主图(430px*430px)</label>
                 <div class="layui-input-block" style="display: flex;">
                     <button type="button" class="layui-btn upload-img">
                         <i class="layui-icon">&#xe67c;</i>选择图片</i>
@@ -170,7 +170,24 @@
             url: '/api/file/upload?type=thumb',
             accept: 'file', // 允许上传的文件类型
             field: 'imgFile',
-            auto: true, // 自动上传
+            auto: false, // 自动上传
+            choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    var flag = true;
+                    var img = new Image();
+                    img.src = result; 
+                    img.onload = function () { //初始化夹在完成后获取上传图片宽高，判断限制上传图片的大小。
+                        if(img.width == 430 && img.height == 430){
+                            obj.upload(index, file); //满足条件调用上传方法
+                        }else{
+                            flag = false;
+                            layer.msg("您上传的小图大小必须是430*430尺寸！");
+                            return false;
+                        }
+                    }
+                    return flag;
+                });
+            },
             before: function (obj) {
                 obj.preview(function (index, file, result) {
                     $('#thumb').attr('src', result); //图片链接 base64

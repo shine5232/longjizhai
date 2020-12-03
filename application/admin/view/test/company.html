@@ -52,7 +52,7 @@
                     , {
                         field: 'handle', title: '操作',width: '15%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'测评详情\',\'/admin/test/companyDetail?id=' + d.id + '\',800,500);">详情</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'测评详情\',\'/admin/test/companyDetail?id=' + d.id + '\',800,500,true);">详情</button>';
                             if(d.status == '1'){
                                 handle += '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">解锁</button>';
                             }

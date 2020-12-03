@@ -40,10 +40,12 @@ class Company extends Main
             $where['A.status']=['eq',0];
             $where['A.checked']=['eq',1];
             $where['A.deleted']=['eq',0];
-            $where['A.endtime'] = ['>=',date('Y-m-d H:i:s')];
+            $end_time = date('Y-m-d H:i:s');
             $data = Db::name('company')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address")
+                ->where($where)
+                ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
+                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address")
                 ->order($order)->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as &$v){
@@ -74,10 +76,12 @@ class Company extends Main
             $where['A.status']=['eq',0];
             $where['A.checked']=['eq',1];
             $where['A.deleted']=['eq',0];
-            $where['A.endtime'] = ['>=',date('Y-m-d H:i:s')];
+            $end_time = date('Y-m-d H:i:s');
             $data = Db::name('company')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address,A.phone,A.contact,A.content,B.area,B.authed,B.rank_id")
+                ->where($where)
+                ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
+                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address,A.phone,A.contact,A.content,B.area,B.authed,B.rank_id")
                 ->find();
             if($data){
                 $data['thumb'] = _getServerName().'/public'.$data['thumb'];

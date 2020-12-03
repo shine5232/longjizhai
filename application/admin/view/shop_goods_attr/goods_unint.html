@@ -17,8 +17,8 @@
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
                 {/if}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加规格','unintAdd.html?shop_goods_id={$shop_goods_id}',660,400)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加规格
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加属性','unintAdd.html?pid={$pid}',660,400,true)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加属性
                 </button>
             </div>
         </script>
@@ -36,7 +36,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/shop_goods_attr/unintList?shop_goods_id='+{$shop_goods_id} //数据接口
+            , url: '/admin/shop_goods_attr/unintList?pid='+{$pid} //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
@@ -45,9 +45,13 @@
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: '序号', width: '8%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
                     , { field: 'id', title: 'ID', width: '8%' }
-                    , { field: 'name', title: '规格名称', width: '15%' }
-                    , { field: 'price', title: '市场价', width: '10%'}
-                    , { field: 'shop_price', title: '商铺价', width: '10%'}
+                    , { field: 'name', title: '属性名称', width: '10%' }
+                    , { field: 'price', title: '市场价', width: '8%'}
+                    , { field: 'shop_price', title: '商铺价', width: '8%'}
+                    , { field: 'yun', title: '运费', width: '8%'}
+                    , { field: 'ku', title: '库存数', width: '8%'}
+                    , { field: 'unit', title: '单位名称', width: '10%'}
+                    , { field: 'sort', title: '排序', width: '8%'}
                     , { field: 'thumb',title: '缩略图', width:'15%',
                         templet: function(d){
                             if(d.thumb){
@@ -60,9 +64,9 @@
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',width: '15%',
+                        field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑规格\',\'/admin/shop_goods_attr/unintEdit?id=' + d.id + '\',660,400);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/shop_goods_attr/unintEdit?id=' + d.id + '\',660,400,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
                     }

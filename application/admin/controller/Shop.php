@@ -85,6 +85,8 @@ class Shop extends Main
                 'longitude' => $post['longitude'],
                 'latitude' => $post['latitude'],
                 'view_num' => $post['view_num'],
+                'starttime' => $post['starttime'],
+                'endtime' => $post['endtime'],
                 'hot'=>$post['hot'],
                 'kou'=>$post['kou'],
                 'collect_num' => $post['collect_num'],
@@ -126,6 +128,8 @@ class Shop extends Main
                 'level' => $post['level'],
                 'hot'=>$post['hot'],
                 'kou'=>$post['kou'],
+                'starttime' => $post['starttime'],
+                'endtime' => $post['endtime'],
                 'address' => $post['address'],
                 'shop_cate' => $post['shop_cate'],
                 'longitude' => $post['longitude'],
@@ -386,6 +390,7 @@ class Shop extends Main
      */
     public function recommend(){
         if(request()->isPost()){
+            $res = true;
             $post = $this->request->post();
             $status = isset($post['status'])?$post['status']:0;
             $is_zong = isset($post['is_zong'])?$post['is_zong']:0;
@@ -393,7 +398,33 @@ class Shop extends Main
             $insert['status']=$status;
             $insert['is_zong']=$is_zong;
             $insert['create_time']=date('Y-m-d H:i:s');
-            $res = Db::name('recommend_data')->insert($insert);
+            $where = [
+                'object_id' => $post['object_id'],
+                'recommend_id' => $post['recommend_id'],
+                'type' => $post['type']
+            ];
+            $has = Db::name('recommend_data')->where($where)->find();
+            if(!$has){
+                if($post['type'] == 1){
+                    $data = Db::name('shop_goods')->where('id',$post['object_id'])->find();
+                    $insert['title'] = $data['name'];
+                    $insert['img'] = '/public'.$data['thumb'];
+                }else if($post['type'] == 2){
+                    $data = Db::name('shop')->where('id',$post['object_id'])->find();
+                    $insert['title'] = $data['name'];
+                    $insert['img'] = $data['rectangle_logo'];
+                }else if($post['type'] == 3){
+                    $data = Db::name('cases')->where('id',$post['object_id'])->find();
+                    $insert['title'] = $data['case_title'];
+                    $insert['img'] = $data['thumb'];
+                }else if($post['type'] == 4){
+                    $data = Db::name('article')->where('id',$post['object_id'])->find();
+                    $insert['title'] = $data['title'];
+                    $insert['img'] = '/public'.$data['thumb'];
+                }
+                $insert['county'] = $data['county'];
+                $res = Db::name('recommend_data')->insert($insert);
+            }
             if ($res) {
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '添加成功';
@@ -401,11 +432,11 @@ class Shop extends Main
             return json($this->ret);
         }else{
             $shop_id  = $this->request->get('id');
-            $recommend = Db::name('recommend')->where('status',1)->select();
-            $province = _getRegion(); //获取省份数据
+            $type  = $this->request->get('type');
+            $recommend = Db::name('recommend')->where(['status'=>1,'type'=>$type])->select();
             $this->assign('shop_id', $shop_id);
             $this->assign('recommend', $recommend);
-            $this->assign('province', $province);
+            $this->assign('type', $type);
             return $this->fetch('recommend');
         }
     }

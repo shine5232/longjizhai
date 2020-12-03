@@ -5,7 +5,7 @@
         <table id="demo" lay-filter="test"></table>
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加成员','itemAdd.html',600,380)">
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加成员','itemAdd.html',600,380,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加成员
                 </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
@@ -51,7 +51,7 @@
                     , {
                         field: 'handle', title: '操作', width: '10%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑成员\',\'/admin/thirdparty/itemEdit?id=' + d.id + '\',600,380);">编辑</button>' +
+                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'编辑成员\',\'/admin/thirdparty/itemEdit?id=' + d.id + '\',600,380,true);">编辑</button>' +
                                 '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delNotice(' + d.id + ');">删除</button>';
                             return handle;
                         }

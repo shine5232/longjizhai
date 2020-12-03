@@ -15,13 +15,6 @@
     <div class="x-body">
         <div class="layui-form" id="mainForm" style="margin-right: 20px;">
             <div class="layui-form-item">
-                <label class="layui-form-label">标题</label>
-                <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" name="title"
-                        placeholder="请输入标题" type="text" value="{$data.title}" />
-                </div>
-            </div>
-            <div class="layui-form-item">
                 <label class="layui-form-label">推荐位置</label>
                 <div class="layui-input-block">
                     <select name="recommend_id" lay-verify="required">
@@ -30,53 +23,6 @@
                         <option value="{$vo['id']}" {if condition="$vo['id'] == $data['recommend_id']"}selected{/if}>{$vo['name']}</option>
                         {/foreach}
                     </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属地区</label>
-                <div class="layui-input-inline">
-					<select name="province" lay-filter="province" id="province" lay-verify="required">
-						<option value="">请选择省</option>
-						{volist name='province' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['province']"}selected{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="city" lay-filter="city" id="city" lay-verify="required">
-                        <option value="">请选择市</option>
-                        {volist name='city' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['city']"}selected{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="county" lay-filter="county" id="county" lay-verify="required">
-                        <option value="">请选择区/县</option>
-                        {volist name='county' id='vo'}
-						<option value="{$vo.region_code}" {if condition="$vo.region_code == $data['county']"}selected{/if}>{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">链接地址</label>
-                <div class="layui-input-block">
-                    <input autocomplete="off" class="layui-input" name="url"
-                        placeholder="请输入链接地址" type="text" value="{$data.url}" />
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">图片</label>
-                <div class="layui-input-block" style="display: flex;">
-                    <button type="button" class="layui-btn upload-img">
-                        <i class="layui-icon">&#xe67c;</i>轮播图
-                    </button>
-                    <div style="color: #999;margin-left: 5px;">
-                        <p>(移动端:200px*100px)</p>
-                        <p>(PC端:200px*100px)</p>
-                    </div>
-                    <img class="layui-upload-img" id="thumb" src="{$data.img}">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -186,14 +132,8 @@
             }
             var params = {
                 id:data.field.id,
-				title: data.field.title,
-				img: data.field.img,
                 recommend_id:data.field.recommend_id,
-                province:data.field.province,
-                city:data.field.city,
-                county:data.field.county,
 				sort: data.field.sort,
-				url: data.field.url,
                 status:data.field.status,
                 is_zong:data.field.is_zong,
                 start_time:data.field.start_time,

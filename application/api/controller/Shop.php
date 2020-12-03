@@ -69,13 +69,14 @@ class Shop extends Main
                 }
             }
             $where['A.status'] = 0;
-            $where['A.endtime'] = ['>=',date('Y-m-d H:i:s')];
+            $end_time = date('Y-m-d H:i:s');
             $page = $post['page']>0?$post['page']:1;
             $limit = $post['size']>0?$post['size']:10;
             $page_start = ($page - 1) * $limit;
             $data = Db::name('shop')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
                 ->where($where)->field('A.id,A.rectangle_logo AS img,A.name')
+                ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
                 ->order($order)
                 ->limit($page_start, $limit)
                 ->select();

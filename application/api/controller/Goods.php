@@ -100,14 +100,15 @@ class Goods extends Main
             $data = Db::name('shop_goods')->alias('A')
                 ->join('brands B','B.id = A.brand_id','LEFT')
                 ->join('goods_cate C','C.id = A.cate','LEFT')
-                ->where($where)->field("A.id,A.name,A.title,A.thumb,A.unit,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
+                ->where($where)->field("A.id,A.name,A.title,A.thumb,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price')->find();
+                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
+                        $data[$key]['unit'] = $attr['unit'];
                     }
                     $data[$key]['thumb'] = _getServerName().'/public'.$v['thumb'];
                 }
@@ -140,7 +141,9 @@ class Goods extends Main
                 ->where($where)->field("A.id,A.name,A.title,A.thumb,A.unit,A.video,A.content,A.shop_id,A.cate,A.points,B.name AS brand_name,C.title AS cate_name")
                 ->find();
             if($data){
-                $data['video'] = _getServerName().$data['video'];
+                if($data['video']){
+                    $data['video'] = _getServerName().$data['video'];
+                }
                 $this->ret['code'] = 200;
                 $this->ret['data'] = $data;
             }else{
@@ -205,8 +208,9 @@ class Goods extends Main
             $goods = Db::name('comment_order')->alias('A')
                 ->join('member B','B.id = A.uid','INNER') 
                 ->join('member_weixin C','C.id = B.uid','INNER')
-                ->join('shop_goods_attr D','D.id = A.goods_attr_id','INNER')   
-                ->where($where)->field("A.id,A.content,A.quality_point,A.transport_point,A.create_time,C.nickname,C.avatar,D.name")
+                ->join('shop_goods_attr D','D.id = A.goods_attr_id','INNER') 
+                ->join('shop_goods_attr E','E.id = D.pid','INNER')  
+                ->where($where)->field("A.id,A.content,A.quality_point,A.transport_point,A.create_time,C.nickname,C.avatar,D.name,E.name AS cate_name")
                 ->order('A.id DESC')->limit($page_start, $limit)->select();
             if($goods){
                 foreach($goods as $key=>$v){
@@ -242,26 +246,34 @@ class Goods extends Main
             $where['A.status']=['eq',0];
             $where['A.online']=['eq',1];
             $data['goods'] = Db::name('shop_goods_attr')->alias('A')  
-                ->where($where)->field("A.id,A.name,A.thumb AS imgUrl,A.thumb AS previewImgUrl,A.shop_price")
-                ->order('A.id DESC')->select();
+                ->where($where)->field("A.id,A.name,shop_price,thumb AS imgUrl")
+                ->order('A.sort DESC')->select();
             $data['lis'] = array();
+            $data['ku'] = 0;
             if($data['goods']){
-                $k=0;
+                $k = 0;
                 foreach($data['goods'] as &$v){
-                    $v['previewImgUrl'] = $v['imgUrl'] = _getServerName().'/public'.$v['imgUrl'];
-                    $attr = Db::name('shop_goods_attr')->where('pid',$v['id'])->field('id,name,shop_price')->select();
+                    $v['imgUrl'] = _getServerName().'/public'.$v['imgUrl'];
+                    $where2 = [
+                        'pid'=>$v['id'],
+                        'status' => 0,
+                        'online' => 1,
+                    ];
+                    $attr = Db::name('shop_goods_attr')->where($where2)->field('id,name,shop_price,thumb AS imgUrl,thumb AS previewImgUrl,ku')->order('sort DESC')->select();
                     if($attr){
                         foreach($attr as &$i){
                             $k++;
                             $i['shop_price'] = $i['shop_price'] * 100;
+                            $i['previewImgUrl'] = $i['imgUrl'] = _getServerName().'/public'.$i['imgUrl'];
                             $data['attr'][] = $i;
                             $data['lis'][] = [
                                 's1'=>$v['id'],
                                 's2'=>$i['id'],
                                 'price'=>$i['shop_price'],
-                                'stock_num'=>9999,
+                                'stock_num'=>$i['ku'],
                                 'id'=>$k
                             ];
+                            $data['ku'] += (int)$i['ku'];
                         }
                     }
                 }
@@ -292,9 +304,9 @@ class Goods extends Main
             }
             $where['A.status'] = 1;
             $where['A.recommend_id'] = 3;
-            $where['A.end_time'] = ['>=',date('Y-m-d H:i:s')];
             $where['B.status'] = 0;
             $where['B.online'] = 1;
+            $end_time = date('Y-m-d H:i:s');
             $page = $post['page']>0?$post['page']:1;
             $limit = $post['size']>0?$post['size']:10;
             $page_start = ($page - 1) * $limit;
@@ -302,17 +314,20 @@ class Goods extends Main
                 ->join('shop_goods B','B.id = A.object_id','INNER')
                 ->join('brands C','C.id = B.brand_id','LEFT')
                 ->join('goods_cate D','D.id = B.cate','LEFT')
-                ->where($where)->field('A.object_id AS id,A.img,B.name,B.title,B.unit,C.name AS brand_name,D.title AS cate_name')
+                ->where($where)
+                ->where("A.end_time >= '".$end_time."' OR A.end_time = ''")
+                ->field('A.object_id AS id,A.img,B.name,B.title,C.name AS brand_name,D.title AS cate_name')
                 ->order('A.sort DESC')
                 ->limit($page_start, $limit)
                 ->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price')->find();
+                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
+                        $data[$key]['unit'] = $attr['unit'];
                     }
                     $data[$key]['img'] = _getServerName().$v['img'];
                 }
@@ -345,14 +360,15 @@ class Goods extends Main
             $data = Db::name('shop_goods')->alias('A')
                 ->join('brands B','B.id = A.brand_id','LEFT')
                 ->join('goods_cate C','C.id = A.cate','LEFT')
-                ->where($where)->field("A.id,A.name,A.title,A.thumb,A.unit,A.points,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
+                ->where($where)->field("A.id,A.name,A.title,A.thumb,A.points,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price')->find();
+                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
+                        $data[$key]['unit'] = $attr['unit'];
                     }
                     $data[$key]['thumb'] = _getServerName().'/public'.$v['thumb'];
                 }

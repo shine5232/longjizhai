@@ -108,7 +108,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">方形logo(200px*200px)</label>
                 <div class="layui-input-block" style="display: flex;">
-                    <button type="button" class="layui-btn layui-btn-sm upload-img" data-id="1">
+                    <button type="button" class="layui-btn layui-btn-sm upload-img1" data-id="1">
                         <i class="layui-icon">&#xe67c;</i>选择图片
                     </button>
                     <img class="layui-upload-img" id="thumb1" src="{$shop['square_logo']}">
@@ -117,10 +117,19 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">矩形logo(200px*100px)</label>
                 <div class="layui-input-block" style="display: flex;">
-                    <button type="button" class="layui-btn layui-btn-sm upload-img" data-id="2">
+                    <button type="button" class="layui-btn layui-btn-sm upload-img2" data-id="2">
                         <i class="layui-icon">&#xe67c;</i>选择图片
                     </button>
                     <img class="layui-upload-img" id="thumb2" src="{$shop['rectangle_logo']}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">有效期(不选:永久有效)</label>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" name="starttime" class="layui-input" id="test5" placeholder="请选择开始时间" value="{$shop.starttime}" />
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" name="endtime" class="layui-input" id="test6" placeholder="请选择结束时间" value="{$shop.endtime}" />
                 </div>
             </div>
             <div class="layui-form-item">
@@ -165,8 +174,18 @@
             }
         });
     });
-    layui.use(['form', 'layer', 'upload'], function () {
-        var form = layui.form,layer = layui.layer,upload = layui.upload;
+    layui.use(['form', 'layer', 'upload','laydate'], function () {
+        var form = layui.form,layer = layui.layer,upload = layui.upload,laydate = layui.laydate;
+        laydate.render({
+            elem: '#test5'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
+        laydate.render({
+            elem: '#test6'
+            ,type: 'datetime'
+            ,trigger: 'click'
+        });
         /**
         * 监听省份选择
         */
@@ -244,11 +263,71 @@
 			}, 'json');
         });
         var uploadInst = upload.render({
-            elem: '.upload-img',
+            elem: '.upload-img1',
             url: '/api/file/upload?type=logo',
             accept: 'file', // 允许上传的文件类型
             field: 'imgFile',
-            auto: true, // 自动上传
+            auto: false, // 自动上传
+            choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    var flag = true;
+                    var img = new Image();
+                    img.src = result; 
+                    img.onload = function () { //初始化夹在完成后获取上传图片宽高，判断限制上传图片的大小。
+                        if(img.width == 200 && img.height == 200){
+                            obj.upload(index, file); //满足条件调用上传方法
+                        }else{
+                            flag = false;
+                            layer.msg("您上传的小图大小必须是200*200尺寸！");
+                            return false;
+                        }
+                    }
+                    return flag;
+                });
+            },
+            before: function (obj) {
+                var item = this.item;
+                var id = $(item).data('id');
+                obj.preview(function (index, file, result) {
+                    $('#thumb'+id).attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                if (res.error == 0) {
+                    var item = this.item;
+                    var id = $(item).data('id');
+                    $("input[name='thumb"+id+"']").val(res.url);
+                    $('#thumb'+id).show();
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+        var uploadInst = upload.render({
+            elem: '.upload-img2',
+            url: '/api/file/upload?type=logo',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: false, // 自动上传
+            choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    var flag = true;
+                    var img = new Image();
+                    img.src = result; 
+                    img.onload = function () { //初始化夹在完成后获取上传图片宽高，判断限制上传图片的大小。
+                        if(img.width == 200 && img.height == 100){
+                            obj.upload(index, file); //满足条件调用上传方法
+                        }else{
+                            flag = false;
+                            layer.msg("您上传的小图大小必须是200*100尺寸！");
+                            return false;
+                        }
+                    }
+                    return flag;
+                });
+            },
             before: function (obj) {
                 var item = this.item;
                 var id = $(item).data('id');

@@ -112,15 +112,20 @@ class Recommend extends Main
             $data = Db::name('recommend_data')->alias('A')
                 ->join('recommend B','B.id = A.recommend_id','INNER')
                 ->where($where)->order('A.sort DESC,A.id DESC')->limit($page_start,$limit)
-                ->field('A.*,B.name AS recommend_name,A.province AS province_name,A.city AS city_name,A.county AS county_name')->select();
+                ->field('A.*,B.name AS recommend_name,A.county')->select();
             $count = Db::name('recommend_data')->alias('A')
                 ->join('recommend B','B.id = A.recommend_id','INNER')
                 ->where($where)->count();
             if ($data) {
-                foreach($data as &$v){
-                    $v['province_name'] = Db::name('region')->where('region_code',$v['province'])->value('region_name');
-                    $v['city_name'] = Db::name('region')->where('region_code',$v['city'])->value('region_name');
-                    $v['county_name'] = Db::name('region')->where('region_code',$v['county'])->value('region_name');
+                foreach($data as $key=>$v){
+                    $info = Db::name('region')->alias('A')
+                        ->join('region B','B.region_code = A.region_superior_code','INNER')
+                        ->join('region C','C.region_code = B.region_superior_code','INNER')
+                        ->where('A.region_code',$v['county'])
+                        ->field('A.region_name AS county_name,B.region_name AS city_name,C.region_name AS province_name')->find();
+                    $data[$key]['county_name'] = $info['county_name'];
+                    $data[$key]['province_name'] = $info['province_name'];
+                    $data[$key]['city_name'] = $info['city_name'];
                 }
                 $this->ret['count'] = $count;
                 $this->ret['data'] = $data;
@@ -154,12 +159,6 @@ class Recommend extends Main
             $id = $this->request->get('id');
             $data = Db::name('recommend_data')->where('id',$id)->find();
             $recommend = Db::name('recommend')->where(['status'=>['eq',1]])->select();
-            $province = _getRegion(); //获取省份数据
-            $city = _getRegion($data['province'], false, true); //获取城市数据
-            $county = _getRegion($data['city'], false, true); //获取区县数据
-            $this->assign('province', $province);
-            $this->assign('city', $city);
-            $this->assign('county', $county);
             $this->assign('recommend',$recommend);
             $this->assign('data',$data);
             return $this->fetch('data_edit');

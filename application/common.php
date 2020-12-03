@@ -511,10 +511,13 @@ function _getUserInfoByOpenid($openid){
     $res['uper'] = Db::name('member')->where('uid',$res['superior_id'])->value('uname');
     if($res['type'] == '1'){
         $res['typer'] = '技工';
+        $res['avatar'] = _getServerName().$res['thumb'];
     }else if($res['type'] == '2'){
         $res['typer'] = '工长';
+        $res['avatar'] = _getServerName().$res['thumb'];
     }else if($res['type'] == '3'){
         $res['typer'] = '设计师';
+        $res['avatar'] = _getServerName().$res['thumb'];
     }else if($res['type'] == '4'){
         $res['typer'] = '装饰公司';
     }else if($res['type'] == '5'){

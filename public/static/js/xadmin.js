@@ -133,7 +133,7 @@ $(function (){
     w       弹出层宽度（缺省调默认值）
     h       弹出层高度（缺省调默认值）
 */
-function x_admin_show(title,url,w,h,offset){
+function x_admin_show(title,url,w,h,full=false,offset){
     if(offset==null||offset==''){
         offset = 100;
     }
@@ -149,7 +149,7 @@ function x_admin_show(title,url,w,h,offset){
     if (h == null || h == '') {
         h=($(window).height() - 50);
     };
-    layer.open({
+    var index = layer.open({
         offset:100 +'px', //右下角弹出
         type: 2,
         area: [w+'px', h +'px'],
@@ -164,6 +164,9 @@ function x_admin_show(title,url,w,h,offset){
             iframeWindow.layui.form.render();
         }
     });
+    if(full){
+        layer.full(index);
+    }
 }
 /**
  * 弹出层DOM

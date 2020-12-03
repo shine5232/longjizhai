@@ -17,8 +17,8 @@
                     <i class="layui-icon layui-icon-delete"></i>批量删除
                 </button>
                 {/if}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加属性','attrAdd.html?goods_id={$id}',860,500)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加属性
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加规格','attrAdd.html?goods_id={$id}',860,500,true)">
+                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加规格
                 </button>
             </div>
         </script>
@@ -44,10 +44,9 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '10%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'name', title: '属性名称', width: '10%' }
+                    , { field: 'name', title: '规格名称', width: '10%' }
                     , { field: 'price', title: '市场价', width: '8%'}
                     , { field: 'shop_price', title: '商铺价', width: '8%'}
-                    , { field: 'specs', title: '属性规格', width: '10%'}
                     , { field: 'unit', title: '单位名称', width: '10%'}
                     , { field: 'thumb',title: '缩略图', width:'15%',
                         templet: function(d){
@@ -61,9 +60,9 @@
                     }
                     , { field: 'create_time', title: '创建时间', width: '15%', }
                     , {
-                        field: 'handle', title: '操作',width: '15%',
+                        field: 'handle', title: '操作',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/goods/attrEdit?id=' + d.id + '\',860,500);">编辑</button>'+
+                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑规格\',\'/admin/goods/attrEdit?id=' + d.id + '\',860,500,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'商品属性\',\'/admin/shop_goods_attr/unintList?pid=' + d.id + '\',860,500,true);">属性</button>'+
                             '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
                             return handle;
                         }
