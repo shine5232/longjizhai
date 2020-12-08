@@ -53,7 +53,7 @@ class Member extends Main
                 $where .= " AND A.county = ".$user['county'];
             }
             $sql1 = "SELECT A.*,B.rank_name,C.uname AS topname,A.province AS province_name,A.city AS city_name,A.county AS county_name FROM lg_member A
-                    INNER JOIN lg_member_rank B ON A.rank_id = B.id
+                    LEFT JOIN lg_member_rank B ON A.rank_id = B.id
                     LEFT JOIN lg_member C ON A.superior_id = C.uid
                     WHERE $where
                     ORDER BY A.id DESC 

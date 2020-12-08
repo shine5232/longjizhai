@@ -59,7 +59,7 @@
                     , { field: 'checked', title: '审核状态', width: '8%',
                         templet:function(d){
                             if(d.checked == '0'){
-                                return '待审核';
+                                return '<font style="color:red">待审核</font>';
                             }else if(d.checked == '1'){
                                 return '正常';
                             }

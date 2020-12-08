@@ -21,6 +21,7 @@ class Banner extends Main
                 $where['county'] = $post['county'];
             }
             $where['status'] = 0;
+            $where['position_id'] = 1;
             $data = Db::name('banner')->where($where)->field('id,title,url,thumb')->order('sort DESC,id DESC')->select();
             if($data){
                 $this->ret['code'] = 200;

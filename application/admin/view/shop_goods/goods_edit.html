@@ -186,6 +186,7 @@
             choose: function (obj) {
                 obj.preview(function (index, file, result) {
                     var flag = true;
+                    obj.upload(index, file);
                     /* var img = new Image();
                     img.src = result; 
                     img.onload = function () { //初始化夹在完成后获取上传图片宽高，判断限制上传图片的大小。

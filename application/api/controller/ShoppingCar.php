@@ -86,7 +86,7 @@ class ShoppingCar extends Main
                         ->where('A.car_id',$v['id'])->select();
                     if($info){
                         foreach($info as $k=>$i){
-                            $car_num += (int)$i['num'];
+                            $car_num += $i['num'];
                             $info[$k]['thumb'] =  _getServerName().'/public'.$i['thumb'];
                             $info[$k]['checked'] = false;
                         }
@@ -124,7 +124,7 @@ class ShoppingCar extends Main
                 ->sum('B.num');
             $car_num = 0;
             if($data){
-                $car_num += (int)$data;
+                $car_num += $data;
                 $this->ret['code'] = 200;
                 $this->ret['data'] = $car_num;
             }else{

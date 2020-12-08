@@ -245,7 +245,7 @@ class Branch extends Controller
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
             $page_start = ($page - 1) * $limit;
-            $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id . " ORDER BY A.region_sort DESC LIMIT " . $page_start . "," . $limit;
+            $sql = "SELECT A.region_id,A.region_name,A.region_short_name,A.region_code FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id . " ORDER BY A.region_sort ASC LIMIT " . $page_start . "," . $limit;
             $sql2 = "SELECT count(1) FROM lg_region A INNER JOIN lg_region B ON A.region_superior_code = B.region_code AND B.region_id = " . $region_id;
             $data = Db::query($sql);
             $count = Db::query($sql2);

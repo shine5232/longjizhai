@@ -183,7 +183,7 @@ class Shop extends Main
                 $where['A.is_zong'] = 1;
             }
             $where['A.status'] = 1;
-            $where['A.recommend_id'] = 1;
+            $where['A.recommend_id'] = 2;
             $end_time = date('Y-m-d H:i:s');
             $page = $post['page']>0?$post['page']:1;
             $limit = $post['size']>0?$post['size']:10;

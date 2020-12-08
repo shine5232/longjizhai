@@ -53,4 +53,22 @@ class ornament extends Main
         
         return  $this->fetch('look', ['data' => $data]);
     }
+    /**
+     * 装修需求-处理需求
+     */
+    public function optat(){
+        if(request()->isPost()){
+            $post     = $this->request->post();
+            $data = Db::name('ornament')->where('id',$post['id'])->update(['status'=>1]);
+            if ($data) {
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '处理成功';
+            }else{
+                $this->ret['msg'] = '处理失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
 }
