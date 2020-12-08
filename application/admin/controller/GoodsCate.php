@@ -129,13 +129,17 @@ class GoodsCate extends Main
     public function addBrands(){
         if(request()->isPost()){
             $post = $this->request->post();
-            $brands = implode(',',$post['brands']);
+            if(isset($post['brands'])){
+                $brands = implode(',',$post['brands']);
+            }else{
+                $brands = '';
+            }
             $res = Db::name('goods_cate')->where('id',$post['cate_id'])->update(['brands'=>$brands]);
             if($res){
                 $this->ret['code'] = 200;
-                $this->ret['msg'] = '绑定成功';
+                $this->ret['msg'] = '操作成功';
             }else{
-                $this->ret['msg'] = '绑定失败';
+                $this->ret['msg'] = '操作失败';
             }
             return json($this->ret);
         }else{
@@ -144,7 +148,7 @@ class GoodsCate extends Main
             $pid = $cate['pid'];
             $title = '【'.$cate['title'].'】';
             $title = _getAllCateTitle($pid,$title);
-            $brands = Db::name('brands')->where('status',0)->field('id,name')->select();
+            $brands = Db::name('brands')->where('status',0)->field('id,name')->order('sort ASC')->select();
             $this->assign('cate',$cate);
             $this->assign('title',$title);
             $this->assign('brands',$brands);

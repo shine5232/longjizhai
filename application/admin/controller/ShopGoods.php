@@ -20,14 +20,18 @@ class ShopGoods extends Main
             $cate_id = $this->request->param('cate_id', '');
             $name = $this->request->param('name', '');
             $brand_id = $this->request->param('brand_id', '');
+            $checked = $this->request->param('checked', '-1');
             $page_start = ($page - 1) * $limit;
             $where['a.shop_id'] = ['eq', $shop_id];
             $where['a.status'] = ['eq', 0];
             if ($cate_id) {
-                $where['a.cate_id'] = ['eq', $cate_id];
+                $where[] = ['exp','FIND_IN_SET('.$cate_id.',a.cate_id)'];
             }
             if ($brand_id) {
                 $where['a.brand_id'] = ['eq', $brand_id];
+            }
+            if ($checked > '-1') {
+                $where['a.checked'] = ['eq', $checked];
             }
             if ($name) {
                 $where['a.name'] = ['like', '%'.$name.'%'];
@@ -35,8 +39,8 @@ class ShopGoods extends Main
             $data = Db::name('shop_goods')->alias('a')
                 ->join('brands b', 'b.id = a.brand_id', 'LEFT')
                 ->where($where)
-                ->field('a.id,a.name,a.thumb,a.online,a.cate,a.title,b.name as brand_name')
-                ->order('a.id DESC')
+                ->field('a.id,a.name,a.thumb,a.online,a.sort,a.cate,a.title,b.name as brand_name')
+                ->order('a.sort ASC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop_goods')->alias('a')
@@ -87,6 +91,7 @@ class ShopGoods extends Main
             $insert['cate_id'] = $cate_id;
             $insert['county'] = $county;
             $insert['hot']=isset($post['hot'])?1:0;
+            $insert['checked'] = isset($post['checked']) ? $post['checked'] : 0;
             $insert['online'] = isset($post['online']) ? $post['online'] : 0;
             $insert['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
             $insert['create_time'] = date('Y-m-d H:i:s');
@@ -122,6 +127,7 @@ class ShopGoods extends Main
             $update = $post;
             $update['cate_id'] = $cate_id;
             $update['hot']=isset($post['hot'])?1:0;
+            $insert['checked'] = isset($post['checked']) ? $post['checked'] : 0;
             $update['online'] = isset($post['online']) ? $post['online'] : 0;
             $update['brand_id'] = $post['brand_id'] > 0 ? $post['brand_id'] : '';
             $update['update_time'] = date('Y-m-d H:i:s');

@@ -319,13 +319,23 @@ class check extends Main
         $cases = Db::name('cases')->alias('A')
             ->join('village B','B.id = A.area_id','INNER')
             ->join('member C','C.id = A.user_id','INNER')
-            ->join('cases_attr D','D.id = A.home_id','INNER')
-            ->join('cases_attr E','E.id = A.position_id','INNER')
-            ->join('cases_attr F','F.id = A.price_id','INNER')
+            ->join('cases_attr D','D.id = A.home_id','LEFT')
+            ->join('cases_attr F','F.id = A.price_id','LEFT')
             ->where(['A.id'=>$id])
-            ->field('A.id,A.case_title,A.area,A.create_time,A.type,A.style,A.thumb,B.village_name,C.uname,C.realname,D.title AS home,E.title AS position,F.title AS price')->find();
-        $cases_img = Db::name('case_img')->where(['case_id'=>$cases['id']])
-            ->order(['sort' => 'DESC', 'id' => 'ASC'])->field('id,img')->select();
+            ->field('A.id,A.case_title,A.area,A.create_time,A.type,A.style,A.thumb,B.village_name,C.uname,C.realname,D.title AS home,F.title AS price')->find();
+        if($cases['type'] == 3){
+            $position = Db::name('case_img')->alias('A')
+                ->join('cases_attr B','B.id = A.position_id','LEFT')->where(['case_id'=>$cases['id']])->field('A.position_id,B.title AS position')->group('position_id')->select();
+            if($position){
+                foreach($position as $key=>$v){
+                    $position[$key]['img'] = Db::name('case_img')->where(['case_id'=>$cases['id'],'position_id'=>$v['position_id']])->field('img')->select();
+                }
+            }
+            $cases_img = $position;
+        }else{
+            $cases_img = Db::name('case_img')->where(['case_id'=>$cases['id']])
+                ->order(['sort' => 'DESC', 'id' => 'ASC'])->field('id,img,position_id')->select();
+        }
         $this->assign('cases_img',$cases_img);
         $this->assign('cases', $cases);
         return $this->fetch('look_cases');

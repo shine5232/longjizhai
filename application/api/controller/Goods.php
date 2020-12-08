@@ -100,7 +100,7 @@ class Goods extends Main
             $data = Db::name('shop_goods')->alias('A')
                 ->join('brands B','B.id = A.brand_id','LEFT')
                 ->join('goods_cate C','C.id = A.cate','LEFT')
-                ->where($where)->field("A.id,A.name,A.title,A.thumb,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
+                ->where($where)->field("A.id,A.name,A.title,A.thumb,B.name AS brand_name,C.title AS cate_name")->order('A.sort ASC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
@@ -170,7 +170,7 @@ class Goods extends Main
             $goods = Db::name('shop_goods')->where($where)->field("id,thumb")->find();
             if($goods){
                 //轮播图
-                $goods_img = Db::name('shop_goods_img')->where('goods_id',$goods['id'])->order('sort DESC')->field('img')->select();
+                $goods_img = Db::name('shop_goods_img')->where('goods_id',$goods['id'])->order('sort ASC')->field('img')->select();
                 if($goods_img){
                     foreach($goods_img as $key=>$v){
                         $v['img'] = _getServerName().$v['img'];
@@ -232,7 +232,7 @@ class Goods extends Main
         return json($this->ret);
     }
     /**
-     * 获取商品属性信息
+     * 获取商品规格信息
      */
     public function getGoodsAttrLis(){
         if(request()->isPost()){
@@ -245,36 +245,79 @@ class Goods extends Main
             $where['A.pid']=['eq',0];
             $where['A.status']=['eq',0];
             $where['A.online']=['eq',1];
-            $data['goods'] = Db::name('shop_goods_attr')->alias('A')  
-                ->where($where)->field("A.id,A.name,shop_price,thumb AS imgUrl")
-                ->order('A.sort DESC')->select();
+            $data['attr'] = Db::name('shop_goods_attr')->alias('A')  
+                ->where($where)->field("A.id,A.name,shop_price AS price,thumb AS img")
+                ->order('A.sort ASC')->select();
             $data['lis'] = array();
             $data['ku'] = 0;
-            if($data['goods']){
-                $k = 0;
-                foreach($data['goods'] as &$v){
-                    $v['imgUrl'] = _getServerName().'/public'.$v['imgUrl'];
+            if($data['attr']){
+                foreach($data['attr'] as $key=>$v){
+                    if($v['img']){
+                        $data['attr'][$key]['img'] = _getServerName().'/public'.$v['img'];
+                    }
+                    $data['attr'][$key]['selected']=false;
                     $where2 = [
                         'pid'=>$v['id'],
                         'status' => 0,
                         'online' => 1,
                     ];
-                    $attr = Db::name('shop_goods_attr')->where($where2)->field('id,name,shop_price,thumb AS imgUrl,thumb AS previewImgUrl,ku')->order('sort DESC')->select();
-                    if($attr){
-                        foreach($attr as &$i){
-                            $k++;
-                            $i['shop_price'] = $i['shop_price'] * 100;
-                            $i['previewImgUrl'] = $i['imgUrl'] = _getServerName().'/public'.$i['imgUrl'];
-                            $data['attr'][] = $i;
-                            $data['lis'][] = [
-                                's1'=>$v['id'],
-                                's2'=>$i['id'],
-                                'price'=>$i['shop_price'],
-                                'stock_num'=>$i['ku'],
-                                'id'=>$k
-                            ];
-                            $data['ku'] += (int)$i['ku'];
+                    $ku = Db::name('shop_goods_attr')->where($where2)->sum('ku');
+                    $data['ku'] += (int)$ku;
+                }
+                $where3 = [
+                    'pid'=>$data['attr'][0]['id'],
+                    'status' => 0,
+                    'online' => 1,
+                ];
+                $attr = Db::name('shop_goods_attr')->where($where3)->field('id,name,shop_price AS price,thumb AS img,thumb AS previewImgUrl,ku,unit')->order('sort ASC')->select();
+                if($attr){
+                    foreach($attr as &$i){
+                        if($i['img']){
+                            $i['img'] = _getServerName().'/public'.$i['img'];
                         }
+                        $data['lis'][] = [
+                            'id'=>$i['id'],
+                            'price'=>$i['price'],
+                            'ku'=>$i['ku'],
+                            'img'=>$i['img'],
+                            'name'=>$i['name'],
+                            'unit'=>$i['unit'],
+                            'selected'=>false
+                        ];
+                    }
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 根据规格id获取属性信息
+     */
+    public function getSkuLisByPid(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $where['goods_id']=['eq',$post['goods_id']];
+            $where['pid']=['eq',$post['id']];
+            $where['status']=['eq',0];
+            $where['online']=['eq',1];
+            $data = Db::name('shop_goods_attr')  
+                ->where($where)
+                ->field("id,name,shop_price AS price,thumb AS img,thumb AS previewImgUrl,ku,unit")
+                ->order('sort ASC')->select();
+            if($data){
+                foreach($data as &$v){
+                    if($v['img']){
+                        $v['previewImgUrl'] = $v['img'] = _getServerName().'/public'.$v['img'];
                     }
                 }
                 $this->ret['code'] = 200;
@@ -317,13 +360,13 @@ class Goods extends Main
                 ->where($where)
                 ->where("A.end_time >= '".$end_time."' OR A.end_time = ''")
                 ->field('A.object_id AS id,A.img,B.name,B.title,C.name AS brand_name,D.title AS cate_name')
-                ->order('A.sort DESC')
+                ->order('A.sort ASC')
                 ->limit($page_start, $limit)
                 ->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
+                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
@@ -360,11 +403,11 @@ class Goods extends Main
             $data = Db::name('shop_goods')->alias('A')
                 ->join('brands B','B.id = A.brand_id','LEFT')
                 ->join('goods_cate C','C.id = A.cate','LEFT')
-                ->where($where)->field("A.id,A.name,A.title,A.thumb,A.points,B.name AS brand_name,C.title AS cate_name")->order('A.id DESC')->limit($page_start, $limit)->select();
+                ->where($where)->field("A.id,A.name,A.title,A.thumb,A.points,B.name AS brand_name,C.title AS cate_name")->order('A.sort ASC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
+                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];

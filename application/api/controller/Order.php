@@ -32,7 +32,7 @@ class Order extends Main
                             ->where('A.id',$i['goods_id'])
                             ->where('C.id',$i['goods_attr_id'])
                             ->where('D.id',$i['pid_attr_id'])
-                            ->field('A.name AS goods_name,A.cate,A.points,B.name AS shop_name,C.name AS attr_name,C.shop_price,C.thumb,D.name AS cate_name')
+                            ->field('A.name AS goods_name,A.cate,A.points,B.name AS shop_name,C.name AS attr_name,C.shop_price,C.thumb,C.unit,D.name AS cate_name')
                             ->find();
                         $data[$key]['shop_name'] = $info['shop_name'];
                         $data[$key]['lis'][$k]['goods_name'] = $info['goods_name'];
@@ -43,14 +43,17 @@ class Order extends Main
                         $data[$key]['lis'][$k]['points'] = $info['points'];
                         $data[$key]['lis'][$k]['cate'] = $info['cate'];
                         $data[$key]['lis'][$k]['yun'] = $yun;
+                        $data[$key]['lis'][$k]['unit'] = $info['unit'];
                         if($info['cate'] == 8){
                             $pay_one = $info['points'] * $i['num'];
                         }else{
                             $pay_one = $info['shop_price'] * $i['num'] + $yun;
                         }
                         $data[$key]['lis'][$k]['pay'] = $pay_one;
-                        $data[$key]['lis'][$k]['thumb'] = _getServerName().'/public'.$info['thumb'];
-                        $num += (int)$i['num'];
+                        if($info['thumb']){
+                            $data[$key]['lis'][$k]['thumb'] = _getServerName().'/public'.$info['thumb'];
+                        }
+                        $num += $i['num'];
                         $pay_all += $data[$key]['lis'][$k]['pay'];
                         $pay += $data[$key]['lis'][$k]['pay'];
                         $yuns += $data[$key]['lis'][$k]['yun'];
@@ -139,6 +142,7 @@ class Order extends Main
                             'shop_goods_id' => $s['goods_id'],
                             'goods_num' => $s['num'],
                             'goods_attrs_id' => $s['goods_attr_id'],
+                            'notes' => $s['notes'],
                             'create_time' => date('Y-m-d H:i:s'),
                         ];
                         Db::name('order_info')->insert($insert2);

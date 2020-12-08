@@ -115,9 +115,21 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" lay-verify="required" name="sort" placeholder="数值越小越靠前" type="number" value="0"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <label class="layui-form-label">是否上架</label>
                 <div class="layui-input-block">
                   <input type="checkbox" name="online" lay-skin="switch" lay-text="是|否" value="1" checked>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" name="checked" lay-skin="switch" lay-text="正常|待审" value="1" checked>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -173,7 +185,7 @@
             choose: function (obj) {
                 obj.preview(function (index, file, result) {
                     var flag = true;
-                    var img = new Image();
+                    /* var img = new Image();
                     img.src = result; 
                     img.onload = function () { //初始化夹在完成后获取上传图片宽高，判断限制上传图片的大小。
                         if(img.width == 430 && img.height == 430){
@@ -183,7 +195,7 @@
                             layer.msg("您上传的小图大小必须是430*430尺寸！");
                             return false;
                         }
-                    }
+                    } */
                     return flag;
                 });
             },

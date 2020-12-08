@@ -11,7 +11,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">所属用户</label>
                 <div class="layui-input-block">
-                    <select name="uid" lay-verify="required" lay-search="">
+                    <select name="uid" lay-search="">
                         <option value="">直接选择或搜索选择</option>
                         <option value="{$gongzhang['uid']}" selected>{$gongzhang['uname']}</option>
                         {volist name='member' id = 'vo'}

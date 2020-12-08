@@ -3,7 +3,7 @@ namespace app\api\controller;
 
 use think\Db;
 use phpcode\QRcode;
-
+set_time_limit(0);
 class Member extends Main
 {
     /**
@@ -749,5 +749,40 @@ class Member extends Main
             $this->ret['msg'] = '请求方式错误';
         }
         return json($this->ret);
+    }
+    public function changeUser(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:1000;
+            $page_start = ($page - 1) * $limit;
+            
+            $data = Db::name('member')->alias('a')
+            ->join('member_weixin b','b.openid = a.openid','left')
+            ->field('a.id,a.openid,a.superior_id,b.id as uid')->limit($page_start, $limit)->select();
+            if($data){
+                foreach($data as $key=>$vo){
+                    if($vo['superior_id']){
+                        $uid = Db::name('member')->alias('a')
+                            ->join('member_weixin b','b.openid = a.openid','left')->where('a.uid',$vo['superior_id'])->value('b.id');
+                        if($uid){
+                            Db::name('member')->where('id',$vo['id'])->update(['superior_id'=>$uid]);
+                            if($vo['openid']){
+                                Db::name('member_weixin')->where('openid',$vo['openid'])->update(['pid'=>$uid]);
+                            }
+                        }
+                    }
+                }
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '操作成功';
+                return json($this->ret);
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
     }
 }

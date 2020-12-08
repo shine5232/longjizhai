@@ -21,7 +21,7 @@ class ShopGoodsImg extends Main
             $where['goods_id'] = $shop_goods_id;
             $data = Db::name('shop_goods_img')
                 ->where($where)
-                ->order('sort DESC,id DESC')
+                ->order('sort ASC,id DESC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop_goods_img')

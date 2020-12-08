@@ -1,94 +1,181 @@
 {include file='public/head'}
+
 <body>
     <style media="screen" type="text/css">
         header {
             color: black;
         }
-        .logo-img{
+
+        .layui-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .layui-upload-list {
+            height: 100%;
+            margin: 0 10px;
+        }
+
+        .layui-upload-img {
+            height: 100%;
+            width: 30px;
+            cursor: pointer;
+        }
+
+        .layui-layer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .layui-input-block{
+            margin-left: 0;
+        }
+        .logo-img {
             width: 50px;
         }
     </style>
     <div class="x-body">
-        <table id="demo" lay-filter="test"></table>
-        <script type="text/html" id="toolbarDemo">
-            <div class="layui-btn-container">
-                {if $role_id <= '144'}
-                <button class="layui-btn  layui-btn-sm layui-btn-danger" lay-event="getCheckData">
-                    <i class="layui-icon layui-icon-delete"></i>批量删除
-                </button>
-                {/if}
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加属性','unintAdd.html?pid={$pid}',660,400,true)">
-                    <i class="layui-icon layui-icon-add-circle-fine"></i>添加属性
-                </button>
+        <div class="layui-btn-group demoTable">
+            <button class="layui-btn" onclick="addOne()">
+                <i class="layui-icon">&#xe608;</i>添加属性
+            </button>
+        </div>
+        <form action="{:url('unintAdd')}" class="layui-form" id="mainForm" method="post">
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th width="50">ID</th>
+                        <th width="100">属性名称</th>
+                        <th width="50">市场价</th>
+                        <th width="50">商铺价</th>
+                        <th width="50">单位名称</th>
+                        <th width="50">库存数量</th>
+                        <th width="50">运费</th>
+                        <th width="100">是否上架</th>
+                        <th width="150">缩略图</th>
+                        <th width="50">排序</th>
+                        <th width="100">操作</th>
+                    </tr>
+                </thead>
+                <tbody class="form-tb">
+                    {foreach name="data" item="vo"}
+                    <tr class="form-tr tr{$key}">
+                        <td>
+                            {$vo.id}
+                            <input type="hidden" class="id{$key}" name="form[{$key}][id]" value="{$vo.id}" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input name{$key}" name="form[{$key}][name]" value="{$vo.name}" placeholder="请输入属性名称" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input price{$key}" name="form[{$key}][price]" value="{$vo.price}" placeholder="请输入市场价格" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input shop_price{$key}" name="form[{$key}][shop_price]" value="{$vo.shop_price}" placeholder="请输入商铺价格" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input unit{$key}" name="form[{$key}][unit]" value="{$vo.unit}" placeholder="请输入单位名称" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input ku{$key}" name="form[{$key}][ku]" value="{$vo.ku}" placeholder="请输入库存数量" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input yun{$key}" name="form[{$key}][yun]" value="{$vo.yun|default=0}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="checkbox" class="layui-input online{$key}" name="form[{$key}][online]" lay-skin="switch" lay-text="上架|下架" value="1" {if condition="$vo.online == 1"}checked{/if}>
+                        </td>
+                        <td>
+                            <div class="layui-upload">
+                                <button type="button" class="layui-btn layui-btn-sm upload-img{$key}"
+                                    data-key="{$key}">上传图片</button>
+                                <div class="layui-upload-list">
+                                    <img class="layui-upload-img demo{$key}" src="__public__{$vo.thumb}"
+                                        onclick="show_img(this)">
+                                    <input type="hidden" class="thumb{$key}" name="form[{$key}][thumb]" value="{$vo.thumb}" />
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input sort{$key}" name="form[{$key}][sort]" value="{$vo.sort}" placeholder="请输入序号"  autocomplete="off" />
+                        </td>
+                        <td>
+                            <button type="button" class="layui-btn layui-btn-danger layui-btn-xs"
+                                onclick="delUser({$vo.id})">删除</button>
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+            <input type="hidden" name="pid" value="{$pid}" />
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="submit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
             </div>
-        </script>
+        </form>
     </div>
 </body>
 {include file='public/foot'}
 <script type="text/javascript">
-	var tableIns;
-    layui.use(['laydate', 'form', 'table'], function () {
-        var table = layui.table, laydate = layui.laydate, form = layui.form;
-        /**
-         * 请求数据
-        */
-        tableIns = table.render({
-            elem: '#demo'
-            , toolbar: '#toolbarDemo'
-            , defaultToolbar: []
-            , url: '/admin/goods/unintList?shop_goods_id='+{$shop_goods_id} //数据接口
-            , page: true //开启分页
-            , limit: 20
-            , id: 'test'
-            , cols: [
-                [ //表头
-                    { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', title: '序号', width: '8%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'id', title: 'ID', width: '8%' }
-                    , { field: 'name', title: '属性名称', width: '10%' }
-                    , { field: 'price', title: '市场价', width: '8%'}
-                    , { field: 'shop_price', title: '商铺价', width: '8%'}
-                    , { field: 'yun', title: '运费', width: '8%'}
-                    , { field: 'ku', title: '库存数', width: '8%'}
-                    , { field: 'unit', title: '单位名称', width: '10%'}
-                    , { field: 'thumb',title: '缩略图', width:'15%',
-                        templet: function(d){
-                            if(d.thumb){
-                                var img = '<img src="__public__'+d.thumb+'" class="logo-img" />'
-                            }else{
-                                var img = '暂无缩略图';
-                            }
-                            return img;
-                        }
-                    }
-                    , { field: 'create_time', title: '创建时间', width: '15%', }
-                    , {
-                        field: 'handle', title: '操作',
-                        templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑属性\',\'/admin/goods/unintEdit?id=' + d.id + '\',660,400,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delUser(' + d.id + ');">删除</button>';
-                            return handle;
-                        }
-                    }
-                ]
-            ]
-        });
-        /**
-         * 监听批量删除 
-        */
-        table.on('toolbar(test)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-            var ids = [];
-            switch (obj.event) {
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    data.forEach(function (v, i) {
-                        ids.push(v.id);
+    var tableIns,form,upload;
+    layui.use(['laydate', 'form', 'table', 'upload'], function () {
+        var laydate = layui.laydate;
+        upload = layui.upload;
+        form = layui.form;
+        form.on('submit(submit)', function(data){
+            var params = data.field;
+            var length = $('.form-tr').length;
+            if(length == 0){
+                layer.msg('请添加属性');
+                return false;
+            }
+            $.post('/admin/goods/unintAdd', params, function(data){
+                var res = data.data;
+                if(data.code == 200){
+                    layer.msg('操作成功',{icon:1,time:1000},function(){
+                        location.reload();
                     });
-                    delAll(ids);
-                    break;
-            };
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+            return false;
         });
     });
+    /**
+     * 文件上传
+    */
+    function uploadImg(key){
+        upload.render({
+            elem: '.upload-img'+key,
+            url: '/api/file/upload?type=thumb',
+            accept: 'file', // 允许上传的文件类型
+            field: 'imgFile',
+            auto: true, // 自动上传
+            before: function (obj) {
+                var item = this.item;
+                var key = $(item).data('key');
+                obj.preview(function (index, file, result) {
+                    $('.demo' + key).attr('src', result); //图片链接 base64
+                });
+            },
+            done: function (res) {
+                layer.msg(res.msg);
+                var item = this.item;
+                var key = $(item).data('key');
+                if (res.error == 0) {
+                    $('.thumb' + key).val(res.url);
+                }
+            },
+            error: function (index, upload) {
+                // 上传失败
+            }
+        });
+    }
     /**
      * 批量删除
     */
@@ -126,5 +213,93 @@
             }, 'json');
         });
     }
+    /**
+     * 看大图
+    */
+    function show_img(e) {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['70%', '90%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<div><img src="' + $(e).attr('src') + '" /></div>'
+        });
+    }
+    /**
+     * 添加一条
+    */
+    function addOne(){
+        var length = $('.form-tr').length;
+        var tr = '<tr class="form-tr tr'+length+'">'+
+                    '<td>'+
+                        'New<input type="hidden" name="form['+length+'][id]" value="" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input name'+length+'" name="form['+length+'][name]" value="" placeholder="请输入属性名称" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input price'+length+'" name="form['+length+'][price]" value="{$vo.price|default="0"}" placeholder="请输入市场价格" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input shop_price'+length+'" name="form['+length+'][shop_price]" value="{$vo.shop_price|default="0"}" placeholder="请输入商铺价格" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input unit'+length+'" name="form['+length+'][unit]" value="{$vo.unit|default=""}" placeholder="请输入单位名称" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input ku'+length+'" name="form['+length+'][ku]" value="{$vo.ku|default=""}" placeholder="请输入库存" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input yun'+length+'" name="form['+length+'][yun]" value="{$vo.yun|default="0"}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="checkbox" class="layui-input online'+length+'" name="form['+length+'][online]" lay-skin="switch" lay-text="上架|下架" value="1">'+
+                    '</td>'+
+                    '<td>'+
+                        '<div class="layui-upload">'+
+                            '<button type="button" class="layui-btn layui-btn-sm upload-img'+length+'" data-key="'+length+'">上传图片</button>'+
+                            '<div class="layui-upload-list">'+
+                                '<img class="layui-upload-img demo'+length+'" src="" onclick="show_img(this)">'+
+                                '<input type="hidden" class="thumb'+length+'" name="form['+length+'][thumb]" value="" />'+
+                            '</div>'+
+                        '</div>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input sort'+length+'" name="form['+length+'][sort]" value="" placeholder="请输入序号" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-key='+length+' onclick="delThis(this)">取消</button>'+
+                    '</td>'+
+                '</tr>';
+        $('.form-tb').append(tr);
+        form.render();
+        uploadImg(length);
+    }   
+    /**
+     * 删除一条
+    */
+    function delThis(e){
+        console.log($(e).data('key'));
+        var key = $(e).data('key');
+        $('.tr'+key).remove();
+        form.render();
+        uploadImg(length);
+    }
+    /**
+     * 初始化文件上传
+    */
+    function uploadRen(){
+        var length = $('.form-tr').length;
+        if(length > 0){
+            for(var s=0;s<=length;s++){
+                uploadImg(s);
+            }
+        }
+    }
+    uploadRen();
 </script>
+
 </html>

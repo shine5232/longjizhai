@@ -48,7 +48,7 @@ class Shop extends Main
                 ->join('goods_cate f', 'f.id = a.shop_cate', 'LEFT')
                 ->where($where)
                 ->field('a.*,e.area,e.realname,e.mobile,e.uname,e.subor,e.superior_id,e.rank_id,f.title as cate_title,g.rank_name')
-                ->order('a.id DESC')
+                ->order('a.sort ASC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop')->alias('a')
@@ -302,7 +302,7 @@ class Shop extends Main
             $shop_id = $this->request->param('shop_id', '');
             $where['shop_id'] = ['eq', $shop_id];
             $where['status'] = ['neq', 2];
-            $data = Db::name('shop_cate')->where($where)->order('sort DESC,id DESC')->limit($page_start, $limit)->select();
+            $data = Db::name('shop_cate')->where($where)->order('sort ASC,id DESC')->limit($page_start, $limit)->select();
             $count = Db::name('shop_cate')->where($where)->count();
             if ($data) {
                 $this->ret['count'] = $count;

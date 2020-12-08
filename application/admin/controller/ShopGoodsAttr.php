@@ -13,32 +13,18 @@ class ShopGoodsAttr extends Main
      */
     public function goodsAttr()
     {
-        if (request()->isAjax()) {
-            $page = $this->request->param('page', 1, 'intval');
-            $limit = $this->request->param('limit', 20, 'intval');
-            $shop_goods_id = $this->request->param('shop_goods_id', '');
-            $page_start = ($page - 1) * $limit;
+        if (request()->isGet()) {
+            $shop_goods_id  = $this->request->get('id');
             $where['a.status'] = ['eq', 0];
             $where['a.pid'] = ['eq', 0];
             $where['a.goods_id'] = ['eq', $shop_goods_id];
             $data = Db::name('shop_goods_attr')->alias('a')
                 ->where($where)
                 ->field('a.*')
-                ->order('a.sort DESC,a.id DESC')
-                ->limit($page_start, $limit)
+                ->order('a.sort ASC,a.id DESC')
                 ->select();
-            $count = Db::name('shop_goods_attr')->alias('a')
-                ->join('shop_goods b', 'b.id = a.goods_id', 'INNER')
-                ->where($where)
-                ->count();
-            if ($data) {
-                $this->ret['count'] = $count;
-                $this->ret['data'] = $data;
-            }
-            return json($this->ret);
-        } else {
-            $shop_goods_id  = $this->request->get('id');
             $this->assign('shop_goods_id', $shop_goods_id);
+            $this->assign('data', $data);
             return $this->fetch('goods_attr');
         }
     }
@@ -49,31 +35,48 @@ class ShopGoodsAttr extends Main
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
-            $insert = [
-                'name' => $post['name'],
-                'price' => $post['price'],
-                'shop_price' => $post['shop_price'],
-                'thumb' => $post['thumb'],
-                'sort' => $post['sort'],
-                'unit' => $post['unit'],
-                'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,
-                'pay_one' => $post['pay_one'],
-                'pay_two' => $post['pay_two'],
-                'pay_three' => $post['pay_three'],
-                'online' => isset($post['online']) ? $post['online'] : 0,
-                'goods_id' => $post['goods_id'],
-                'create_time' => date('Y-m-d H:i:s')
-            ];
-            $db = Db::name('shop_goods_attr')->insert($insert);
-            if ($db) {
-                $this->ret['code'] = 200;
-                $this->ret['msg'] = '添加成功';
+            $form = $post['form'];
+            $goods_id = $post['goods_id'];
+            foreach($form as $key=>$vo){
+                if($vo['id']){//更新数据
+                    $upd = [
+                        'name' => $vo['name'],
+                        'price' => $vo['price'],
+                        'shop_price' => $vo['shop_price'],
+                        'thumb' => $vo['thumb'],
+                        'sort' => $vo['sort'],
+                        'unit' => $vo['unit'],
+                        'paytype' => $vo['pay_one']?1:0,
+                        'pay_one' => $vo['pay_one'],
+                        'pay_two' => $vo['pay_two'],
+                        'pay_three' => $vo['pay_three'],
+                        'online' => isset($vo['online']) ? $vo['online'] : 0,
+                        'goods_id' => $goods_id,
+                        'update_time' => date('Y-m-d H:i:s')
+                    ];
+                    $db = Db::name('shop_goods_attr')->where('id',$vo['id'])->update($upd);
+                }else{//插入新数据
+                    $insert = [
+                        'name' => $vo['name'],
+                        'price' => $vo['price'],
+                        'shop_price' => $vo['shop_price'],
+                        'thumb' => $vo['thumb'],
+                        'sort' => $vo['sort'],
+                        'unit' => $vo['unit'],
+                        'paytype' => $vo['pay_one']?1:0,
+                        'pay_one' => $vo['pay_one'],
+                        'pay_two' => $vo['pay_two'],
+                        'pay_three' => $vo['pay_three'],
+                        'online' => isset($vo['online']) ? $vo['online'] : 0,
+                        'goods_id' => $goods_id,
+                        'create_time' => date('Y-m-d H:i:s')
+                    ];
+                    $db = Db::name('shop_goods_attr')->insert($insert);
+                }
             }
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '添加成功';
             return json($this->ret);
-        } else {
-            $goods_id = $this->request->get('shop_goods_id');
-            $this->assign('goods_id', $goods_id);
-            return $this->fetch('attr_add');
         }
     }
     /**
@@ -136,30 +139,17 @@ class ShopGoodsAttr extends Main
      */
     public function unintList()
     {
-        if (request()->isAjax()) {
-            $page = $this->request->param('page', 1, 'intval');
-            $limit = $this->request->param('limit', 20, 'intval');
-            $pid = $this->request->param('pid', '');
-            $page_start = ($page - 1) * $limit;
+        if (request()->isGet()) {
+            
+            $pid  = $this->request->get('pid');
             $where['a.status'] = ['eq', 0];
             $where['a.pid'] = ['eq', $pid];
             $data = Db::name('shop_goods_attr')->alias('a')
                 ->where($where)
                 ->field('a.*')
-                ->order('a.sort DESC,a.id DESC')
-                ->limit($page_start, $limit)
+                ->order('a.sort ASC,a.id DESC')
                 ->select();
-            $count = Db::name('shop_goods_attr')->alias('a')
-                ->join('shop_goods b', 'b.id = a.goods_id', 'INNER')
-                ->where($where)
-                ->count();
-            if ($data) {
-                $this->ret['count'] = $count;
-                $this->ret['data'] = $data;
-            }
-            return json($this->ret);
-        } else {
-            $pid  = $this->request->get('pid');
+            $this->assign('data', $data);
             $this->assign('pid', $pid);
             return $this->fetch('goods_unint');
         }
@@ -171,35 +161,47 @@ class ShopGoodsAttr extends Main
     {
         if (request()->isPost()) {
             $post     = $this->request->post();
-            $goods_id = Db::name('shop_goods_attr')->where('id',$post['pid'])->value('goods_id');
-            $insert = [
-                'name' => $post['name'],
-                'price' => $post['price'],
-                'shop_price' => $post['shop_price'],
-                'pid'=>$post['pid'],
-                'thumb' => $post['thumb'],
-                'sort' => $post['sort'],
-                'yun' => $post['yun'],
-                'ku' => $post['ku'],
-                'unit' => $post['unit'],
-                'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,
-                'pay_one' => $post['pay_one'],
-                'pay_two' => $post['pay_two'],
-                'pay_three' => $post['pay_three'],
-                'online' => isset($post['online']) ? $post['online'] : 0,
-                'goods_id' => $goods_id,
-                'create_time' => date('Y-m-d H:i:s')
-            ];
-            $db = Db::name('shop_goods_attr')->insert($insert);
-            if ($db) {
-                $this->ret['code'] = 200;
-                $this->ret['msg'] = '添加成功';
+            $form = $post['form'];
+            $pid = $post['pid'];
+            $goods_id = Db::name('shop_goods_attr')->where('id',$pid)->value('goods_id');
+            foreach($form as $key=>$vo){
+                if($vo['id']){//更新数据
+                    $upd = [
+                        'name' => $vo['name'],
+                        'price' => $vo['price'],
+                        'shop_price' => $vo['shop_price'],
+                        'thumb' => $vo['thumb'],
+                        'sort' => $vo['sort'],
+                        'unit' => $vo['unit'],
+                        'ku' => $vo['ku'],
+                        'yun' => $vo['yun'],
+                        'pid'=>$pid,
+                        'online' => isset($vo['online']) ? $vo['online'] : 0,
+                        'goods_id' => $goods_id,
+                        'update_time' => date('Y-m-d H:i:s')
+                    ];
+                    $db = Db::name('shop_goods_attr')->where('id',$vo['id'])->update($upd);
+                }else{//插入新数据
+                    $insert = [
+                        'name' => $vo['name'],
+                        'price' => $vo['price'],
+                        'shop_price' => $vo['shop_price'],
+                        'thumb' => $vo['thumb'],
+                        'sort' => $vo['sort'],
+                        'unit' => $vo['unit'],
+                        'ku' => $vo['ku'],
+                        'yun' => $vo['yun'],
+                        'pid'=>$pid,
+                        'online' => isset($vo['online']) ? $vo['online'] : 0,
+                        'goods_id' => $goods_id,
+                        'create_time' => date('Y-m-d H:i:s')
+                    ];
+                    $db = Db::name('shop_goods_attr')->insert($insert);
+                }
             }
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '添加成功';
             return json($this->ret);
-        } else {
-            $pid = $this->request->get('pid');
-            $this->assign('pid', $pid);
-            return $this->fetch('unint_add');
         }
     }
     /**

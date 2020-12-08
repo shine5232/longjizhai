@@ -44,22 +44,38 @@ class Cases extends Main
                 'area_id'  =>  $post['community'],
                 'area'  =>  $post['area'],
                 'type'  =>  $post['type'],
-                'style'  =>  $post['style'],
+                'style'  =>  isset($post['style'])?$post['style']:'',
                 'home_id'  =>  $post['home'],
-                'position_id'  =>  $post['position'],
-                'price_id'  =>  $post['price'],
-                'thumb' => $post['fileLists'][0],
+                'price_id'  =>  isset($post['price'])?$post['price']:'',
                 'create_time'   =>  date('Y-m-d H:i:s'),
             ];
             $cases_id = Db::name('cases')->insertGetId($insert);
             if($cases_id){
                 foreach($post['fileLists'] as $key=>$v){
-                    $img = [
-                        'case_id' => $cases_id,
-                        'img'   =>  $v,
-                        'create_time'   =>  date('Y-m-d H:i:s')
-                    ];
-                    Db::name('case_img')->insert($img);
+                    if($post['type'] == 3){//设计师，有位置
+                        if($v){
+                            foreach($v as $k=>$s){
+                                $img = [
+                                    'case_id' => $cases_id,
+                                    'position_id' => $s['id'],
+                                    'img'   =>  $s['img'],
+                                    'create_time'   =>  date('Y-m-d H:i:s')
+                                ];
+                                Db::name('case_img')->insert($img);
+                            }
+                        }
+                    }else{//技工、工长没有位置
+                        if($v){
+                            foreach($v as $k=>$s){
+                                $img = [
+                                    'case_id' => $cases_id,
+                                    'img'   =>  $s['img'],
+                                    'create_time'   =>  date('Y-m-d H:i:s')
+                                ];
+                                Db::name('case_img')->insert($img);
+                            }
+                        }
+                    }
                 }
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '上传成功，等待审核';
@@ -137,7 +153,7 @@ class Cases extends Main
                 ->join('cases B','B.id = A.object_id','INNER')
                 ->where($where)
                 ->where("A.end_time >= '".$end_time."' OR A.end_time = ''")
-                ->field('A.object_id AS id,A.img')
+                ->field('A.object_id AS id,A.img,A.id AS recom_id')
                 ->order('A.sort DESC')
                 ->select();
             if($data){
@@ -178,12 +194,13 @@ class Cases extends Main
             if(isset($post['style']) && $post['style']){//风格
                 $where['A.style'] = $post['style'];
             }
-            if(isset($post['position']) && $post['position']){//位置
+            /* if(isset($post['position']) && $post['position']){//位置
                 $where['A.position_id'] = $post['position'];
-            }
+            } */
             if(isset($post['price']) && $post['price']){//价格
                 $where['A.price_id'] = $post['price'];
             }
+            $where['A.type']=['eq',3];
             $where['A.deleted']=['eq',0];
             $where['A.checked']=['eq',1];
             $data = Db::name('cases')->alias('A')
@@ -237,6 +254,97 @@ class Cases extends Main
                 }
                 $this->ret['code'] = 200;
                 $this->ret['data'] = $datas;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取用户案例列表
+     */
+    public function getCasesLisByUid(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            $where['A.user_id']=['eq',$post['uid']];
+            $where['A.deleted']=['eq',0];
+            $where['A.checked']=['eq',1];
+            $data = Db::name('cases')->alias('A')
+                ->join('cases_attr B','B.id = A.home_id','LEFT')
+                ->where($where)->field("A.id,A.case_title,A.thumb,A.style,A.style AS style_name,B.title AS home_name,A.create_time")->order('A.id DESC,A.sort DESC')->limit($page_start, $limit)->select();
+            if($data){
+                foreach($data as &$v){
+                    if($v['thumb']){
+                        $v['thumb'] = _getServerName().$v['thumb'];
+                    }
+                    if($v['style']==1){
+                        $v['style_name'] = '中式风格';
+                    }else if($v['style']==2){
+                        $v['style_name'] = '欧式风格';
+                    }else if($v['style']==3){
+                        $v['style_name'] = '现代风格';
+                    }else if($v['style']==4){
+                        $v['style_name'] = '田园风格';
+                    }else if($v['style']==5){
+                        $v['style_name'] = '地中海风格';
+                    }else if($v['style']==6){
+                        $v['style_name'] = '东南亚风格';
+                    }else if($v['style']==7){
+                        $v['style_name'] = '混搭风格';
+                    }
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 根据案例获取案例详情
+     */
+    public function getCasesInfoById(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $data['cases'] = Db::name('cases')->alias('A')
+                ->join('village B','B.id = A.area_id','INNER')
+                ->join('cases_attr D','D.id = A.home_id','LEFT')
+                ->join('cases_attr F','F.id = A.price_id','LEFT')
+                ->where(['A.id'=>$post['id']])
+                ->field('A.*,B.village_name,D.title AS home,F.title AS price')->find();
+            if($data['cases']){
+                $cases_id = $data['cases']['id'];
+                if($data['cases']['type'] == 3){
+                    $position = Db::name('case_img')->alias('A')
+                        ->join('cases_attr B','B.id = A.position_id','LEFT')->where(['case_id'=>$cases_id])->field('A.position_id,B.title AS position')->group('position_id')->select();
+                    if($position){
+                        foreach($position as $key=>$v){
+                            $position[$key]['img'] = Db::name('case_img')->where(['case_id'=>$cases_id,'position_id'=>$v['position_id']])->field('img')->select();
+                        }
+                    }
+                    $data['cases_img'] = $position;
+                }else{
+                    $data['cases_img'] = Db::name('case_img')->where(['case_id'=>$cases_id])
+                        ->order(['sort' => 'DESC', 'id' => 'ASC'])->field('id,img,position_id')->select();
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
             }else{
                 $this->ret['msg'] = '获取失败';
             }

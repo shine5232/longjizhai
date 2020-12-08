@@ -22,7 +22,7 @@ class GoodsBrand extends Main
             }
             $data = Db::name('brands')
                 ->where($where)
-                ->order('sort DESC,id DESC')
+                ->order('sort ASC,id DESC')
                 ->limit($page_start,$limit)
                 ->select();
             $count = Db::name('brands')
@@ -67,13 +67,9 @@ class GoodsBrand extends Main
         if(request()->isPost()){
             $post     = $this->request->post();
             $id = $post['id'];
-            $update = [
-                'name'=>$post['name'],
-                'sort'=>$post['sort'],
-                'logo'=>$post['logo'],
-                'content'=>$post['content'],
-                'update_time'=>date('Y-m-d H:i:s')
-            ];
+            unset($post['id'],$post['imgFile']);
+            $update = $post;
+            $update['update_time']=date('Y-m-d H:i:s');
             $db = Db::name('brands')->where('id',$id)->update($update);
             if($db){
                 $this->ret['code'] = 200;
@@ -101,7 +97,7 @@ class GoodsBrand extends Main
         $ids = explode(',',$id);
         $upd = [
             'status'    =>  1,
-            'delete_time'   =>  date('Y-m-d H:i:s')
+            'update_time'   =>  date('Y-m-d H:i:s')
         ];
         if(count($ids) > 1){
             $res = Db::name('brands')->where('id','in',$id)->update($upd);

@@ -56,6 +56,15 @@
                     , { field: 'superior_id', title: '上级会员', width: '7%'}
                     , { field: 'subor', title: '下级数量', width: '7%'}
                     , { field: 'mobile', title: '联系电话', width: '8%'}
+                    , { field: 'checked', title: '审核状态', width: '8%',
+                        templet:function(d){
+                            if(d.checked == '0'){
+                                return '待审核';
+                            }else if(d.checked == '1'){
+                                return '正常';
+                            }
+                        }
+                    }
                     , { field: 'create_time', title: '创建时间', width: '8%', }
                     , { field: 'endtime', title: '终止时间', width: '8%', }
                     , {

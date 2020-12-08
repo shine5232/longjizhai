@@ -54,10 +54,12 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="title">案例位置：</td>
-                        <td class="cont">{$cases['position']}</td>
                         <td class="title">装修价位：</td>
                         <td class="cont">{$cases['price']}</td>
+                        <td class="title">案例主图：</td>
+                        <td class="cont">
+                            <img class="upload-img" src="{$cases['thumb']}" onclick="show_img(this)" />
+                        </td>
                     </tr>
                     <tr>
                         <td class="title">上传人员：</td>
@@ -70,16 +72,19 @@
             <table class="layui-table">
                 <tbody>
                     <tr>
-                        <td class="title">案例主图：</td>
-                        <td class="cont" colspan="3">
-                            <img class="upload-img" src="{$cases['thumb']}" onclick="show_img(this)" />
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="title">案例图片：</td>
                         <td class="cont" colspan="3">
                             {foreach $cases_img as $v}
-                            <img class="upload-img" src="{$v.img}" style="margin-right: 10px;" onclick="show_img(this)"/>
+                                {if $v['position_id']}
+                                    <div>
+                                        <span>{$v['position']}</span>
+                                        {foreach $v['img'] as $i}
+                                        <img class="upload-img" src="{$i.img}" style="margin-right: 10px;" onclick="show_img(this)"/>
+                                        {/foreach}
+                                    </div>
+                                {else}
+                                    <img class="upload-img" src="{$v.img}" style="margin-right: 10px;" onclick="show_img(this)"/>
+                                {/if}
                             {/foreach}
                         </td>
                     </tr>
