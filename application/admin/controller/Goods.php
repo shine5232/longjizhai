@@ -40,7 +40,7 @@ class Goods extends Main
                 ->join('goods_cate b','b.id = a.cate_id','LEFT')
                 ->join('brands c','c.id = a.brand_id','LEFT')
                 ->where($where)
-                ->order('a.sort ASC')
+                ->order('a.sort ASC,a.id ASC')
                 ->limit($page_start,$limit)
                 ->field('a.*,b.title as cate_title,c.name as brand_name')
                 ->select();

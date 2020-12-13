@@ -24,21 +24,31 @@ class cases extends Main
             }
             $sql = "SELECT A.* 
                     FROM (
-                        SELECT case_title,A.area,C.village_name,B.uname,view_num,collect_num,sort,CASE WHEN is_zong = 0 THEN '否' ELSE '是' END AS is_zong,A.create_time,A.id,A.county
+                        SELECT case_title,A.area,A.recommend_id,C.village_name,B.uname,view_num,collect_num,sort,CASE WHEN is_zong = 0 THEN '否' ELSE '是' END AS is_zong,A.create_time,A.id,A.county
                         FROM lg_cases A
                         INNER JOIN lg_member B ON A.user_id = B.id
                         INNER JOIN lg_village C ON A.area_id = C.id
                         WHERE ".$where." 
                             AND A.deleted = 0
-                        ORDER BY sort DESC
+                        ORDER BY A.sort ASC,A.id ASC
                         LIMIT $page_start,$limit
-                    ) A";
+                    ) A ORDER BY A.sort ASC,A.id ASC";
                 // var_dump($sql);die;
-                $data = Db::query($sql);
+            $data = Db::query($sql);
             $count = Db::name('cases')->alias('A')
                 ->where($where)
                 ->count();
             if($data){
+                foreach($data as $key=>$vo){
+                    $data[$key]['recommend_name'] = '';
+                    if($vo['recommend_id']){
+                        $wheres['id'] = ['in',$vo['recommend_id']];
+                        $name = Db::name('recommend')->where($wheres)->field('name')->select();
+                        $nameb = array_column($name,'name');
+                        $recommend_name = implode(',',$nameb);
+                        $data[$key]['recommend_name'] = $recommend_name;
+                    }
+                }
                 $this->ret['count'] = $count;
                 $this->ret['data'] = $data;
             }

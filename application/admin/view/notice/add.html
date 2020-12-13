@@ -43,6 +43,7 @@
 KindEditor.ready(function (K) {
 	notice = K.create('#notice', {
 		uploadJson: '/api/file/upload?type=article',
+		urlType:'domain',
 		afterBlur: function(){
 			this.sync();
 		}

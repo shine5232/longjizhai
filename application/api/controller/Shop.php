@@ -152,7 +152,7 @@ class Shop extends Main
                 ->select();
             if($data){
                 foreach($data as $key=>$v){
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('shop_price,price')->find();
+                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('shop_price,price')->find();
                     $data[$key]['price'] = $attr['price'];
                     $data[$key]['shop_price'] = $attr['shop_price'];
                     $data[$key]['img'] = _getServerName()."/public".$v['img'];

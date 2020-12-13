@@ -250,7 +250,6 @@ class Shop extends Main
                     ->order('a.id DESC')
                     ->limit($page_start, $limit)
                     ->select();
-                //echo Db::name('member')->getLastSql();die;
                 $count = Db::name('member')->alias('a')
                     //->join('member_weixin b', 'b.openid = a.openid', 'INNER')
                     ->where($where)
@@ -405,22 +404,49 @@ class Shop extends Main
             ];
             $has = Db::name('recommend_data')->where($where)->find();
             if(!$has){
+                $recommend_id = 0;
                 if($post['type'] == 1){
                     $data = Db::name('shop_goods')->where('id',$post['object_id'])->find();
                     $insert['title'] = $data['name'];
                     $insert['img'] = '/public'.$data['thumb'];
+                    $recommend_id = $data['recommend_id'];
                 }else if($post['type'] == 2){
                     $data = Db::name('shop')->where('id',$post['object_id'])->find();
                     $insert['title'] = $data['name'];
                     $insert['img'] = $data['rectangle_logo'];
+                    $recommend_id = $data['recommend_id'];
                 }else if($post['type'] == 3){
                     $data = Db::name('cases')->where('id',$post['object_id'])->find();
                     $insert['title'] = $data['case_title'];
                     $insert['img'] = $data['thumb'];
+                    $recommend_id = $data['recommend_id'];
                 }else if($post['type'] == 4){
                     $data = Db::name('article')->where('id',$post['object_id'])->find();
                     $insert['title'] = $data['title'];
                     $insert['img'] = '/public'.$data['thumb'];
+                }
+                if($recommend_id){//之前被推荐过
+                    $array = explode(',',$recommend_id);
+                    if(!in_array($post['recommend_id'],$array)){//没有推荐过当前位置
+                        array_push($array,$recommend_id);
+                        $upds['recommend_id'] = implode(',',$array);
+                        if($post['type'] == 1){
+                            Db::name('shop_goods')->where('id',$post['object_id'])->update($upds);
+                        }else if($post['type'] == 2){
+                            Db::name('shop')->where('id',$post['object_id'])->update($upds);
+                        }else if($post['type'] == 3){
+                            Db::name('cases')->where('id',$post['object_id'])->update($upds);
+                        }
+                    }
+                }else{//从来没有被推荐过
+                    $upds['recommend_id'] = implode(',',array($post['recommend_id']));
+                    if($post['type'] == 1){
+                        Db::name('shop_goods')->where('id',$post['object_id'])->update($upds);
+                    }else if($post['type'] == 2){
+                        Db::name('shop')->where('id',$post['object_id'])->update($upds);
+                    }else if($post['type'] == 3){
+                        Db::name('cases')->where('id',$post['object_id'])->update($upds);
+                    }
                 }
                 $insert['county'] = $data['county'];
                 $res = Db::name('recommend_data')->insert($insert);

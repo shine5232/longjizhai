@@ -40,7 +40,7 @@ class Designer extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('designer')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->join('member_attr C','C.id = A.position','INNER')
+                ->join('member_attr C','C.id = A.position','LEFT')
                 ->where($where)->field("B.id,A.name,A.case_num,B.thumb,C.title AS position")->order('B.id DESC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as &$v){
@@ -72,7 +72,7 @@ class Designer extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('designer')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->join('member_attr C','C.id = A.position','INNER')
+                ->join('member_attr C','C.id = A.position','LEFT')
                 ->where($where)->field("B.id,A.name,A.case_num,A.mobile,A.content,A.school,A.slogan,B.area,B.thumb,B.authed,B.rank_id,C.title AS position")->find();
             if($data){
                 $date = date('Y-m-d H:i:s',time() - 86400);

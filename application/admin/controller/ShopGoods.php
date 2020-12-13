@@ -40,7 +40,7 @@ class ShopGoods extends Main
                 ->join('brands b', 'b.id = a.brand_id', 'LEFT')
                 ->where($where)
                 ->field('a.id,a.name,a.thumb,a.online,a.sort,a.cate,a.title,b.name as brand_name')
-                ->order('a.sort ASC')
+                ->order('a.sort ASC,a.id ASC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop_goods')->alias('a')

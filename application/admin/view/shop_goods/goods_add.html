@@ -143,7 +143,7 @@
             <input type="hidden" name="shop_id" value="{$shop_id}" />
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn"  lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
+                    <button class="layui-btn" id="submit" lay-filter="toSubmit" lay-submit=""  style="margin-left: 33%">
                         提交
                     </button>
                     <button style="display: none;" class="layui-btn layui-btn-primary" id="reset" type="reset">
@@ -337,7 +337,11 @@
 		      dataType:"json",        //json格式
 		      data:{},    //如果需要提交附加参数，视情况添加
 		      clearForm: false,        //成功提交后，清除所有表单元素的值
-		      resetForm: false,        //成功提交后，重置所有表单元素的值
+              resetForm: false,        //成功提交后，重置所有表单元素的值
+              beforeSubmit:function(){
+                $('#submit').attr("disabled",true);
+                //return false;
+              },
 		      cache:false,          
 		      async:false,          //同步返回
 		      success:function(data){
@@ -345,6 +349,7 @@
     		      		layer.msg(data.msg);
     		      	}else{
     		      		layer.msg(data.msg,{icon:1,time:1000},function(){
+                            $('#submit').attr("disabled",false);
     		      			$("#reset").click();
     		      			x_admin_close();
     		      			parent.location.reload();
@@ -358,7 +363,7 @@
 		    }; 
 	    // bind form using 'ajaxForm' 
 	    $('#mainForm').ajaxForm(options).submit(function(data){
-	    	//无逻辑
+            //无逻辑
 	    }); 
 
 	});

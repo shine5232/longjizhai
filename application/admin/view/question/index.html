@@ -1,0 +1,126 @@
+{include file="public/head"}
+
+<body>
+    <div class="x-body">
+        <table id="demo" lay-filter="test"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+                <button class="layui-btn  layui-btn-sm layui-btn-danger" onclick="delAll()">
+                    <i class="layui-icon layui-icon-delete"></i>批量删除
+                </button>
+                <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
+                    <i class="layui-icon layui-icon-refresh"></i>刷新
+                </button>
+                <!-- <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索信息','search.html',400,200)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button> -->
+            </div>
+        </script>
+    </div>
+</body>
+{include file="public/foot"}
+<script>
+    var tableIns;
+    layui.use(['laydate', 'form', 'table'], function () {
+        var table = layui.table, laydate = layui.laydate, form = layui.form;
+        /**
+         * 请求数据
+        */
+        tableIns = table.render({
+            elem: '#demo'
+            , toolbar: '#toolbarDemo'
+            , defaultToolbar: []
+            , url: '/admin/question/index' //数据接口
+            , page: true //开启分页
+            , limit: 20
+            , id: 'test'
+            , cols: [
+                [ //表头
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+                    , { field: 'name', title: '联系人' }
+                    , { field: 'mobile', title: '联系电话' }
+                    , { field: 'area', title: '所属站点', width: '15%' }
+                    , { field: 'content', title: '留言内容', width: '25%' }
+                    , {
+                        field: 'status', title: '状态', width: '10%',
+                        templet: function (d) {
+                            var type = '';
+                            if(d.status == 0){
+                                type = '<font color="red">未处理</font>';
+                            }else if(d.status == 1){
+                                type = '<font color="#009688">已处理</font>';
+                            }
+                            return type;
+                        }
+                    }
+                    , { field: 'create_time', title: '创建时间', width: '15%', }
+                    , {
+                        field: 'handle', title: '操作', width: '10%',
+                        templet: function (d) {
+                            var handle = '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delNotice(' + d.id + ');">删除</button>';
+                            if(d.status == 0){
+                                handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="updateNotice(' + d.id + ');">处理</button>' + handle;
+                            }
+                            return handle;
+                        }
+                    }
+                ]
+            ]
+        });
+    });
+    function delAll() {
+        var data = [];
+        data = layui.table.checkStatus('test').data;  
+        layer.confirm('确认要进行操作吗？', function (index) {
+            var delList=[];
+            data.forEach(function(n,i){
+                delList.push(n.id);             
+            });
+            // console.log(delList);
+            // return false;
+            //捉到所有被选中的，发异步进行删除
+            delList = JSON.stringify( delList )
+            $.post('/admin/question/delAll', { delList: delList }, function (j) {
+                    if(j.code == 200){
+                        layer.msg('操作成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                    }else{
+                        layer.msg('操作失败', { icon: 2, time: 1000 });
+                    }
+                },'json');
+        });
+    }
+    function delNotice(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.post('/admin/question/deleteNotice', { id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+    function updateNotice(id){
+        layer.confirm('确认要处理吗？', function (index) {
+            $.post('/admin/question/updateStatus', { id: id }, function (j) {
+                if(j.code == 200){
+                    layer.msg('处理成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('处理失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+</script>
+
+</html>

@@ -104,7 +104,7 @@ class Goods extends Main
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('shop_price ASC')->field('price,shop_price,unit')->find();
+                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
@@ -346,7 +346,7 @@ class Goods extends Main
                 $where['A.is_zong'] = 1;
             }
             $where['A.status'] = 1;
-            $where['A.recommend_id'] = 3;
+            $where['A.recommend_id'] = 1;
             $where['B.status'] = 0;
             $where['B.online'] = 1;
             $end_time = date('Y-m-d H:i:s');
@@ -366,7 +366,7 @@ class Goods extends Main
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('sort ASC')->field('price,shop_price,unit')->find();
+                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
@@ -407,7 +407,7 @@ class Goods extends Main
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where('goods_id',$v['id'])->order('sort ASC')->field('price,shop_price,unit')->find();
+                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];

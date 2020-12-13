@@ -6,33 +6,33 @@
             <table class="layui-table" lay-even="" lay-skin="line">
                 <tbody>
                     <tr>
-                        <td>待审核商家：11</td>
-                        <td>待审核公司：51</td>
-                        <td>待审核设计师：48</td>
-                        <td>待审核技工：15</td>
-                        <td>待审核工长：31</td>
+                        <td>待审技工：{$mechanic|default=0}</td>
+                        <td>待审工长：{$gongzhang|default=0}</td>
+                        <td>待审设计师：{$designer|default=0}</td>
+                        <td>待审装饰公司：{$company|default=0}</td>
+                        <td>待审商家：{$shop|default=0}</td>
                     </tr>
                     <tr>
-                        <td>待审核商品：11</td>
-                        <td>待审核认证：51</td>
-                        <td>待审核文章：48</td>
-                        <td>待审核案例：15</td>
-                        <td>待审核公告：31</td>
+                        <td>待审商品：{$shop_goods|default=0}</td>
+                        <td>待审认证：{$authenticate|default=0}</td>
+                        <td>待审案例：{$cases|default=0}</td>
+                        <td>待审文章：{$article|default=0}</td>
+                        <td>待审公告：{$notice|default=0}</td>
                     </tr>
                 </tbody>
             </table>
             <table class="layui-table" lay-even="" lay-skin="line">
                 <tbody>
                     <tr>
-                        <td>今日加盟申请：11</td>
-                        <td>今日公司预约：51</td>
-                        <td>今日设计师预约：11</td>
-                        <td>今日技工预约：48</td>
-                        <td>今日工长预约：15</td>
+                        <td>今日预约技工：{$app_mechanic|default=0}</td>
+                        <td>今日预约工长：{$app_gz|default=0}</td>
+                        <td>今日预约设计师：{$app_designer|default=0}</td>
+                        <td>今日预约装饰公司：{$app_company|default=0}</td>
+                        <td>今日商城订单：{$order|default=0}</td>
                     </tr>
                     <tr>
-                        <td>今日信息发布：31</td>
-                        <td>今日商城订单：630</td>
+                        <td>今日信息发布：{$question|default=0}</td>
+                        <td>{if !$user['county']}今日加盟申请：{$joining|default=0}{/if}</td>
                         <td></td>
                         <td></td>
                         <td></td>

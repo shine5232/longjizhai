@@ -128,6 +128,7 @@ class Order extends Main
                     'shop_id' => $shop_id,
                     'freight_fee' => $v['yuns'],
                     'address_id' => $post['address_id'],
+                    'county'    => $post['county'],
                     'create_time' => date('Y-m-d H:i:s'),
                 ];
                 if($v['lis'][0]['cate'] == 8){

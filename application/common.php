@@ -587,3 +587,55 @@ function _getUsersByCounty($uid,$county,$page_start=0,$limit=10){
     }
     return $data;
 }
+/**
+ * @method 封装curl get请求
+ * @static
+ * @param  {string}
+ * @return {string|boolen}
+ */
+function _requestGet($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    # curl_setopt($ch, CURLOPT_HEADER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+
+    if (!curl_exec($ch)) {
+        error_log(curl_error($ch));
+        $data = '';
+    } else {
+        $data = curl_multi_getcontent($ch);
+    }
+    curl_close($ch);
+    return $data;
+}
+/**
+ * @method 封装curl post请求
+ * @static
+ * @param  {string}        $url URL to post data to
+ * @param  {string|array}  $data Data to be post
+ * @return {string|boolen} Response string or false for failure.
+ */
+function _requestPost($url, $data) {
+    if (!function_exists('curl_init')) {
+        return '';
+    }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    # curl_setopt( $ch, CURLOPT_HEADER, 1);
+
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    $data = curl_exec($ch);
+    if (!$data) {
+        error_log(curl_error($ch));
+    }
+    curl_close($ch);
+    return $data;
+}

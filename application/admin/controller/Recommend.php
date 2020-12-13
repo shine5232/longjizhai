@@ -151,6 +151,41 @@ class Recommend extends Main
             unset($upd['id']);
             $res = Db::name('recommend_data')->where('id',$id)->update($upd);
             if ($res) {
+                $data_info = Db::name('recommend_data')->where('id',$id)->find();
+                $recommend_id = 0;
+                if($data_info['type'] == 1){
+                    $data = Db::name('shop_goods')->where('id',$data_info['object_id'])->find();
+                    $recommend_id = $data['recommend_id'];
+                }else if($data_info['type'] == 2){
+                    $data = Db::name('shop')->where('id',$data_info['object_id'])->find();
+                    $recommend_id = $data['recommend_id'];
+                }else if($data_info['type'] == 3){
+                    $data = Db::name('cases')->where('id',$data_info['object_id'])->find();
+                    $recommend_id = $data['recommend_id'];
+                }
+                if($recommend_id){//之前被推荐过
+                    $array = explode(',',$recommend_id);
+                    if(!in_array($data_info['recommend_id'],$array)){//没有推荐过当前位置
+                        array_push($array,$recommend_id);
+                        $upds['recommend_id'] = implode(',',$array);
+                        if($data_info['type'] == 1){
+                            Db::name('shop_goods')->where('id',$data_info['object_id'])->update($upds);
+                        }else if($data_info['type'] == 2){
+                            Db::name('shop')->where('id',$data_info['object_id'])->update($upds);
+                        }else if($post['type'] == 3){
+                            Db::name('cases')->where('id',$data_info['object_id'])->update($upds);
+                        }
+                    }
+                }else{//从来没有被推荐过
+                    $upds['recommend_id'] = implode(',',array($data_info['recommend_id']));
+                    if($data_info['type'] == 1){
+                        Db::name('shop_goods')->where('id',$data_info['object_id'])->update($upds);
+                    }else if($data_info['type'] == 2){
+                        Db::name('shop')->where('id',$data_info['object_id'])->update($upds);
+                    }else if($data_info['type'] == 3){
+                        Db::name('cases')->where('id',$data_info['object_id'])->update($upds);
+                    }
+                }
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '更新成功';
             }
@@ -177,8 +212,56 @@ class Recommend extends Main
         ];
         if (count($ids) > 1) {
             $res = Db::name('recommend_data')->where('id', 'in', $id)->update($upd);
+            foreach($ids as $key=>$v){
+                $info = Db::name('recommend_data')->where('id',$v)->find();
+                if($info['type'] == '1'){
+                    $recommend = Db::name('shop_goods')->where(['id'=>$info['object_id']])->find();
+                    $array = explode(',',$recommend);
+                    $key = array_search($v, $array);
+                    if ($key !== false) array_splice($array, $key, 1);
+                    $upds['recommend_id'] = implode(',',$array);
+                    Db::name('shop_goods')->where('id',$info['object_id'])->update($upds);
+                }else if($info['type'] == '2'){
+                    $recommend = Db::name('shop')->where(['id'=>$info['object_id']])->find();
+                    $array = explode(',',$recommend);
+                    $key = array_search($v, $array);
+                    if ($key !== false) array_splice($array, $key, 1);
+                    $upds['recommend_id'] = implode(',',$array);
+                    Db::name('shop')->where('id',$info['object_id'])->update($upds);
+                }else if($info['type'] == '3'){
+                    $recommend = Db::name('cases')->where(['id'=>$info['object_id']])->find();
+                    $array = explode(',',$recommend);
+                    $key = array_search($v, $array);
+                    if ($key !== false) array_splice($array, $key, 1);
+                    $upds['recommend_id'] = implode(',',$array);
+                    Db::name('cases')->where('id',$info['object_id'])->update($upds);
+                }
+            }
         } else {
             $res = Db::name('recommend_data')->where('id', $ids[0])->update($upd);
+            $info = Db::name('recommend_data')->where('id',$ids[0])->find();
+            if($info['type'] == '1'){
+                $recommend = Db::name('shop_goods')->where(['id'=>$info['object_id']])->find();
+                $array = explode(',',$recommend);
+                $key = array_search($ids[0], $array);
+                if ($key !== false) array_splice($array, $key, 1);
+                $upds['recommend_id'] = implode(',',$array);
+                Db::name('shop_goods')->where('id',$info['object_id'])->update($upds);
+            }else if($info['type'] == '2'){
+                $recommend = Db::name('shop')->where(['id'=>$info['object_id']])->find();
+                $array = explode(',',$recommend);
+                $key = array_search($ids[0], $array);
+                if ($key !== false) array_splice($array, $key, 1);
+                $upds['recommend_id'] = implode(',',$array);
+                Db::name('shop')->where('id',$info['object_id'])->update($upds);
+            }else if($info['type'] == '3'){
+                $recommend = Db::name('cases')->where(['id'=>$info['object_id']])->find();
+                $array = explode(',',$recommend);
+                $key = array_search($ids[0], $array);
+                if ($key !== false) array_splice($array, $key, 1);
+                $upds['recommend_id'] = implode(',',$array);
+                Db::name('cases')->where('id',$info['object_id'])->update($upds);
+            }
         }
         if ($res) {
             $this->ret['code'] = 200;

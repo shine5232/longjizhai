@@ -6,7 +6,7 @@ use think\Db;
 class Appointment extends Main
 {
     /**
-     * 预约技工、工长、设计师
+     * 预约技工、工长、设计师、装饰公司
      */
     public function appointmentByUid(){
         if(request()->isPost()){
@@ -33,6 +33,7 @@ class Appointment extends Main
                 'uid'   =>  $post['uid'],
                 'appointmented_uid'   =>  $data['uid'],
                 'appoint_time'  =>  $post['times'],
+                'type'  => $post['type'],
                 'mobile'    =>  $post['mobile'],
                 'content'   =>  $post['content'],
                 'province'  =>  $post['province'],

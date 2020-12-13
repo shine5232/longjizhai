@@ -55,6 +55,10 @@ class Cases extends Main
                     if($post['type'] == 3){//设计师，有位置
                         if($v){
                             foreach($v as $k=>$s){
+                                $has = Db::name('cases')->where(['id'=>$cases_id])->value('thumb');
+                                if(!$has){
+                                    Db::name('cases')->where(['id'=>$cases_id])->update(['thumb'=>$s['img']]);
+                                }
                                 $img = [
                                     'case_id' => $cases_id,
                                     'position_id' => $s['id'],
@@ -67,6 +71,10 @@ class Cases extends Main
                     }else{//技工、工长没有位置
                         if($v){
                             foreach($v as $k=>$s){
+                                $has = Db::name('cases')->where(['id'=>$cases_id])->value('thumb');
+                                if(!$has){
+                                    Db::name('cases')->where(['id'=>$cases_id])->update(['thumb'=>$s['img']]);
+                                }
                                 $img = [
                                     'case_id' => $cases_id,
                                     'img'   =>  $s['img'],
@@ -144,7 +152,7 @@ class Cases extends Main
                 $where['A.is_zong'] = 1;
             }
             $where['A.status'] = 1;
-            $where['A.recommend_id'] = 2;
+            $where['A.recommend_id'] = 3;
             $end_time = date('Y-m-d H:i:s');
             $where['B.checked'] = 1;
             $where['B.deleted'] = 0;
@@ -184,50 +192,75 @@ class Cases extends Main
             $limit = $post['size']>0?$post['size']:10;
             $page_start = ($page - 1) * $limit;
             if($post['county']>0){
-                $where['A.county'] = $post['county'];
+                $where['C.county'] = $post['county'];
             }else{
-                $where['A.is_zong'] = 1;
+                $where['C.is_zong'] = 1;
             }
             if(isset($post['home']) && $post['home']){//户型
-                $where['A.home_id'] = $post['home'];
+                $where['C.home_id'] = $post['home'];
             }
             if(isset($post['style']) && $post['style']){//风格
-                $where['A.style'] = $post['style'];
+                $where['C.style'] = $post['style'];
             }
-            /* if(isset($post['position']) && $post['position']){//位置
-                $where['A.position_id'] = $post['position'];
-            } */
             if(isset($post['price']) && $post['price']){//价格
-                $where['A.price_id'] = $post['price'];
+                $where['C.price_id'] = $post['price'];
             }
-            $where['A.type']=['eq',3];
-            $where['A.deleted']=['eq',0];
-            $where['A.checked']=['eq',1];
-            $data = Db::name('cases')->alias('A')
-                ->join('cases_attr B','B.id = A.home_id','LEFT')
-                ->join('cases_attr C','C.id = A.position_id','LEFT')
-                ->where($where)->field("A.id,A.case_title,A.thumb,A.style,A.style AS style_name,B.title AS home_name,C.title AS position_name")->order('A.id DESC,A.sort DESC')->limit($page_start, $limit)->select();
+            $where['C.type']=['eq',3];
+            $where['C.deleted']=['eq',0];
+            $where['C.checked']=['eq',1];
+            $data = Db::name('cases')->alias('C')
+                ->join('cases_attr B','B.id = C.home_id','INNER')
+                ->join('cases_attr D','D.id = C.price_id','INNER')
+                ->where($where)->field("C.id,C.case_title,C.style,C.style AS style_name,B.title AS home_name,D.title AS price")->order('C.sort ASC,C.id ASC')->limit($page_start, $limit)->select();
+            $datas = [];
             if($data){
-                foreach($data as &$v){
-                    $v['thumb'] = _getServerName().$v['thumb'];
-                    if($v['style']==1){
-                        $v['style_name'] = '中式风格';
-                    }else if($v['style']==2){
-                        $v['style_name'] = '欧式风格';
-                    }else if($v['style']==3){
-                        $v['style_name'] = '现代风格';
-                    }else if($v['style']==4){
-                        $v['style_name'] = '田园风格';
-                    }else if($v['style']==5){
-                        $v['style_name'] = '地中海风格';
-                    }else if($v['style']==6){
-                        $v['style_name'] = '东南亚风格';
-                    }else if($v['style']==7){
-                        $v['style_name'] = '混搭风格';
+                $wheres = [];
+                if(isset($post['position']) && $post['position']){//位置
+                    $wheres['A.position_id'] = $post['position'];
+                }
+                foreach($data as $key=>$vo){
+                    $img = Db::name('case_img')->alias('A')
+                        ->join('cases_attr B','B.id = A.position_id','INNER')
+                        ->where(['A.case_id'=>$vo['id']])
+                        ->where($wheres)
+                        ->field('A.id,A.img,A.position_id,B.title AS position_name')->order('A.id ASC')->group('A.position_id')->select();
+                    if($img){
+                        if($vo['style']==1){
+                            $style_name = '中式风格';
+                        }else if($vo['style']==2){
+                            $style_name = '欧式风格';
+                        }else if($vo['style']==3){
+                            $style_name = '现代风格';
+                        }else if($vo['style']==4){
+                            $style_name = '田园风格';
+                        }else if($vo['style']==5){
+                            $style_name = '地中海风格';
+                        }else if($vo['style']==6){
+                            $style_name = '东南亚风格';
+                        }else if($vo['style']==7){
+                            $style_name = '混搭风格';
+                        }
+                        foreach($img as $k=>$v){
+                            $datas[] = [
+                                'id' => $v['id'],
+                                'case_id' => $vo['id'],
+                                'case_title' => $vo['case_title'],
+                                'style_name' => $style_name,
+                                'home_name' => $vo['home_name'],
+                                'price' => $vo['price'],
+                                'thumb' => _getServerName().$v['img'],
+                                'position_name' => $v['position_name'],
+                                'position_id' => $v['position_id'],
+                            ];
+                        }
                     }
                 }
-                $this->ret['code'] = 200;
-                $this->ret['data'] = $data;
+                if($datas){
+                    $this->ret['code'] = 200;
+                    $this->ret['data'] = $datas;
+                }else{
+                    $this->ret['msg'] = '获取失败';
+                }
             }else{
                 $this->ret['msg'] = '获取失败';
             }
@@ -242,11 +275,14 @@ class Cases extends Main
     public function getCasesImgLis(){
         if(request()->isPost()){
             $post = $this->request->post();
-            if(!isset($post['id'])){
+            if(!isset($post['case_id'])){
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
-            $where['case_id']=$post['id'];
+            $where['case_id']=$post['case_id'];
+            if(isset($post['position_id'])){
+                $where['position_id']=$post['position_id'];
+            }
             $data = Db::name('case_img')->where($where)->field("img")->select();
             if($data){
                 foreach($data as &$v){

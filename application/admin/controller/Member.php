@@ -123,10 +123,7 @@ class Member extends Main
             }elseif($type == '5'){
                 $has = Db::name('shop')->where('uid',$id)->find();
             }
-            if($has){
-                $this->ret['msg'] = '该类型下账号已存在';
-                return json($this->ret);
-            }else{
+            if(!$has){
                 $mechanic = [
                     'uid'       =>  $id,
                     'province'  =>  $post['province'],
