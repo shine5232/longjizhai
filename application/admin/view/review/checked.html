@@ -1,0 +1,72 @@
+{include file='public/head'}
+
+<body>
+	<style type="text/css" media="screen">
+		header {
+			color: black;
+		}
+
+		.layui-upload-img {
+			width: auto;
+			height: 60px;
+			margin-left: 20px;
+		}
+	</style>
+	<div class="x-body">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label">是否通过</label>
+				<div class="layui-input-block">
+					<input type="checkbox" name="checked" lay-skin="switch" lay-text="是|否" value="1"
+						lay-filter="switch">
+				</div>
+			</div>
+			<input type="hidden" value="{$id}" name="id" />
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="toSubmit">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+{include file='public/foot'}
+<script type="text/javascript">
+	layui.use(['form', 'layer'], function () {
+		var form = layui.form;
+		var layer = layui.layer;
+		/**
+		 * 监听表单提交
+		 */
+		form.on('submit(toSubmit)', function (data) {
+			var params = {
+                checked: data.field.checked ? 1 : 2,
+                id:data.field.id
+			};
+			$.post('/admin/review/checked', params,
+                function (data) {
+                    var res = data.data;
+                    if (data.code == 200) {
+                        layer.msg('审核完成', {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            x_admin_close();
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.msg('审核失败', {
+                            icon: 1,
+                            time: 1000
+                        }, function () {
+                            x_admin_close();
+                            parent.location.reload();
+                        });
+                    }
+                }, 'json');
+			return false;
+		});
+	});
+</script>
+
+</html>

@@ -24,8 +24,13 @@ class Points extends Main
             if($page_start <= 10){
                 $data = Db::name('member')->alias('A')
                     ->join('member_weixin B','B.openid = A.openid','INNER')
-                    ->where($where)->field("A.id,A.point,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.point DESC')->limit($page_start, $limit)->select();
+                    ->where($where)->field("A.id,A.point,A.thumb,A.realname,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.point DESC')->limit($page_start, $limit)->select();
                 if($data){
+                    foreach($data as $key=>$v){
+                        if($v['thumb']){
+                            $data[$key]['thumb'] = _getServerName().$v['thumb'];
+                        }
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['data'] = $data;
                 }else{

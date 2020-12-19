@@ -19,20 +19,19 @@
 <script>
     var tableIns;
     var type = {$type};
-    var is_reply = {$is_reply};
-    if(is_reply == 1){
-        reply = '详情' 
-    }else{
-        reply = '回复' 
-    }
+    var name = '';
+    var score1 = '施工分';
     if(type == 1){
-        name = '技工'
+        name = '技工';
     }else if(type == 2){
-        name = '工长'
+        name = '工长';
     }else if(type == 3){
-        name = '设计师'
+        name = '设计师';
     }else if(type == 4){
-        name = '装饰公司'
+        name = '装饰公司';
+    }else if(type == 5){
+        name = '商家';
+        score1 = '产品分';
     }
     layui.use(['laydate', 'form', 'table'], function () {
         var table = layui.table, laydate = layui.laydate, form = layui.form;
@@ -43,7 +42,7 @@
             elem: '#demo'
             , toolbar: '#toolbarDemo'
             , defaultToolbar: []
-            , url: '/admin/review/index?type='+type+'&is_reply='+is_reply //数据接口
+            , url: '/admin/review/index?type='+type //数据接口
             , page: true //开启分页
             , limit: 20
             , id: 'test'
@@ -51,13 +50,44 @@
                 [ //表头
                     { type: 'checkbox', fixed: 'left' }
                     , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'uname', title: name, width: '15%' }
-                    , { field: 'content', title: '评论内容', width: '15%' }
-                    , { field: 'create_time', title: '评论时间', width: '15%', }
+                    , { field: 'name', title: '被评'+name, width: '8%' }
+                    , { field: 'realname', title: '评论人', width: '8%' }
+                    , { field: 'design_point', title: score1, width: '8%' }
+                    , { field: 'service_point', title: '服务分', width: '8%' }
+                    , { field: 'care_point', title: '贴心分', width: '8%' }
+                    , { field: 'content', title: '评论内容', width: '20%' }
+                    , { field: 'img', title: '评论图片',width: '20%',
+                        templet:function(d){
+                            var img = '';
+                            if(d.img){
+                                d.img.forEach(function(v,i){
+                                    img += '<img src="'+v+'" class="upload-img" onclick="show_img(this)" />';
+                                });
+                                return img;
+                            }else{
+                                return '无图片';
+                            }
+                        }
+                    }
+                    , { field: 'checked', title: '状态', width: '8%',
+                        templet:function(d){
+                            if(d.checked == 0){
+                                return '<font style="color:red">待审核</font>';
+                            }else if(d.checked == 1){
+                                return '审核通过';
+                            }else if(d.checked == 2){
+                                return '<font style="color:orange">未通过</font>';
+                            }
+                        }
+                    }
+                    , { field: 'create_time', title: '评论时间', width: '12%', }
                     , {
-                        field: 'handle', title: '操作',
+                        field: 'handle', title: '操作',width: '6%',
                         templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\' '+reply+' \',\'/admin/review/reply?id=' + d.id + '\',800,480);">'+reply+'</button>' ;
+                            var handle = '';
+                            if(d.checked == 0){
+                                handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'评论审核\',\'/admin/review/checked?id=' + d.id + '\',300,300);">审核</button>';
+                            }
                             return handle;
                         }
                     }
@@ -65,6 +95,46 @@
             ]
         });
     });
+    function delCase(id,method) {
+        layer.confirm('确认要吗？', function (index) {
+            $.post('/admin/cases/delete', { id: id,method:method }, function (j) {
+                if(j.code == 200){
+                    layer.msg('删除成功', { icon: 1, time: 1000 }, function () {
+                        location.reload();
+                    });
+                }else{
+                    layer.msg('删除失败', { icon: 2, time: 1000 });
+                }
+            },'json');
+        });
+    }
+    function show_img(e){
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['80%', '80%'], //宽高
+            shadeClose: true, //开启遮罩关闭
+            end: function (index, layero) {
+                return false;
+            },
+            content: '<img src="' + $(e).attr('src') + '" class="img"/>'
+        });
+    }  
 </script>
-
+<style>
+    .upload-img{
+        width: 50px;
+        float: left;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .layui-layer-content{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .img{
+        height: 100%;
+    }
+</style>
 </html>

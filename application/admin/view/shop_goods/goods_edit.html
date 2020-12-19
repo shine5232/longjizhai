@@ -75,7 +75,7 @@
                     <select lay-filter="brands" name="brand_id" id="brands_id">
                         <option value="">请选择</option>
                         {foreach $brands as $key=>$vo}
-                        <option value="{$vo['id']}" {if condition="$vo['id'] == $goods_info['brand_id']"}selected{/if}>{$vo['name']}</option>
+                        <option value="{$vo['id']}" <?php if($vo['id'] == $goods_info['brand_id']){echo "selected";} ?>>{$vo['name']}</option>
                         {/foreach}
                     </select>
                 </div>

@@ -146,7 +146,7 @@ class Member extends Main
             while(_checkUserAccount($uname)){
                 $uname = 'wx'.rand(10000000,99999999);
             }
-            $type = (int)$post['type'] + 1;
+            $type = (int)$post['type'];
             $insert = [
                 'uname' =>  $uname,
                 'mobile'    =>  trim($post['mobile']),
@@ -175,6 +175,9 @@ class Member extends Main
                     $insert['thumb'] = $post['fileLists'][0];
                 }
             }
+            if($type >= 1 && $type <= 5){
+                $insert['rank_id'] = 1;
+            }
             $member_id = Db::name('member')->insertGetId($insert);
             if($member_id){
                 _updatePoint($member_id,10,1);
@@ -189,10 +192,20 @@ class Member extends Main
                     'create_time'=> date('Y-m-d H:i:s'),
                 ];
                 if($type == '1'){
+                    $mechanic['content'] = $post['note'];
+                    $mechanic['ages'] = $post['age'];
+                    $mechanic['position'] = implode(',',$post['gongz']);
                     Db::name('mechanic')->insert($mechanic);
                 }elseif($type == '2'){
+                    $mechanic['content'] = $post['note'];
+                    $mechanic['ages'] = $post['age'];
                     Db::name('gongzhang')->insert($mechanic);
                 }elseif($type == '3'){
+                    $mechanic['content'] = $post['note'];
+                    $mechanic['ages'] = $post['age'];
+                    $mechanic['position'] = $post['position'];
+                    $mechanic['school'] = $post['school'];
+                    $mechanic['slogan'] = $post['slogan'];
                     Db::name('designer')->insert($mechanic);
                 }elseif($type == '4'){
                     Db::name('company')->insert($mechanic);
@@ -262,14 +275,11 @@ class Member extends Main
             $where = [
                 'id'=>$post['uid'],
             ];
-            $img = Db::name('member')->where($where)->value('code_img');
-            if(!$img){
-                $img = $this->makeCode($post['uid']);
-                $upd = [
-                    'code_img' => $img
-                ];
-                Db::name('member')->where('id',$post['uid'])->update($upd);
-            }
+            $img = $this->makeCode($post['uid']);
+            $upd = [
+                'code_img' => $img
+            ];
+            Db::name('member')->where('id',$post['uid'])->update($upd);
             $this->ret['code'] = 200;
             $this->ret['data'] = _getServerName().'/'.$img;
         }else{
@@ -283,11 +293,16 @@ class Member extends Main
     public function makeCode($uid){
         $member = Db::name('member')->alias('A')
             ->join('member_weixin B','B.openid = A.openid','INNER')
-            ->where('A.id',$uid)->field('A.id,A.type,B.nickname,B.avatar')
+            ->where('A.id',$uid)->field('A.id,A.type,A.thumb,A.realname,B.nickname,B.avatar')
             ->find();
         $avatar = 'public/uploads/avatar/avatar'.$member['id'].'.jpg';
         if(!file_exists($avatar)){
-            $QR2 = imagecreatefromstring(file_get_contents($member['avatar']));
+            if($member['thumb']){
+                $img = ltrim($member['thumb'],'/');
+            }else{
+                $img = $member['avatar'];
+            }
+            $QR2 = imagecreatefromstring(file_get_contents($img));
             imagejpeg($QR2,'public/uploads/avatar/avatar'.$member['id'].'.jpg'); //输出头像图片
         }
         $url = 'http://mobile.harus.icu';
@@ -392,7 +407,7 @@ class Member extends Main
 		imagedestroy($QT); 
 		//$QS = 'themes/green/ucenter/code/helloweba'.$id.'.png';
 		$QS = 'public/codes/helloweba'.$member['id'].'.png';
-		$text = $member['nickname'];
+		$text = $member['realname']?$member['realname']:$member['nickname'];
 		$font = 'public/static/fonts/watermark/msyh.ttf';
 		$QS = imagecreatefromstring(file_get_contents($QS));
 		$black = imagecolorallocatealpha($QS,255,255,255,0);
@@ -779,10 +794,245 @@ class Member extends Main
                 }
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '操作成功';
-                return json($this->ret);
             }
         }else{
             $this->ret['msg'] = '请求方式错误';
         }
+        return json($this->ret);
+    }
+    /**
+     * 根据会员类型获取工龄经验数据
+     */
+    public function getAgeLisByType(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['utype']) || !isset($post['type'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $where = [
+                'utype' =>  $post['utype'],
+                'type'  =>  $post['type'],
+                'status'=>0,
+                'deleted'=>0,
+            ];
+            $data = Db::name('member_attr')->where($where)->field('id AS value,title AS text')->order('sort ASC')->select();
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取技工工种属性
+     */
+    public function getMechanicAttrLis(){
+        if(request()->isPost()){
+            $where = [
+                'utype' =>  1,
+                'type'  =>  1,
+                'status'=>0,
+                'deleted'=>0,
+                'pid'=>0,
+            ];
+            $data = Db::name('member_attr')->where($where)->field('id AS value,title AS text')->order('sort ASC')->select();
+            if($data){
+                foreach($data as $key=>$vo){
+                    $wheres = [
+                        'utype' =>  1,
+                        'type'  =>  1,
+                        'status'=>0,
+                        'deleted'=>0,
+                        'pid'=>$vo['value'],
+                    ];
+                    $top = ['id'=>$vo['value'],'text'=>$vo['text']];
+                    $data[$key]['children'] = Db::name('member_attr')->where($wheres)->field('id,title AS text')->order('sort ASC')->select();
+                    array_unshift($data[$key]['children'], $top);
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 通过id获取工种名称
+     */
+    public function getNameById(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $where = [
+                'id' =>  $post['id'],
+                'status'=>0,
+                'deleted'=>0,
+            ];
+            $data = Db::name('member_attr')->where($where)->value('title');
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 更新用户信息
+     */
+    public function myInfoUpdate(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['uid']) || !isset($post['type'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $upd['update_time'] = date('Y-m-d H:i:s');
+            if($post['type'] == '1'){
+                $upd['content'] = $post['note'];
+                $upd['ages'] = $post['age'];
+                $upd['position'] = implode(',',$post['gongz']);
+                Db::name('mechanic')->where('uid',$post['uid'])->update($upd);
+            }else if($post['type'] == '2'){
+                $upd['content'] = $post['note'];
+                $upd['ages'] = $post['age'];
+                Db::name('gongzhang')->where('uid',$post['uid'])->update($upd);
+            }else if($post['type'] == '3'){
+                $upd['content'] = $post['note'];
+                $upd['ages'] = $post['age'];
+                $upd['position'] = $post['position'];
+                $upd['school'] = $post['school'];
+                $upd['slogan'] = $post['slogan'];
+                Db::name('designer')->where('uid',$post['uid'])->update($upd);
+            }
+            $this->ret['code'] = 200;
+            $this->ret['msg'] = '更新成功';
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取人员评论列表
+     */
+    public function getMechanicPingLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id']) || !isset($post['page']) || !isset($post['size']) || !isset($post['type'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+
+            $where['A.uid']=['eq',$post['id']];
+            $where['A.status']=['neq',2];
+            $where['A.checked']=['eq',1];
+            $where['A.type']=['eq',$post['type']];
+            $goods = Db::name('comment_user')->alias('A')
+                ->join('member B','B.id = A.comment_uid','INNER') 
+                ->join('member_weixin C','C.id = B.uid','INNER')  
+                ->where($where)->field("A.id,A.content,A.design_point,A.service_point,A.care_point,A.create_time,C.nickname,C.avatar")
+                ->order('A.id DESC')->limit($page_start, $limit)->select();
+            if($goods){
+                foreach($goods as $key=>$v){
+                    $img = Db::name('comment_user_img')->where(['comment_user_id'=>$v['id'],'status'=>0])->field('comment_img')->select();
+                    if($img){
+                        foreach($img as $k=>$i){
+                            $goods[$key]['img'][$k] = _getServerName().$i['comment_img'];
+                        }
+                    }
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $goods;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 用户评论人员
+     */
+    public function commentUser(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            $img = $post['img'];
+            unset($post['img']);
+            if(!isset($post['uid']) || !isset($post['comment_uid'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            if($post['uid'] == $post['comment_uid']){
+                if($img){
+                    foreach($img as $key=>$v){//删除评论图片
+                        $v = ltrim($v,'/');
+                        if(file_exists($v)){
+                            unlink($v);
+                        }
+                    }
+                }
+                $this->ret['msg'] = '不可评论自己';
+                return json($this->ret);
+            }
+            $post['create_time'] = date('Y-m-d H:i:s');
+            $authed = Db::name('member')->where(['uid'=>$post['uid']])->value('authed');
+            if($authed){
+                $post['checked'] = 1;
+                $post['checked_time'] = date('Y-m-d H:i:s');
+            }
+            $member = Db::name('member')->where(['uid'=>$post['comment_uid']])->field('province,city,county')->find();
+            if($member){
+                $post['province'] = $member['province'];
+                $post['city'] = $member['city'];
+                $post['county'] = $member['county'];
+            }
+            $id = Db::name('comment_user')->insertGetId($post);
+            if($id){
+                if($img){
+                    foreach($img as $key=>$v){
+                        $insert_img = [
+                            'comment_user_id' => $id,
+                            'comment_img' => $v,
+                            'create_time' => date('Y-m-d H:i:s')
+                        ];
+                        Db::name('comment_user_img')->insert($insert_img);
+                    }
+                }
+                if($post['type'] == 1){
+                    _computeUserScore($post['uid'],$post['design_point'],$post['service_point'],$post['care_point'],'mechanic',$authed);
+                }elseif($post['type'] == 2){
+                    _computeUserScore($post['uid'],$post['design_point'],$post['service_point'],$post['care_point'],'gongzhang',$authed);
+                }elseif($post['type'] == 3){
+                    _computeUserScore($post['uid'],$post['design_point'],$post['service_point'],$post['care_point'],'designer',$authed);
+                }elseif($post['type'] == 4){
+                    _computeUserScore($post['uid'],$post['design_point'],$post['service_point'],$post['care_point'],'company',$authed);
+                }elseif($post['type'] == 5){
+                    _computeUserScore($post['uid'],$post['design_point'],$post['service_point'],$post['care_point'],'shop',$authed);
+                }
+                $this->ret['code'] = 200;
+                if($authed){
+                    $this->ret['msg'] = '评价成功';
+                }else{
+                    $this->ret['msg'] = '评价已提交,等待审核';
+                }
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
     }
 }

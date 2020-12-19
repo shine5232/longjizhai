@@ -43,9 +43,10 @@ class Company extends Main
             $end_time = date('Y-m-d H:i:s');
             $data = Db::name('company')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
+                ->join('member_rank C','C.id = B.rank_id','INNER')
                 ->where($where)
                 ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
-                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address")
+                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address,B.rank_id,C.rank_name")
                 ->order($order)->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as &$v){
@@ -68,7 +69,7 @@ class Company extends Main
     public function getCompanyInfoById(){
         if(request()->isPost()){
             $post = $this->request->post();
-            if(!isset($post['id']) || !isset($post['uid'])){
+            if(!isset($post['id'])){
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
@@ -79,9 +80,10 @@ class Company extends Main
             $end_time = date('Y-m-d H:i:s');
             $data = Db::name('company')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
+                ->join('member_rank C','C.id = B.rank_id','INNER')
                 ->where($where)
                 ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
-                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address,A.phone,A.contact,A.content,B.area,B.authed,B.rank_id")
+                ->field("B.id,A.short_name,A.case_num,A.site_num,A.thumb,A.logo,A.address,A.phone,A.contact,A.content,B.area,B.authed,B.rank_id,C.rank_name")
                 ->find();
             if($data){
                 $data['thumb'] = _getServerName().'/public'.$data['thumb'];

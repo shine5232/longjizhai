@@ -75,7 +75,8 @@ class Shop extends Main
             $page_start = ($page - 1) * $limit;
             $data = Db::name('shop')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field('A.id,A.rectangle_logo AS img,A.name')
+                ->join('member_rank C','C.id = B.rank_id','INNER')
+                ->where($where)->field('A.id,A.rectangle_logo AS img,A.name,B.rank_id,C.rank_name')
                 ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
                 ->order($order)
                 ->limit($page_start, $limit)
@@ -106,8 +107,9 @@ class Shop extends Main
             }
             $data['info'] = Db::name('shop')->alias('A')
                 ->join('member B','B.id = A.uid','LEFT')
+                ->join('member_rank C','C.id = B.rank_id','INNER')
                 ->where('A.id',$post['id'])
-                ->field('A.id,A.name,A.rectangle_logo AS img,A.kou,A.view_num AS view,A.address,A.content,B.rank_id AS rank,B.authed AS ren,B.mobile,B.realname AS user')
+                ->field('A.id,A.name,A.square_logo AS img,A.score,A.view_num AS view,A.address,A.content,B.rank_id AS rank,B.authed AS ren,B.mobile,B.realname AS user,C.rank_name')
                 ->find();
             $data['cate'] = Db::name('shop_cate')
                 ->where('shop_id',$post['id'])

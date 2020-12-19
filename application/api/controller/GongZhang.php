@@ -37,7 +37,8 @@ class GongZhang extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('gongzhang')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field("B.id,A.name,A.case_num,B.thumb")->order('B.id DESC')->limit($page_start, $limit)->select();
+                ->join('member_rank C','C.id = B.rank_id','INNER')
+                ->where($where)->field("B.id,A.name,A.case_num,B.thumb,B.rank_id,C.rank_name")->order('B.id DESC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as &$v){
                     $v['thumb'] = _getServerName().$v['thumb'];
@@ -58,7 +59,7 @@ class GongZhang extends Main
     public function getGongZhangInfoById(){
         if(request()->isPost()){
             $post = $this->request->post();
-            if(!isset($post['id']) || !isset($post['uid'])){
+            if(!isset($post['id'])){
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
@@ -68,12 +69,13 @@ class GongZhang extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('gongzhang')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->join('member_attr C','C.id = A.ages','LEFT')
-                ->where($where)->field("B.id,A.name,A.case_num,A.mobile,A.content,B.area,B.thumb,B.authed,B.rank_id,C.title")->find();
+                ->join('member_rank C','C.id = B.rank_id','INNER')
+                ->where($where)->field("B.id,A.name,A.case_num,A.mobile,A.content,B.area,B.thumb,B.authed,B.rank_id,C.rank_name")->find();
             if($data){
                 $date = date('Y-m-d H:i:s',time() - 86400);
+                $uid = isset($post['uid'])?$post['uid']:0;
                 $where_look = [
-                    'uid' => $post['uid'],
+                    'uid' => $uid,
                     'user_id' => $post['id'],
                     'crate_time' => ['>',$date],
                 ];

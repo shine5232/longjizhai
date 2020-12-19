@@ -425,4 +425,59 @@ class Goods extends Main
         }
         return json($this->ret);
     }
+    /**
+     * 获取智能预算商品列表
+     */
+    public function getTuiGoodsLis(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['cate_id']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            if(isset($post['brand']) && $post['brand']){//品牌
+                $where['A.brand_id'] = $post['brand'];
+            }
+            if(isset($post['cate_id'])){
+                $cate = $post['cate_id'];
+                $where[] = ['exp','FIND_IN_SET('.$cate.',A.cate_id)'];
+            }
+            if(isset($post['style'])){
+                $style = $post['style'];
+                $where[] = ['exp','FIND_IN_SET('.$style.',A.style)'];
+            }
+            $order = 'D.sort DESC';
+            if(isset($post['sort']) && $post['sort']){
+                if($post['sort'] == '1'){//价格最低
+                    $order = 'D.shop_price ASC';
+                }elseif($post['sort'] == '2'){//价格最高
+                    $order = 'D.shop_price DESC';
+                }
+            }
+            $where['A.status']=['eq',0];
+            $where['A.online']=['eq',1];
+            $where['D.pid']=['eq',0];
+            $where['D.shop_price']=['>',0];
+            $data = Db::name('shop_goods')->alias('A')
+                ->join('brands B','B.id = A.brand_id','LEFT')
+                ->join('goods_cate C','C.id = A.cate','LEFT')
+                ->join('shop_goods_attr D','D.goods_id = A.id','LEFT')
+                ->where($where)->field("A.id,A.name,A.title,A.thumb,B.name AS brand_name,C.title AS cate_name,D.price,D.shop_price,D.unit")->order($order)->limit($page_start, $limit)->select();
+            if($data){
+                foreach($data as $key=>$v){
+                    $data[$key]['thumb'] = _getServerName().'/public'.$v['thumb'];
+                }
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '获取失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
 }

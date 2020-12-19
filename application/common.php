@@ -248,6 +248,11 @@ function _getBrandsByCate($cate_id){
         'id'=>['in',$brands]
     ];
     $brandlis = Db::name('brands')->where($where)->field('id,name')->select();
+    if($brandlis){
+        foreach($brandlis as $key=>$v){
+            $brandlis[$key]['cate_id'] = $cate_id;
+        }
+    }
     return $brandlis;
 }
 /**
@@ -555,9 +560,12 @@ function _getMyUsersByUid($uid,$first=0,$page_start=0,$limit=10){
     }
     $data = Db::name('member')->alias('A')
         ->join('member_weixin B','B.openid = A.openid','INNER')
-        ->where($where)->field("A.id,A.subor,A.superior_id,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
+        ->where($where)->field("A.id,A.subor,A.superior_id,A.thumb,A.realname,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
     if($data){
         foreach($data as $key=>$v){
+            if($v['thumb']){
+                $data[$key]['thumb'] = _getServerName().$v['thumb'];
+            }
             $data[$key]['uper'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
         }
     }
@@ -579,13 +587,36 @@ function _getUsersByCounty($uid,$county,$page_start=0,$limit=10){
     }
     $data = Db::name('member')->alias('A')
         ->join('member_weixin B','B.openid = A.openid','INNER')
-        ->where($where)->field("A.id,A.subor,A.superior_id,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
+        ->where($where)->field("A.id,A.subor,A.superior_id,A.thumb,A.realname,B.avatar,B.nickname,(CASE WHEN A.type = 0 THEN '会员' WHEN A.type = 1 THEN '技工' WHEN A.type = 2 THEN '工长' WHEN A.type = 3 THEN '设计师' WHEN A.type = 4 THEN '装饰公司' WHEN A.type = 5 THEN '商家' ELSE '业主' END) AS typer")->order('A.subor DESC')->limit($page_start, $limit)->select();
     if($data){
         foreach($data as $key=>$v){
+            if($v['thumb']){
+                $data[$key]['thumb'] = _getServerName().$v['thumb'];
+            }
             $data[$key]['uper'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
         }
     }
     return $data;
+}
+/**
+ * 计算口碑分数
+ */
+function _computeUserScore($id,$score1,$score2,$score3,$model=false,$authed = false){
+    if($model && $authed){
+        $score = $score1 + $score2 + $score3;
+        $user = Db::name($model)->where(['uid'=>$id])->field('score,score1,score2,score3')->find();
+        $upd = [
+            'score' => $score + (int)$user['score'],
+            'score1' => $score1 + (int)$user['score1'],
+            'score2' => $score2 + (int)$user['score2'],
+            'score3' => $score3 + (int)$user['score3'],
+        ];
+        $res = Db::name($model)->where(['uid'=>$id])->update($upd);
+        if($res){
+            return true;
+        }
+    }
+    return false;
 }
 /**
  * @method 封装curl get请求

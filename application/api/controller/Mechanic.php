@@ -45,7 +45,8 @@ class Mechanic extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('mechanic')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field("B.id,A.name,A.case_num,A.position,B.thumb")->order('B.id DESC')->limit($page_start, $limit)->select();
+                ->join('member_rank C','C.id = B.rank_id','INNER')
+                ->where($where)->field("B.id,A.name,A.case_num,A.position,B.thumb,B.rank_id,C.rank_name")->order('B.id DESC')->limit($page_start, $limit)->select();
             if($data){
                 foreach($data as &$v){
                     $type = Db::name('member_attr')->where(['id'=>['in',$v['position']]])->field('title')->select();
@@ -69,7 +70,7 @@ class Mechanic extends Main
     public function getMechanicInfoById(){
         if(request()->isPost()){
             $post = $this->request->post();
-            if(!isset($post['id']) || !isset($post['uid'])){
+            if(!isset($post['id'])){
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
@@ -79,11 +80,13 @@ class Mechanic extends Main
             $where['A.deleted']=['eq',0];
             $data = Db::name('mechanic')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
-                ->where($where)->field("B.id,A.name,A.case_num,A.position,A.mobile,A.content,B.area,B.thumb,B.authed,B.rank_id")->find();
+                ->join('member_rank C','C.id = B.rank_id','INNER')
+                ->where($where)->field("B.id,A.name,A.case_num,A.position,A.mobile,A.content,A.score,B.area,B.thumb,B.authed,B.rank_id,C.rank_name")->find();
             if($data){
                 $date = date('Y-m-d H:i:s',time() - 86400);
+                $uid = isset($post['uid'])?$post['uid']:0;
                 $where_look = [
-                    'uid' => $post['uid'],
+                    'uid' => $uid,
                     'user_id' => $post['id'],
                     'crate_time' => ['>',$date],
                 ];
