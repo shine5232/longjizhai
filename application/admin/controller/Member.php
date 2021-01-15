@@ -25,8 +25,12 @@ class Member extends Main
             $city = $this->request->param('city', '');
             $county = $this->request->param('county', '');
             $type = $this->request->param('type', '');
+            $uid = $this->request->param('uid', '');
+            $subscribe = $this->request->param('subscribe', '');
+            $status = $this->request->param('status', '');
+            $checked = $this->request->param('checked', '');
             $page_start = ($page - 1) * $limit;
-            $where = '1';
+            $where = 'A.deleted = 0';
             if ($realname) {
                 $where .= " AND A.realname = '$realname'";
             }
@@ -45,8 +49,19 @@ class Member extends Main
             if ($county) {
                 $where .= " AND A.county = $county";
             }
-            if ($type) {
-                $where['type'] = ['eq', $type];
+            if ($uid) {
+                $where .= " AND A.uid = $uid";
+            }
+            if ($subscribe != '') {
+                $where .= " AND A.subscribe = $subscribe";
+            }
+            if ($status != '') {
+                $where .= " AND A.status = $status";
+            }
+            if ($checked != '') {
+                $where .= " AND A.checked = $checked";
+            }
+            if ($type != '') {
                 $where .= " AND A.type = $type";
             }
             if($user['county']){
@@ -109,19 +124,28 @@ class Member extends Main
             $post     = $this->request->post();
             $id = $post['id'];
             $post['update_time']  = date('Y-m-d H:i:s');
-            unset($post['id']);
+            $uname = $post['uname'];
+            unset($post['id'],$post['uname']);
             $type = $post['type'];
             $has = false;
+            $typer = 'member';
             if($type == '1'){
+                $typer = 'mechanic';
                 $has = Db::name('mechanic')->where('uid',$id)->find();
             }elseif($type == '2'){
+                $typer = 'gz';
                 $has = Db::name('gongzhang')->where('uid',$id)->find();
             }elseif($type == '3'){
+                $typer = 'designer';
                 $has = Db::name('designer')->where('uid',$id)->find();
             }elseif($type == '4'){
+                $typer = 'company';
                 $has = Db::name('company')->where('uid',$id)->find();
             }elseif($type == '5'){
+                $typer = 'shop';
                 $has = Db::name('shop')->where('uid',$id)->find();
+            }elseif($type == '6'){
+                $typer = 'proprietor';
             }
             if(!$has){
                 $mechanic = [
@@ -149,6 +173,22 @@ class Member extends Main
             }
             $db = Db::name('member')->where('id', $id)->update($post);
             if ($db) {
+                $url = "https://yhgg.longjizhai.com/ashx/member/account/update.ashx";
+                $city = _getRegionNameByCode($post['city']);
+                $county = _getRegionNameByCode($post['county']);
+                if($city && $county){
+                    $area = $city['region_name'].$county['region_name'];
+                }else{
+                    $area = '总站';
+                }
+                $params = [
+                    'u'=>$uname,
+                    't'=>$typer,
+                    'r'=>$post['realname'],
+                    'd'=>$area,
+                    'c'=>$post['mobile'],
+                ];
+                $res = json_decode(_requestPost($url,$params),true);
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = 'success';
             }
@@ -180,14 +220,14 @@ class Member extends Main
     /**
      * 会员管理-会员删除
      */
-    public function deleteArticle()
+    public function deleteUser()
     {
         $id = $this->request->post('id');
         $upd = [
-            'status'    =>  1,
+            'deleted'    =>  1,
             'delete_time'   =>  date('Y-m-d H:i:s')
         ];
-        $res = Db::name('article')->where('id', $id)->update($upd);
+        $res = Db::name('member')->where('id', $id)->update($upd);
         if ($res) {
             $this->ret['code'] = 200;
             $this->ret['msg'] = 'success';

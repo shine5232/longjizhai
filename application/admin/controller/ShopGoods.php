@@ -18,17 +18,25 @@ class ShopGoods extends Main
             $limit = $this->request->param('limit', 20, 'intval');
             $shop_id = $this->request->param('shop_id', '');
             $cate_id = $this->request->param('cate_id', '');
+            $id = $this->request->param('id', '');
             $name = $this->request->param('name', '');
             $brand_id = $this->request->param('brand_id', '');
             $checked = $this->request->param('checked', '-1');
+            $province = $this->request->param('province', '');
+            $city = $this->request->param('city', '');
+            $county = $this->request->param('county', '');
             $page_start = ($page - 1) * $limit;
             $where['a.shop_id'] = ['eq', $shop_id];
             $where['a.status'] = ['eq', 0];
+            $user = session('user');
             if ($cate_id) {
                 $where[] = ['exp','FIND_IN_SET('.$cate_id.',a.cate_id)'];
             }
             if ($brand_id) {
                 $where['a.brand_id'] = ['eq', $brand_id];
+            }
+            if ($id) {
+                $where['a.id'] = ['eq', $id];
             }
             if ($checked > '-1') {
                 $where['a.checked'] = ['eq', $checked];
@@ -36,15 +44,30 @@ class ShopGoods extends Main
             if ($name) {
                 $where['a.name'] = ['like', '%'.$name.'%'];
             }
+            if ($province) {
+                $where['c.province'] = ['eq', $province];
+            }
+            if ($city) {
+                $where['c.city'] = ['eq', $city];
+            }
+            if ($county) {
+                $where['c.county'] = ['eq', $county];
+            }
+            if($user['county']){
+                $where['c.county'] = ['eq', $user['county']];
+            }
             $data = Db::name('shop_goods')->alias('a')
                 ->join('brands b', 'b.id = a.brand_id', 'LEFT')
+                ->join('shop c', 'c.id = a.shop_id', 'INNER')
+                ->join('region d','d.region_code = a.county','LEFT')
                 ->where($where)
-                ->field('a.id,a.name,a.thumb,a.online,a.sort,a.cate,a.title,b.name as brand_name')
-                ->order('a.sort ASC,a.id ASC')
+                ->field('a.id,a.name,a.thumb,a.online,a.checked,a.zong,a.sort,a.cate,a.title,b.name as brand_name,c.name AS shop_name,d.region_name AS area')
+                ->order('a.id DESC,a.sort ASC')
                 ->limit($page_start, $limit)
                 ->select();
             $count = Db::name('shop_goods')->alias('a')
                 ->join('brands b', 'b.id = a.brand_id', 'LEFT')
+                ->join('shop c', 'c.id = a.shop_id', 'INNER')
                 ->where($where)
                 ->count();
             $datas = [];
@@ -72,8 +95,10 @@ class ShopGoods extends Main
     {
         $cate_id  = $this->request->get('cate_id');
         $cate = _getGoodsCate(); //获取顶级分类
+        $region = _getRegion(); //获取省份数据
         $this->assign('cate', $cate);
         $this->assign('cate_id', $cate_id);
+        $this->assign('regin', $region);
         return $this->fetch('search_goods');
     }
     /**

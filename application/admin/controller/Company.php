@@ -16,14 +16,18 @@ class Company extends Main
         if (request()->isAjax()) {
             $page = $this->request->param('page', 1, 'intval');
             $limit = $this->request->param('limit', 20, 'intval');
-            $keywords = $this->request->param('keywords', '');
+            $realname = $this->request->param('realname', '');
+            $mobile = $this->request->param('mobile', '');
+            $uname = $this->request->param('uname', '');
+            $uid = $this->request->param('uid', '');
+            $subscribe = $this->request->param('subscribe', '');
+            $status = $this->request->param('status', '');
+            $checked = $this->request->param('checked', '');
             $city = $this->request->param('city', '');
             $province = $this->request->param('province', '');
             $county = $this->request->param('county', '');
             $where = '';
-            if ($keywords) {
-                $where .= " AND (A.name LIKE '%$keywords%' OR A.phone = '$keywords')";
-            }
+            $wheres = 'WHERE 1 = 1';
             if ($city) {
                 $where .= " AND A.city =" . $city;
             }
@@ -33,23 +37,45 @@ class Company extends Main
             if ($county) {
                 $where .= " AND A.county =" . $county;
             }
+            if ($realname) {
+                $where .= " AND A.name LIKE '%".$realname."%'";
+            }
+            if($mobile){
+                $where .= " AND A.mobile =" . $mobile;
+            }
+            if($uname){
+                $wheres .= " AND E.uname = '" . $uname . "'";
+            }
+            if($uid){
+                $wheres .= " AND E.id =" . $uid;
+            }
+            if($subscribe != ''){
+                $wheres .= " AND E.subscribe =" . $subscribe;
+            }
+            if ($status != '') {
+                $wheres .= " AND E.status = $status";
+            }
+            if ($checked != '') {
+                $where .= " AND A.checked = $checked";
+            }
             $user = session('user');
             if($user['county']){
                 $where .= " AND A.county =" . $user['county'];
             }
             $page_start = ($page - 1) * $limit;
-            $sql = "SELECT A.*,E.uname,E.realname,E.subor,E.superior_id,E.area,F.rank_name
+            $sql = "SELECT A.*,E.uname,E.area,E.point,E.subor,E.subscribe,F.rank_name,G.uname AS topname
                 FROM (
                     SELECT A.*,
                         CASE WHEN A.is_zong = 1 THEN '是' ELSE '否' END AS zong,
                         CASE WHEN A.checked = 0 THEN '未审' WHEN A.checked = 1 THEN '通过' ELSE '未过' END AS checked_title
                         FROM lg_company A
-                    WHERE A.deleted = 0  AND A.checked = 1" . $where . "
+                    WHERE A.deleted = 0 " . $where . "
                     ORDER BY id DESC
                     limit $page_start,$limit
                 ) A 
                 INNER JOIN lg_member E ON A.uid = E.id
-                INNER JOIN lg_member_rank F ON E.rank_id = F.id";
+                INNER JOIN lg_member_rank F ON E.rank_id = F.id
+                LEFT JOIN lg_member G ON E.superior_id = G.uid ".$wheres;
             // var_dump($sql);die;
             $data = Db::query($sql);
             $sql1 = "SELECT COUNT(1) AS count FROM lg_company A 
@@ -58,9 +84,6 @@ class Company extends Main
             $count = Db::query($sql1);
             // var_dump($count);die;
             if ($data) {
-                foreach($data as &$v){
-                    $v['superior_id'] = Db::name('member')->where('uid',$v['superior_id'])->value('uname');
-                }
                 $this->ret['count'] = $count[0]['count'];
                 $this->ret['data'] = $data;
             }

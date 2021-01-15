@@ -73,6 +73,9 @@ class File extends Main
                 $src = '/uploads/avatar';
             }else if($data['type'] == 'auths'){
                 $src = '/uploads/auths';
+            }else if($data['type'] == 'article'){
+                //文章内容图片上传
+                $src = '/uploads/article';
             }
         }else{
             $src = '/uploads/ping';

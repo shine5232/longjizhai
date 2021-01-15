@@ -67,6 +67,7 @@ class check extends Main
             $type = $this->request->get('type');
             $post =  $this->request->post();
             $post['checked_time'] = date('Y-m-d H:i:s');
+            $uid = '';
             if ($this->request->get('uid')) {
                 $uid = $this->request->get('uid');
                 // var_dump($post);die;
@@ -138,6 +139,9 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == 1){//审核通过
+                        Db::name('member')->where('id',$uid)->update(['checked'=>1]);
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }
@@ -148,6 +152,9 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == 1){//审核通过
+                        Db::name('member')->where('id',$uid)->update(['checked'=>1]);
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }
@@ -158,6 +165,9 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == 1){//审核通过
+                        Db::name('member')->where('id',$uid)->update(['checked'=>1]);
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }
@@ -168,6 +178,9 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == 1){//审核通过
+                        Db::name('member')->where('id',$uid)->update(['checked'=>1]);
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }
@@ -178,6 +191,9 @@ class check extends Main
                     ->where('id', $id)
                     ->update($post);
                 if ($res) {
+                    if($post['checked'] == 1){//审核通过
+                        Db::name('member')->where('id',$uid)->update(['checked'=>1]);
+                    }
                     $this->ret['code'] = 200;
                     $this->ret['msg'] = 'success';
                 }

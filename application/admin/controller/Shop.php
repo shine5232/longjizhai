@@ -18,11 +18,17 @@ class Shop extends Main
             $limit = $this->request->param('limit', 20, 'intval');
             $name = $this->request->param('name', '');
             $shop_cate = $this->request->param('shop_cate', '');
+            $mobile = $this->request->param('mobile', '');
+            $uname = $this->request->param('uname', '');
+            $uid = $this->request->param('uid', '');
+            $subscribe = $this->request->param('subscribe', '');
+            $checked = $this->request->param('checked', '');
             $province = $this->request->param('province', '');
             $city = $this->request->param('city', '');
             $county = $this->request->param('county', '');
             $page_start = ($page - 1) * $limit;
-            $where['a.status'] = ['eq', 0];
+            
+            $where = '';
             $user = session('user');
             if ($name) {
                 $where['a.name'] = ['like', "%$name%"];
@@ -42,8 +48,23 @@ class Shop extends Main
             if($user['county']){
                 $where['a.county'] = ['eq', $user['county']];
             }
+            if($mobile){
+                $where['a.mobile'] = ['eq',$mobile];
+            }
+            if($uname){
+                $where['e.uname'] = ['eq',$uname];
+            }
+            if($uid){
+                $where['e.id'] = ['eq',$uid];
+            }
+            if($subscribe != ''){
+                $where['e.subscribe'] = ['eq',$subscribe];
+            }
+            if ($checked != '') {
+                $where['a.checked'] = ['eq',$checked];
+            }
             $data = Db::name('shop')->alias('a')
-                ->join('member e', 'e.id = a.uid', 'LEFT')
+                ->join('member e', 'e.id = a.uid', 'INNER')
                 ->join('member_rank g','g.id = e.rank_id','LEFT')
                 ->join('goods_cate f', 'f.id = a.shop_cate', 'LEFT')
                 ->where($where)
@@ -465,5 +486,25 @@ class Shop extends Main
             $this->assign('type', $type);
             return $this->fetch('recommend');
         }
+    }
+    /**
+     * 跳转到商家管理
+     */
+    public function goToUcenter(){
+        $id = $this->request->param('id', '');
+        $user = Db::name('shop')->alias('A')
+            ->join('member B','B.id = A.uid','INNER')
+            ->where('A.id',$id)
+            ->field('A.*,B.uname,B.password,B.type')
+            ->find();
+        if($user){
+            $session = [
+                'uid' => $user['uid'],
+                'uname' => $user['uname'],
+                'type' => $user['type'],
+            ];
+            session('ucenter',$session);
+        }
+        $this->redirect('/ucenter/index/index');
     }
 }

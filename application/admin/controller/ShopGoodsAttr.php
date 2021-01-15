@@ -140,7 +140,7 @@ class ShopGoodsAttr extends Main
     public function unintList()
     {
         if (request()->isGet()) {
-            
+            $is_bizhi = 0;
             $pid  = $this->request->get('pid');
             $where['a.status'] = ['eq', 0];
             $where['a.pid'] = ['eq', $pid];
@@ -149,8 +149,18 @@ class ShopGoodsAttr extends Main
                 ->field('a.*')
                 ->order('a.sort ASC,a.id DESC')
                 ->select();
+            $cate_id = Db::name('shop_goods_attr')->alias('A')
+                ->join('shop_goods B','B.id = A.goods_id','INNER')
+                ->where('A.id',$pid)->value('B.cate_id');
+            if($cate_id){
+                $array = explode(',',$cate_id);
+                if(in_array('515',$array)){
+                    $is_bizhi = 1;
+                }
+            }
             $this->assign('data', $data);
             $this->assign('pid', $pid);
+            $this->assign('is_bizhi', $is_bizhi);
             return $this->fetch('goods_unint');
         }
     }
@@ -165,6 +175,11 @@ class ShopGoodsAttr extends Main
             $pid = $post['pid'];
             $goods_id = Db::name('shop_goods_attr')->where('id',$pid)->value('goods_id');
             foreach($form as $key=>$vo){
+                $tui_price = $vo['shop_price'];
+                if($vo['unit'] == '片' || $vo['unit'] == '卷'){
+                    $tui_price = $vo['shop_price'] / ($vo['wide'] *  $vo['long']);
+                    round($tui_price,2);
+                }
                 if($vo['id']){//更新数据
                     $upd = [
                         'name' => $vo['name'],
@@ -173,6 +188,11 @@ class ShopGoodsAttr extends Main
                         'thumb' => $vo['thumb'],
                         'sort' => $vo['sort'],
                         'unit' => $vo['unit'],
+                        'wide' => $vo['wide'],
+                        'long' => $vo['long'],
+                        'jimo_price' => isset($vo['jimo_price'])?$vo['jimo_price']:0,
+                        'work_price' => isset($vo['work_price'])?$vo['work_price']:0,
+                        'tui_price'=>$tui_price,
                         'ku' => $vo['ku'],
                         'yun' => $vo['yun'],
                         'pid'=>$pid,
@@ -189,6 +209,11 @@ class ShopGoodsAttr extends Main
                         'thumb' => $vo['thumb'],
                         'sort' => $vo['sort'],
                         'unit' => $vo['unit'],
+                        'wide' => $vo['wide'],
+                        'long' => $vo['long'],
+                        'jimo_price' => isset($vo['jimo_price'])?$vo['jimo_price']:0,
+                        'work_price' => isset($vo['work_price'])?$vo['work_price']:0,
+                        'tui_price'=>$tui_price,
                         'ku' => $vo['ku'],
                         'yun' => $vo['yun'],
                         'pid'=>$pid,
@@ -212,6 +237,11 @@ class ShopGoodsAttr extends Main
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
+            $tui_price = $post['shop_price'];
+            if($post['unit'] == '片' || $post['unit'] == '卷'){
+                $tui_price = $post['shop_price'] / ($post['wide'] *  $post['long']);
+                round($tui_price,2);
+            }
             $update = [
                 'name' => $post['name'],
                 'price' => $post['price'],
@@ -219,6 +249,11 @@ class ShopGoodsAttr extends Main
                 'thumb' => $post['thumb'],
                 'sort' => $post['sort'],
                 'yun' => $post['yun'],
+                'wide' => $post['wide'],
+                'long' => $post['long'],
+                'jimo_price' => isset($vo['jimo_price'])?$vo['jimo_price']:0,
+                'work_price' => isset($vo['work_price'])?$vo['work_price']:0,
+                'tui_price'=>$tui_price,
                 'ku' => $post['ku'],
                 'unit' => $post['unit'],
                 'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,

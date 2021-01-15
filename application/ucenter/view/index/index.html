@@ -1,0 +1,28 @@
+{include file="common/header"}
+    <div class="ucenter">
+        <div class="ucenter-body">
+            <div class="ucenter-title">
+                <div class="title-left">管理中心</div>
+                <div class="title-right">
+                    <div>
+                        <i class="iconfont iconjifen"></i>积分：<span style="color:#ff6b23">{$user['point']|default='0'}</span>
+                    </div>
+                    <div class="through pointer point-rechage">充值积分</div>
+                    <div class="through pointer login-out">退出登录</div>
+                </div>
+            </div>
+            <div class="ucenter-content">
+                <div class="layui-tab layui-tab-card">
+                    <ul class="layui-tab-title">
+                      <li class="layui-this">个人中心</li>
+                      <li>{$type|default='商铺'}管理</li>
+                    </ul>
+                    <div class="layui-tab-content" style="height: 100px;">
+                      <div class="layui-tab-item layui-show">默认宽度是相对于父元素100%适应的，你也可以固定宽度。</div>
+                      <div class="layui-tab-item">2</div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+{include file="common/footer"}

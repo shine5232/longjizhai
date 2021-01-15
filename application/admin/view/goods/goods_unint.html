@@ -53,6 +53,8 @@
                         <th width="50">单位名称</th>
                         <th width="50">库存数量</th>
                         <th width="50">运费</th>
+                        <th width="50">长度(m)</th>
+                        <th width="50">宽度(m)</th>
                         <th width="100">是否上架</th>
                         <th width="150">缩略图</th>
                         <th width="50">排序</th>
@@ -83,6 +85,12 @@
                         </td>
                         <td>
                             <input type="text" class="layui-input yun{$key}" name="form[{$key}][yun]" value="{$vo.yun|default=0}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input long{$key}" name="form[{$key}][long]" value="{$vo.long|default=0}" placeholder="请输入长度(m)" lay-verify="required" autocomplete="off" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input wide{$key}" name="form[{$key}][wide]" value="{$vo.wide|default=0}" placeholder="请输入宽度(m)" lay-verify="required" autocomplete="off" />
                         </td>
                         <td>
                             <input type="checkbox" class="layui-input online{$key}" name="form[{$key}][online]" lay-skin="switch" lay-text="上架|下架" value="1" {if condition="$vo.online == 1"}checked{/if}>
@@ -254,6 +262,12 @@
                     '</td>'+
                     '<td>'+
                         '<input type="text" class="layui-input yun'+length+'" name="form['+length+'][yun]" value="{$vo.yun|default="0"}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input long'+length+'" name="form['+length+'][long]" value="{$vo.long|default="0"}" placeholder="请输入长度(m)" lay-verify="required" autocomplete="off" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input wide'+length+'" name="form['+length+'][wide]" value="{$vo.wide|default="0"}" placeholder="请输入宽度(m)" lay-verify="required" autocomplete="off" />'+
                     '</td>'+
                     '<td>'+
                         '<input type="checkbox" class="layui-input online'+length+'" name="form['+length+'][online]" lay-skin="switch" lay-text="上架|下架" value="1">'+

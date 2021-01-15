@@ -70,7 +70,7 @@ class GongZhang extends Main
             $data = Db::name('gongzhang')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
                 ->join('member_rank C','C.id = B.rank_id','INNER')
-                ->where($where)->field("B.id,A.name,A.case_num,A.mobile,A.content,B.area,B.thumb,B.authed,B.rank_id,C.rank_name")->find();
+                ->where($where)->field("B.id,A.name,A.case_num,A.mobile,A.content,A.slogan,B.area,B.thumb,B.authed,B.rank_id,C.rank_name")->find();
             if($data){
                 $date = date('Y-m-d H:i:s',time() - 86400);
                 $uid = isset($post['uid'])?$post['uid']:0;

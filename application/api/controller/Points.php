@@ -20,6 +20,7 @@ class Points extends Main
             $page_start = ($page - 1) * $limit;
             $where = [
                 'A.status'=>['neq',1],
+                'A.subscribe'=>['eq',1],
             ];
             if($page_start <= 10){
                 $data = Db::name('member')->alias('A')

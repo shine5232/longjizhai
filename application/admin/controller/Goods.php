@@ -14,38 +14,58 @@ class Goods extends Main
         if(request()->isAjax()){
             $page = $this->request->param('page',1,'intval');
             $limit = $this->request->param('limit',20,'intval');
-            $name = $this->request->param('name','');
-            $brand_id = $this->request->param('brand_id','');
-            $cate_id = $this->request->param('cate_id','');
+            $id = $this->request->param('id', '');
+            $name = $this->request->param('name', '');
+            $cate_id = $this->request->param('cate_id', '');
+            $brand_id = $this->request->param('brand_id', '');
             $checked = $this->request->param('checked', '-1');
+            $province = $this->request->param('province', '');
+            $city = $this->request->param('city', '');
+            $county = $this->request->param('county', '');
             $user = session('user');
             $page_start = ($page - 1) * $limit;
             $where['a.status'] = ['eq',0];
-            if($name){
-                $where['a.name'] = ['like',"%$name%"];
+            if ($cate_id) {
+                $where[] = ['exp','FIND_IN_SET('.$cate_id.',a.cate_id)'];
             }
-            if($brand_id){
-                $where['a.brand_id'] = ['eq',$brand_id];
+            if ($brand_id) {
+                $where['a.brand_id'] = ['eq', $brand_id];
+            }
+            if ($id) {
+                $where['a.id'] = ['eq', $id];
             }
             if ($checked > '-1') {
                 $where['a.checked'] = ['eq', $checked];
             }
-            if ($cate_id) {
-                $where[] = ['exp','FIND_IN_SET('.$cate_id.',a.cate_id)'];
+            if ($name) {
+                $where['a.name'] = ['like', '%'.$name.'%'];
+            }
+            if ($province) {
+                $where['d.province'] = ['eq', $province];
+            }
+            if ($city) {
+                $where['d.city'] = ['eq', $city];
+            }
+            if ($county) {
+                $where['d.county'] = ['eq', $county];
             }
             if($user['county']){
-                $where['a.county'] = ['eq',$user['county']];
+                $where['d.county'] = ['eq', $user['county']];
             }
             $data = Db::name('shop_goods')->alias('a')
+                ->join('shop d', 'd.id = a.shop_id', 'INNER')
                 ->join('goods_cate b','b.id = a.cate_id','LEFT')
                 ->join('brands c','c.id = a.brand_id','LEFT')
+                ->join('region e','e.region_code = a.county','LEFT')
                 ->where($where)
-                ->order('a.sort ASC,a.id ASC')
+                ->order('a.id DESC,a.sort ASC')
                 ->limit($page_start,$limit)
-                ->field('a.*,b.title as cate_title,c.name as brand_name')
+                ->field('a.*,b.title as cate_title,c.name as brand_name,d.name AS shop_name,e.region_name AS area')
                 ->select();
             $count = Db::name('shop_goods')->alias('a')
+                ->join('shop d', 'd.id = a.shop_id', 'INNER')
                 ->join('goods_cate b','b.id = a.cate_id','LEFT')
+                ->join('region e','e.region_code = a.county','LEFT')
                 ->where($where)
                 ->count();
             if($data){
@@ -151,7 +171,9 @@ class Goods extends Main
      */
     public function search(){
         $cate = _getGoodsCate();//获取顶级分类
+        $region = _getRegion(); //获取省份数据
         $this->assign('cate',$cate);
+        $this->assign('regin', $region);
         return $this->fetch();
     }
     /**
@@ -328,6 +350,11 @@ class Goods extends Main
             $pid = $post['pid'];
             $goods_id = Db::name('shop_goods_attr')->where('id',$pid)->value('goods_id');
             foreach($form as $key=>$vo){
+                $tui_price = $vo['shop_price'];
+                if($vo['unit'] == '片' || $vo['unit'] == '卷'){
+                    $tui_price = $vo['shop_price'] / ($vo['wide'] *  $vo['long']);
+                    round($tui_price,2);
+                }
                 if($vo['id']){//更新数据
                     $upd = [
                         'name' => $vo['name'],
@@ -336,6 +363,9 @@ class Goods extends Main
                         'thumb' => $vo['thumb'],
                         'sort' => $vo['sort'],
                         'unit' => $vo['unit'],
+                        'wide' => $vo['wide'],
+                        'long' => $vo['long'],
+                        'tui_price'=>$tui_price,
                         'ku' => $vo['ku'],
                         'yun' => $vo['yun'],
                         'pid'=>$pid,
@@ -352,6 +382,9 @@ class Goods extends Main
                         'thumb' => $vo['thumb'],
                         'sort' => $vo['sort'],
                         'unit' => $vo['unit'],
+                        'wide' => $vo['wide'],
+                        'long' => $vo['long'],
+                        'tui_price'=>$tui_price,
                         'ku' => $vo['ku'],
                         'yun' => $vo['yun'],
                         'pid'=>$pid,
@@ -375,6 +408,11 @@ class Goods extends Main
         if (request()->isPost()) {
             $post     = $this->request->post();
             $id = $post['id'];
+            $tui_price = $post['shop_price'];
+            if($post['unit'] == '片' || $post['unit'] == '卷'){
+                $tui_price = $post['shop_price'] / ($post['wide'] *  $post['long']);
+                round($tui_price,2);
+            }
             $update = [
                 'name' => $post['name'],
                 'price' => $post['price'],
@@ -383,6 +421,9 @@ class Goods extends Main
                 'yun' => $post['yun'],
                 'ku' => $post['ku'],
                 'unit' => $post['unit'],
+                'wide' => $post['wide'],
+                'long' => $post['long'],
+                'tui_price'=>$tui_price,
                 'paytype' => isset($post['paytype']) ? $post['paytype'] : 0,
                 'pay_one' => $post['pay_one'],
                 'pay_two' => $post['pay_two'],

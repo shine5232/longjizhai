@@ -27,11 +27,11 @@
                 <button class="layui-btn layui-btn-sm" onclick="x_admin_show('添加商品','goodsAdd.html?shop_id={$shop_id}&cate_id={$cate_id}',820,500,true)">
                     <i class="layui-icon layui-icon-add-circle-fine"></i>添加商品
                 </button>
+                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索商品','searchGoods.html?cate_id={$cate_id}',800,400)">
+                    <i class="layui-icon layui-icon-search"></i>搜索
+                </button>
                 <button class="layui-btn layui-btn-sm" onclick="javascript:location.reload()">
                     <i class="layui-icon layui-icon-refresh"></i>刷新
-                </button>
-                <button class="layui-btn layui-btn-sm" onclick="x_admin_show('搜索商品','searchGoods.html?cate_id={$cate_id}',900,360)">
-                    <i class="layui-icon layui-icon-search"></i>搜索
                 </button>
             </div>
         </script>
@@ -40,6 +40,105 @@
 {include file="public/foot"}
 <script>
     var tableIns,shop_id = {$shop_id};
+    var role_id = "{$role_id}";
+    console.log(role_id);
+    var tableHead = [ //表头
+        { type: 'checkbox',fixed: 'left',width:'50' }
+        , { field: 'id', title: '序号', width: '80', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+        , { field: 'id', title: 'ID', width: '80',fixed: 'left' }
+        , { field: 'name', title: '商品名称', width: '100'}
+        , { field: 'title', title: '副标题', width: '100'}
+        , { field: 'shop_name', title: '商铺', width: '100'}
+        , { field: 'thumb', title: '商品主图', width: '100',
+            templet:function(d){
+                if(d.thumb){
+                    var img = '<img src="__public__'+d.thumb+'" class="logo-img" />';
+                }else{
+                    var img = '暂无图片';
+                }
+                return img;
+            }
+        }
+        , { field: 'brand_name', title: '所属品牌', width: '100'}
+        , { field: 'cate_title', title: '所属分类', width: '100'}
+        , { field: 'area', title: '地区', width: '150',}
+        , { field: 'sort', title: '排序', width: '10%'}
+        , { field: 'online', title: '上下架',width:'80',
+            templet:function(d){
+                if(d.online == '1'){
+                    return '上架';
+                }else{
+                    return '下架';
+                }
+            }
+        }
+        , { field: 'zong', title: '总站', width: '80', }
+        , { field: 'checked', title: '审核状态', width: '100',
+            templet:function(d){
+                if(d.checked == '0'){
+                    return '<font style="color:red">待审核</font>';
+                }else if(d.checked == '1'){
+                    return '正常';
+                }
+            }
+        }
+        , {
+            field: 'handle', title: '操作',width: '200',
+            templet: function (d) {
+                var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500,true);">规格</button>'+'<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500,true);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '&type=1\',800,580,true);">推送</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delGoods(' + d.id + ');">删除</button>';
+                return handle;
+            }
+        }
+    ];
+    if(role_id == 178){
+        tableHead = [ //表头
+            { type: 'checkbox',fixed: 'left',width:'50' }
+            , { field: 'id', title: '序号', width: '80', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
+            , { field: 'id', title: 'ID', width: '80',fixed: 'left' }
+            , { field: 'name', title: '商品名称', width: '100'}
+            , { field: 'title', title: '副标题', width: '100'}
+            , { field: 'shop_name', title: '商铺', width: '100'}
+            , { field: 'thumb', title: '商品主图', width: '100',
+                templet:function(d){
+                    if(d.thumb){
+                        var img = '<img src="__public__'+d.thumb+'" class="logo-img" />';
+                    }else{
+                        var img = '暂无图片';
+                    }
+                    return img;
+                }
+            }
+            , { field: 'brand_name', title: '所属品牌', width: '100'}
+            , { field: 'cate_title', title: '所属分类', width: '100'}
+            , { field: 'sort', title: '排序', width: '10%'}
+            , { field: 'online', title: '上下架',width:'80',
+                templet:function(d){
+                    if(d.online == '1'){
+                        return '上架';
+                    }else{
+                        return '下架';
+                    }
+                }
+            }
+            , { field: 'zong', title: '总站', width: '80', }
+            , { field: 'checked', title: '审核状态', width: '100',
+                templet:function(d){
+                    if(d.checked == '0'){
+                        return '<font style="color:red">待审核</font>';
+                    }else if(d.checked == '1'){
+                        return '正常';
+                    }
+                }
+            }
+            , {
+                field: 'handle', title: '操作',width: '200',
+                templet: function (d) {
+                    var handle = '<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500,true);">规格</button>'+'<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500,true);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '&type=1\',800,580,true);">推送</button>';
+                    return handle;
+                }
+            }
+        ];
+    };
     layui.use(['laydate', 'form', 'table'], function () {
         var table = layui.table, laydate = layui.laydate, form = layui.form;
         /**
@@ -54,41 +153,7 @@
             , limit: 10
             , id: 'test'
             , cols: [
-                [ //表头
-                    { type: 'checkbox',fixed: 'left',width:'5%' }
-                    , { field: 'id', title: 'ID', width: '5%', fixed: 'left',templet:function(d){return d.LAY_INDEX;}}
-                    , { field: 'name', title: '商品名称', width: '10%'}
-                    , { field: 'title', title: '副标题', width: '10%'}
-                    , { field: 'thumb', title: '商品主图', width: '10%',
-                        templet:function(d){
-                            if(d.thumb){
-                                var img = '<img src="__public__'+d.thumb+'" class="logo-img" />';
-                            }else{
-                                var img = '暂无图片';
-                            }
-                            return img;
-                        }
-                    }
-                    , { field: 'cate_title', title: '所属分类', width: '10%'}
-                    , { field: 'brand_name', title: '所属品牌', width: '10%'}
-                    , { field: 'sort', title: '排序', width: '10%'}
-                    , { field: 'online', title: '上下架',width:'8%',
-                        templet:function(d){
-                            if(d.online == '1'){
-                                return '上架';
-                            }else{
-                                return '下架';
-                            }
-                        }
-                    }
-                    , {
-                        field: 'handle', title: '操作',
-                        templet: function (d) {
-                            var handle = '<button type="button" class="layui-btn layui-btn-warm layui-btn-xs" onclick="x_admin_show(\'商品相册\',\'/admin/shop_goods_img/goodsImg?id=' + d.id + '\',900,500,true);">相册</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品规格\',\'/admin/shop_goods_attr/goodsAttr?id=' + d.id + '\',900,500,true);">规格</button>'+'<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="x_admin_show(\'商品推送\',\'/admin/shop/recommend?id=' + d.id + '&type=1\',800,580,true);">推送</button>'+'<button type="button" class="layui-btn layui-btn-xs" onclick="x_admin_show(\'编辑商品\',\'/admin/shop_goods/goodsEdit?id=' + d.id + '\',900,480,true);">编辑</button>'+'<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" onclick="delGoods(' + d.id + ');">删除</button>';
-                            return handle;
-                        }
-                    }
-                ]
+                tableHead
             ]
         });
         /**

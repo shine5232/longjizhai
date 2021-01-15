@@ -52,7 +52,7 @@ class Article extends Main
     public function getArticleLis(){
         if(request()->isPost()){
             $post = $this->request->post();
-            if(!isset($post['cate_id']) || !isset($post['cate_pid']) || !isset($post['page']) || !isset($post['size'])){
+            if(!isset($post['cate_id']) || !isset($post['cate_pid']) || !isset($post['page']) || !isset($post['size']) || !isset($post['county'])){
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
@@ -97,6 +97,7 @@ class Article extends Main
                 'A.cate_id' => $cate,
                 'A.status' => 0,
                 'A.checked'  =>  1,
+                'A.county' => $post['county']
             ];
             $data = Db::name('article')->alias('A')
                 ->where($where)->field('A.id,A.title,A.thumb,A.desc,A.create_time')
@@ -127,12 +128,11 @@ class Article extends Main
             }
             $where = [
                 'id' => $post['id'],
-                'checked'  =>  1,
             ];
             $data = Db::name('article')->where($where)->field('id,cate_id,author,title,thumb,desc,content,create_time')->find();
             if($data){
                 if($data['cate_id'] == 76){
-                    $data['authors'] = Db::name('designer')->where('id',$data['author'])->value('name');
+                    $data['authors'] = Db::name('designer')->where('uid',$data['author'])->value('name');
                 }
                 if($data['author'] == ''){
                     $data['authors'] = '龙吉宅';
@@ -141,6 +141,115 @@ class Article extends Main
                 $this->ret['data'] = $data;
             }else{
                 $this->ret['msg'] = '暂无数据';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 获取设计师文章
+     */
+    public function articleDesigner(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['author']) || !isset($post['page']) || !isset($post['size'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $page = $post['page']>0?$post['page']:1;
+            $limit = $post['size']>0?$post['size']:10;
+            $page_start = ($page - 1) * $limit;
+            $where = [
+                'cate_id' => 76,
+                'status' => 0,
+                'author' => $post['author'],
+            ];
+            $data = Db::name('article')->where($where)->order('sort ASC,id DESC')->limit($page_start,$limit)->select();
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['data'] = $data;
+            }else{
+                $this->ret['msg'] = '暂无数据';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 设计师添加文章
+     */
+    public function addArticleDesigner(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['author'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $data = $post;
+            $data['create_time'] = date('Y-m-d H:i:s');
+            $data['cate_id'] = 76;
+            $res = Db::name('article')->insert($data);
+            if($res){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '添加成功';
+            }else{
+                $this->ret['msg'] = '添加失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 设计师编辑文章
+     */
+    public function editArticleDesigner(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $upd = [
+                'title' => $post['title'],
+                'desc' => $post['desc'],
+                'content' => $post['content'],
+                'update_time' => date('Y-m-d H:i:s')
+            ];
+            $data = Db::name('article')->where('id',$post['id'])->update($upd);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '修改成功';
+            }else{
+                $this->ret['msg'] = '修改失败';
+            }
+        }else{
+            $this->ret['msg'] = '请求方式错误';
+        }
+        return json($this->ret);
+    }
+    /**
+     * 设计师文章删除
+     */
+    public function delArticleDesigner(){
+        if(request()->isPost()){
+            $post = $this->request->post();
+            if(!isset($post['id'])){
+                $this->ret['msg'] = '缺少参数';
+                return json($this->ret);
+            }
+            $upd = [
+                'status' => 1,
+                'delete_time' => date('Y-m-d H:i:s')
+            ];
+            $data = Db::name('article')->where('id',$post['id'])->update($upd);
+            if($data){
+                $this->ret['code'] = 200;
+                $this->ret['msg'] = '删除成功';
+            }else{
+                $this->ret['msg'] = '删除失败';
             }
         }else{
             $this->ret['msg'] = '请求方式错误';

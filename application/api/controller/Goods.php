@@ -104,7 +104,12 @@ class Goods extends Main
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('price,shop_price,unit')->find();
+                    $where_attr = [
+                        'goods_id'=>$v['id'],
+                        'pid'=>0,
+                        'status'=>0,
+                    ];
+                    $attr = Db::name('shop_goods_attr')->where($where_attr)->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
@@ -366,7 +371,12 @@ class Goods extends Main
             if($data){
                 foreach($data as $key=>$v){
                     $data[$key]['price'] = $data[$key]['shop_price'] = 0;
-                    $attr = Db::name('shop_goods_attr')->where(['goods_id'=>$v['id'],'pid'=>0])->order('sort ASC')->field('price,shop_price,unit')->find();
+                    $where_attr = [
+                        'goods_id'=>$v['id'],
+                        'pid'=>0,
+                        'status'=>0,
+                    ];
+                    $attr = Db::name('shop_goods_attr')->where($where_attr)->order('sort ASC')->field('price,shop_price,unit')->find();
                     if($attr){
                         $data[$key]['price'] = $attr['price'];
                         $data[$key]['shop_price'] = $attr['shop_price'];
@@ -457,10 +467,16 @@ class Goods extends Main
                     $order = 'D.shop_price DESC';
                 }
             }
+            if(isset($post['county']) && $post['county']){
+                $where['A.county'] = $post['county'];
+            }else{
+                $where['A.zong'] = ['eq',1];
+            }
             $where['A.status']=['eq',0];
             $where['A.online']=['eq',1];
             $where['D.pid']=['eq',0];
             $where['D.shop_price']=['>',0];
+            $where['D.status']=['eq',0];
             $data = Db::name('shop_goods')->alias('A')
                 ->join('brands B','B.id = A.brand_id','LEFT')
                 ->join('goods_cate C','C.id = A.cate','LEFT')

@@ -8,65 +8,125 @@
     </style>
     <div class="x-body">
         <div class="layui-form" id='searchForm'>
-            <div class="layui-form-item">
-                <label class="layui-form-label">姓名</label>
-                <div class="layui-input-block">
-                    <input type="text" id="name" name="realname" autocomplete="off"
-                        placeholder="请输入姓名" class="layui-input" value="" />
+            <div class="layui-row">
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="name" name="realname" autocomplete="off"
+                                placeholder="请输入姓名" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">账号</label>
-                <div class="layui-input-block">
-                    <input type="text" id="uname" name="uname" autocomplete="off"
-                        placeholder="请输入账号" class="layui-input" value="" />
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">账号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="uname" name="uname" autocomplete="off"
+                                placeholder="请输入账号" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">联系电话</label>
-                <div class="layui-input-block">
-                    <input type="text" id="mobile" name="mobile" autocomplete="off"
-                        placeholder="请输入联系电话" class="layui-input" value="" />
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">UID</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="uid" name="uid" autocomplete="off"
+                                placeholder="请输入用户UID" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">会员类型</label>
-                <div class="layui-input-block">
-                    <select lay-filter="cate" name="type">
-                        <option value="">请选择</option>
-                        <option value="0">会员</option>
-                        <option value="1">技工</option>
-                        <option value="2">工长</option>
-                        <option value="3">设计师</option>
-                        <option value="4">装饰公司</option>
-                        <option value="5">商家</option>
-                        <option value="6">业主</option>
-                    </select>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系电话</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="mobile" name="mobile" autocomplete="off"
+                                placeholder="请输入联系电话" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">会员类型</label>
+                        <div class="layui-input-block">
+                            <select lay-filter="cate" name="type">
+                                <option value="">请选择</option>
+                                <option value="0">会员</option>
+                                <option value="1">技工</option>
+                                <option value="2">工长</option>
+                                <option value="3">设计师</option>
+                                <option value="4">装饰公司</option>
+                                <option value="5">商家</option>
+                                <option value="6">业主</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select lay-filter="cate" name="checked">
+                                <option value="">请选择</option>
+                                <option value="0">待审核</option>
+                                <option value="1">已审核</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否关注</label>
+                        <div class="layui-input-block">
+                            <select lay-filter="cate" name="subscribe">
+                                <option value="">请选择</option>
+                                <option value="0">未关注</option>
+                                <option value="1">已关注</option>
+                                <option value="2">已扫码未关注</option>
+                                <option value="3">取消关注</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {if empty($user['county'])}
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">会员状态</label>
+                        <div class="layui-input-block">
+                            <select lay-filter="cate" name="status">
+                                <option value="">请选择</option>
+                                <option value="0">正常</option>
+                                <option value="2">禁言</option>
+                                <option value="1">锁定</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属地区</label>
+                        <div class="layui-input-inline">
+                            <select name="province" lay-filter="province" id="province">
+                                <option value="">请选择省</option>
+                                {volist name='province' id='vo'}
+                                <option value="{$vo.region_code}">{$vo.region_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city" lay-filter="city" id="city">
+                                <option value="">请选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="county" lay-filter="county" id="county">
+                                <option value="">请选择区/县</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {/if}
             </div>
-            {if empty($user['county'])}
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属地区</label>
-                <div class="layui-input-inline">
-					<select name="province" lay-filter="province" id="province">
-						<option value="">请选择省</option>
-						{volist name='province' id='vo'}
-						<option value="{$vo.region_code}">{$vo.region_name}</option>
-						{/volist}
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="city" lay-filter="city" id="city">
-						<option value="">请选择市</option>
-					</select>
-				</div>
-				<div class="layui-input-inline">
-					<select name="county" lay-filter="county" id="county">
-						<option value="">请选择区/县</option>
-					</select>
-				</div>
-            </div>
-            {/if}
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="searchSubmit">提交</button>
@@ -139,15 +199,7 @@
             setTimeout(function () {
                 x_admin_close();
                 parent.tableIns.reload({
-                    where: { //设定异步数据接口的额外参数，任意设
-                        realname: data.field.realname,
-                        mobile: data.field.mobile,
-                        province: data.field.province,
-                        city: data.field.city,
-                        uname:data.field.uname,
-                        county: data.field.county,
-                        type: data.field.type
-                    }
+                    where: data.field
                     , page: {
                         curr: 1 //重新从第 1 页开始
                     }

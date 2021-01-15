@@ -11,41 +11,89 @@
     </style>
     <div class="x-body">
         <div class="layui-form" id='searchForm'>
-            <div class="layui-form-item">
-                <label class="layui-form-label">商品名称</label>
-                <div class="layui-input-block">
-                    <input type="text" id="name" name="name" autocomplete="off"
-                        placeholder="请输入商品名称" class="layui-input" value="" />
+            <div class="layui-row">
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商品id</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="uid" name="id" autocomplete="off"
+                                placeholder="请输入商品ID" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属分类</label>
-                <div class="layui-input-inline select select1">
-                    <select lay-filter="cate" name="cate_id[]" data-id="1">
-                        <option value="">请选择</option>
-                        {volist name='cate' id='vo'}
-                            <option value="{$vo.id}">{$vo.title}</option>
-                         {/volist}
-                    </select>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商品名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="name" name="name" autocomplete="off"
+                                placeholder="请输入商品名称" class="layui-input" value="" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">所属品牌</label>
-                <div class="layui-input-block">
-                    <select lay-filter="brands" name="brand_id" id="brands_id">
-                        <option value="">请选择</option>
-                    </select>
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属分类</label>
+                        <div class="layui-input-inline select select1">
+                            <select lay-filter="cate" name="cate_id[]" data-id="1">
+                                <option value="">请选择</option>
+                                {volist name='cate' id='vo'}
+                                <option value="{$vo.id}">{$vo.title}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">审核状态</label>
-                <div class="layui-input-block">
-                    <select name="checked">
-                        <option value="-1">全部</option>
-                        <option value="0">待审核</option>
-                        <option value="1">正常</option>
-                    </select>
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属品牌</label>
+                        <div class="layui-input-block">
+                            <select lay-filter="brands" name="brand_id" id="brands_id">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
+                {if $user['county'] == ''}
+                <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">审核状态</label>
+                        <div class="layui-input-block">
+                            <select name="checked">
+                                <option value="-1">全部</option>
+                                <option value="0">待审核</option>
+                                <option value="1">正常</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属地区</label>
+                        <div class="layui-input-inline">
+                            <select name="province" lay-filter="province" id="province">
+                                <option value="">请选择省</option>
+                                {volist name='regin' id='vo'}
+                                <option value="{$vo.region_code}">{$vo.region_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city" lay-filter="city" id="city">
+                                <option value="">请选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="county" lay-filter="county" id="county">
+                                <option value="">请选择区/县</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {else}
+                    <input type="hidden" name="province" value="{$user['province']}" />
+                    <input type="hidden" name="city" value="{$user['city']}" />
+                    <input type="hidden" name="county" value="{$user['county']}" />
+                {/if}
             </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
@@ -73,8 +121,13 @@
                 parent.tableIns.reload({
                     where: { //设定异步数据接口的额外参数，任意设
                         cate_id: cate_id,
-                        brands_id: data.field.brand_id,
+                        brand_id: data.field.brand_id,
                         checked:data.field.checked,
+                        name:data.field.name,
+                        province:data.field.province,
+                        city:data.field.city,
+                        county:data.field.county,
+                        id:data.field.id
                     }
                     , page: {
                         curr: 1 //重新从第 1 页开始
@@ -125,6 +178,54 @@
                     }
                 }
             }, 'json');
+        });
+        /**
+        * 监听省份选择
+        */
+        form.on('select(province)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2 
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    if(res.length > 0){
+                        var option = '<option value="">请选择市</option>';
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                        $('#city').html(option);
+                        $('#county').html('<option value="">请选择区/县</option>');
+                        form.render('select');
+                    }
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
+        });
+        /**
+        * 监听城市选择
+        */
+        form.on('select(city)',function(data){
+            $.post('/api/region/index', { 
+                code: data.value,
+                type:2,
+                is_open:2
+            }, function(data){
+                var res = data.data;
+                if(data.code == 0){
+                    if(res.length > 0){
+                        var option = '<option value="">请选择区/县</option>';
+                        res.forEach(function(v,i){
+                            option += '<option value="'+v.region_code+'">'+v.region_name+'</option>';
+                        });
+                        $('#county').html(option);
+                        form.render('select');
+                    }
+                }else{
+                    layer.msg(data.msg);
+                }
+            },'json');
         });
     });  
     $("#reset").on("click",function(){ window.location.reload();});

@@ -17,10 +17,12 @@ class Main extends Controller
         if (empty($username)) {
             $this->redirect('admin/user/login');
         }
+        $user = session('user');
         $this->checkAuth();
         $this->getMenu();
         $role_id = Db::name('auth_group_access')->where('uid',$admin_id)->value('group_id');
         $this->assign('role_id',$role_id);
+        $this->assign('user',$user);
     }
     /**
      * 权限检查

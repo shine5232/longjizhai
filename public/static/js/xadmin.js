@@ -189,7 +189,10 @@ function x_admin_close(){
     var index = parent.layer.getFrameIndex(window.name);
     parent.layer.close(index);
 }
-
-
-
-
+/**
+ * 在新窗口打开
+ */
+function x_admin_new(url){
+    console.log(url);
+    window.open(url);
+}

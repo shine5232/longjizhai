@@ -191,16 +191,21 @@ class Member extends Main
                     'mobile'    =>  $insert['mobile'],
                     'create_time'=> date('Y-m-d H:i:s'),
                 ];
+                $typer = 'member';
                 if($type == '1'){
+                    $typer = 'mechanic';
                     $mechanic['content'] = $post['note'];
                     $mechanic['ages'] = $post['age'];
                     $mechanic['position'] = implode(',',$post['gongz']);
                     Db::name('mechanic')->insert($mechanic);
                 }elseif($type == '2'){
+                    $typer = 'gz';
                     $mechanic['content'] = $post['note'];
                     $mechanic['ages'] = $post['age'];
+                    $mechanic['slogan'] = $post['slogan'];
                     Db::name('gongzhang')->insert($mechanic);
                 }elseif($type == '3'){
+                    $typer = 'designer';
                     $mechanic['content'] = $post['note'];
                     $mechanic['ages'] = $post['age'];
                     $mechanic['position'] = $post['position'];
@@ -208,12 +213,32 @@ class Member extends Main
                     $mechanic['slogan'] = $post['slogan'];
                     Db::name('designer')->insert($mechanic);
                 }elseif($type == '4'){
+                    $typer = 'company';
                     Db::name('company')->insert($mechanic);
                 }elseif($type == '5'){
+                    $typer = 'shop';
                     unset($mechanic['name']);
                     $mechanic['user']=$insert['realname'];
                     Db::name('shop')->insert($mechanic);
+                }elseif($type == '6'){
+                    $typer = 'proprietor';
                 }
+                $url = "https://yhgg.longjizhai.com/ashx/member/account/register.ashx";
+                $city = _getRegionNameByCode($post['city']);
+                $county = _getRegionNameByCode($post['county']);
+                if($city && $county){
+                    $area = $city['region_name'].$county['region_name'];
+                }else{
+                    $area = '总站';
+                }
+                $params = [
+                    'u'=>$uname,
+                    't'=>$typer,
+                    'r'=>$insert['realname'],
+                    'd'=>$area,
+                    'c'=>$insert['mobile'],
+                ];
+                $res = json_decode(_requestPost($url,$params),true);
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '修改成功';
             }else{
@@ -904,6 +929,7 @@ class Member extends Main
             }else if($post['type'] == '2'){
                 $upd['content'] = $post['note'];
                 $upd['ages'] = $post['age'];
+                $upd['slogan'] = $post['slogan'];
                 Db::name('gongzhang')->where('uid',$post['uid'])->update($upd);
             }else if($post['type'] == '3'){
                 $upd['content'] = $post['note'];

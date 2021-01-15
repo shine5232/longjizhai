@@ -69,6 +69,7 @@ class Shop extends Main
                 }
             }
             $where['A.status'] = 0;
+            $where['A.name'] = ['neq',''];
             $end_time = date('Y-m-d H:i:s');
             $page = $post['page']>0?$post['page']:1;
             $limit = $post['size']>0?$post['size']:10;
@@ -76,8 +77,8 @@ class Shop extends Main
             $data = Db::name('shop')->alias('A')
                 ->join('member B','B.id = A.uid','INNER')
                 ->join('member_rank C','C.id = B.rank_id','INNER')
-                ->where($where)->field('A.id,A.rectangle_logo AS img,A.name,B.rank_id,C.rank_name')
-                ->where("A.endtime >= '".$end_time."' OR A.endtime IS NULL")
+                ->where($where)->field('A.id,A.uid,A.rectangle_logo AS img,A.name,B.rank_id,C.rank_name')
+                ->where("A.endtime >= '".$end_time."' OR (A.endtime IS NULL OR A.endtime = '')")
                 ->order($order)
                 ->limit($page_start, $limit)
                 ->select();
@@ -85,6 +86,11 @@ class Shop extends Main
                 foreach($data as &$v){
                     $v['img'] = _getServerName().$v['img'];
                 }
+                
+            if($post['uid'] == 3 && $post['page'] == 2){
+                echo '<pre>';
+                var_dump($data);die;
+            }
                 $this->ret['code'] = 200;
                 $this->ret['data'] = $data;
             }else{

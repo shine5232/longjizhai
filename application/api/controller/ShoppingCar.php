@@ -197,9 +197,14 @@ class ShoppingCar extends Main
                 $this->ret['msg'] = '缺少参数';
                 return json($this->ret);
             }
-            $res = Db::name('goods_car')->alias('A')
-                ->join('goods_car_info B','B.car_id = A.id','LEFT')
-                ->where('A.uid',$post['uid'])->delete();
+            $res = Db::name('goods_car')
+                ->where(['uid'=>$post['uid']])->field('id')->select();
+            if($res){
+                foreach($res as $key=>$v){
+                    Db::name('goods_car')->where(['id'=>$v['id']])->delete();
+                    Db::name('goods_car_info')->where(['car_id'=>$v['id']])->delete();
+                }
+            }
             if($res){
                 $this->ret['code'] = 200;
                 $this->ret['msg'] = '删除成功';

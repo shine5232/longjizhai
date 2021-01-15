@@ -46,17 +46,24 @@
             <table class="layui-table">
                 <thead>
                     <tr>
-                        <th width="50">ID</th>
-                        <th width="100">属性名称</th>
+                        <th width="30">ID</th>
+                        <th width="150">属性名称</th>
                         <th width="50">市场价</th>
                         <th width="50">商铺价</th>
                         <th width="50">单位名称</th>
                         <th width="50">库存数量</th>
                         <th width="50">运费</th>
-                        <th width="100">是否上架</th>
-                        <th width="150">缩略图</th>
+                        <th width="50">长度(m)</th>
+                        <th width="50">宽度(m)</th>
+                        <th width="50">损耗(%)</th>
+                        {if $is_bizhi}
+                        <th width="50">基膜(元/卷)</th>
+                        <th width="50">人工费(元/卷)</th>
+                        {/if}
+                        <th width="80">是否上架</th>
+                        <th width="100">缩略图</th>
                         <th width="50">排序</th>
-                        <th width="100">操作</th>
+                        <th width="50">操作</th>
                     </tr>
                 </thead>
                 <tbody class="form-tb">
@@ -64,30 +71,47 @@
                     <tr class="form-tr tr{$key}">
                         <td>
                             {$vo.id}
-                            <input type="hidden" class="id{$key}" name="form[{$key}][id]" value="{$vo.id}" />
+                            <input type="hidden" class="id{$key}" data-name="id" name="form[{$key}][id]" value="{$vo.id}" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input name{$key}" name="form[{$key}][name]" value="{$vo.name}" placeholder="请输入属性名称" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input name{$key}" name="form[{$key}][name]" value="{$vo.name}" data-name="name" placeholder="请输入属性名称" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input price{$key}" name="form[{$key}][price]" value="{$vo.price}" placeholder="请输入市场价格" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input price{$key}" name="form[{$key}][price]" value="{$vo.price}" data-name="price" placeholder="请输入市场价格"  autocomplete="on" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input shop_price{$key}" name="form[{$key}][shop_price]" value="{$vo.shop_price}" placeholder="请输入商铺价格" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input shop_price{$key}" name="form[{$key}][shop_price]" value="{$vo.shop_price}" data-name="shop_price" placeholder="请输入商铺价格" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input unit{$key}" name="form[{$key}][unit]" value="{$vo.unit}" placeholder="请输入单位名称" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input unit{$key}" name="form[{$key}][unit]" value="{$vo.unit}" data-name="unit" placeholder="请输入单位名称" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input ku{$key}" name="form[{$key}][ku]" value="{$vo.ku}" placeholder="请输入库存数量" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input ku{$key}" name="form[{$key}][ku]" value="{$vo.ku}" data-name="ku" placeholder="请输入库存数量" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
-                            <input type="text" class="layui-input yun{$key}" name="form[{$key}][yun]" value="{$vo.yun|default=0}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />
+                            <input type="text" class="layui-input yun{$key}" name="form[{$key}][yun]" value="{$vo.yun|default=0}" data-name="yun" placeholder="请输入运费" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
-                            <input type="checkbox" class="layui-input online{$key}" name="form[{$key}][online]" lay-skin="switch" lay-text="上架|下架" value="1" {if condition="$vo.online == 1"}checked{/if}>
+                            <input type="text" class="layui-input long{$key}" name="form[{$key}][long]" value="{$vo.long|default=0}" data-name="long" placeholder="请输入长度(m)" lay-verify="required" autocomplete="on" />
                         </td>
                         <td>
+                            <input type="text" class="layui-input wide{$key}" name="form[{$key}][wide]" value="{$vo.wide|default=0}" data-name="wide" placeholder="请输入宽度(m)" lay-verify="required" autocomplete="on" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input loss{$key}" name="form[{$key}][loss]" value="{$vo.loss|default=0}" data-name="loss" placeholder="请输入损耗(%)" lay-verify="required" autocomplete="on" />
+                        </td>
+                        {if $is_bizhi}
+                        <td>
+                            <input type="text" class="layui-input jimo_price{$key}" name="form[{$key}][jimo_price]" value="{$vo.jimo_price}" data-name="jimo_price" placeholder="请输入基膜(元/卷)" lay-verify="required" autocomplete="on" />
+                        </td>
+                        <td>
+                            <input type="text" class="layui-input work_price{$key}" name="form[{$key}][work_price]" value="{$vo.work_price}" data-name="work_price" placeholder="请输入人工费(元/卷)" lay-verify="required" autocomplete="on" />
+                        </td>
+                        {/if}
+                        <td>
+                            <input type="checkbox" class="layui-input online{$key}" name="form[{$key}][online]" lay-skin="switch" data-name="online" lay-text="上架|下架" value="1" {if condition="$vo.online == 1"}checked{/if}>
+                        </td>
+                        <td class="upl">
                             <div class="layui-upload">
                                 <button type="button" class="layui-btn layui-btn-sm upload-img{$key}"
                                     data-key="{$key}">上传图片</button>
@@ -99,7 +123,7 @@
                             </div>
                         </td>
                         <td>
-                            <input type="text" class="layui-input sort{$key}" name="form[{$key}][sort]" value="{$vo.sort}" placeholder="请输入序号"  autocomplete="off" />
+                            <input type="text" class="layui-input sort{$key}" name="form[{$key}][sort]" value="{$vo.sort}" data-name="sort" placeholder="请输入序号"  autocomplete="on" />
                         </td>
                         <td>
                             <button type="button" class="layui-btn layui-btn-danger layui-btn-xs"
@@ -122,6 +146,8 @@
 {include file='public/foot'}
 <script type="text/javascript">
     var tableIns,form,upload;
+    var is_bizhi = '{$is_bizhi}';
+    console.log(is_bizhi);
     layui.use(['laydate', 'form', 'table', 'upload'], function () {
         var laydate = layui.laydate;
         upload = layui.upload;
@@ -233,30 +259,71 @@
     */
     function addOne(){
         var length = $('.form-tr').length;
+        if(length > 0){
+            var len = length - 1;
+        }else{
+            var len = 0;
+        }
+        var name = $(".name"+len).val() === undefined?"":$(".name"+len).val();
+        var price = $(".price"+len).val() === undefined?"":$(".price"+len).val();
+        var shop_price = $(".shop_price"+len).val() === undefined?"":$(".shop_price"+len).val();
+        var unit = $(".unit"+len).val() === undefined?"":$(".unit"+len).val();
+        var ku = $(".ku"+len).val() === undefined?"":$(".ku"+len).val();
+        var yun = $(".yun"+len).val() === undefined?"":$(".yun"+len).val();
+        var long = $(".long"+len).val() === undefined?"":$(".long"+len).val();
+        var wide = $(".wide"+len).val() === undefined?"":$(".wide"+len).val();
+        var loss = $(".loss"+len).val() === undefined?"":$(".loss"+len).val();
+        var pay_one = $(".pay_one"+len).val() === undefined?"":$(".pay_one"+len).val();
+        var pay_two = $(".pay_two"+len).val() === undefined?"":$(".pay_two"+len).val();
+        var pay_three = $(".pay_three"+len).val() === undefined?"":$(".pay_three"+len).val();
+        var sort = $(".sort"+len).val() === undefined?"":$(".sort"+len).val();
+        console.log(len);
+        console.log(loss);
+        if(is_bizhi){
+            var jimo_price = $(".jimo_price"+len).val() === undefined?"":$(".jimo_price"+len).val();
+            var work_price = $(".work_price"+len).val() === undefined?"":$(".work_price"+len).val();
+            bizhi = '<td>'+
+                        '<input type="text" class="layui-input jimo_price'+length+'" name="form['+length+'][jimo_price]" value="'+jimo_price+'" data-name="jimo_price" placeholder="请输入基膜(元/卷)" autocomplete="on" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input work_price'+length+'" name="form['+length+'][work_price]" value="'+work_price+'" data-name="work_price" placeholder="请输入人工费(元/卷)"  autocomplete="on" />'+
+                    '</td>';
+        }else{
+            bizhi = '';
+        }
         var tr = '<tr class="form-tr tr'+length+'">'+
                     '<td>'+
-                        'New<input type="hidden" name="form['+length+'][id]" value="" />'+
+                        'New<input type="hidden" class="id'+length+'" data-name="id" name="form['+length+'][id]" value="" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input name'+length+'" name="form['+length+'][name]" value="" placeholder="请输入属性名称" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input name'+length+'" name="form['+length+'][name]" value="'+name+'" data-name="name" placeholder="请输入属性名称" lay-verify="required" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input price'+length+'" name="form['+length+'][price]" value="{$vo.price|default="0"}" placeholder="请输入市场价格" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input price'+length+'" name="form['+length+'][price]" value="'+price+'" data-name="price" placeholder="请输入市场价格"  autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input shop_price'+length+'" name="form['+length+'][shop_price]" value="{$vo.shop_price|default="0"}" placeholder="请输入商铺价格" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input shop_price'+length+'" name="form['+length+'][shop_price]" value="'+shop_price+'" data-name="shop_price" placeholder="请输入商铺价格" lay-verify="required" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input unit'+length+'" name="form['+length+'][unit]" value="{$vo.unit|default=""}" placeholder="请输入单位名称" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input unit'+length+'" name="form['+length+'][unit]" value="'+unit+'" data-name="unit" placeholder="请输入单位名称" lay-verify="required" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input ku'+length+'" name="form['+length+'][ku]" value="{$vo.ku|default=""}" placeholder="请输入库存" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input ku'+length+'" name="form['+length+'][ku]" value="'+ku+'" data-name="ku" placeholder="请输入库存" lay-verify="required" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input yun'+length+'" name="form['+length+'][yun]" value="{$vo.yun|default="0"}" placeholder="请输入运费" lay-verify="required" autocomplete="off" />'+
+                        '<input type="text" class="layui-input yun'+length+'" name="form['+length+'][yun]" value="'+yun+'" data-name="yun" placeholder="请输入运费" lay-verify="required" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
-                        '<input type="checkbox" class="layui-input online'+length+'" name="form['+length+'][online]" lay-skin="switch" lay-text="上架|下架" value="1">'+
+                        '<input type="text" class="layui-input long'+length+'" name="form['+length+'][long]" value="'+long+'" data-name="long" placeholder="请输入长度(m)" lay-verify="required" autocomplete="on" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input wide'+length+'" name="form['+length+'][wide]" value="'+wide+'" data-name="wide" placeholder="请输入宽度(m)" lay-verify="required" autocomplete="on" />'+
+                    '</td>'+
+                    '<td>'+
+                        '<input type="text" class="layui-input loss'+length+'" name="form['+length+'][loss]" value="'+loss+'" data-name="loss" placeholder="请输入损耗(%)"  autocomplete="on" />'+
+                    '</td>'+ bizhi +
+                    '<td>'+
+                        '<input type="checkbox" class="layui-input online'+length+'" name="form['+length+'][online]" lay-skin="switch" data-name="online" lay-text="上架|下架" value="1" checked>'+
                     '</td>'+
                     '<td>'+
                         '<div class="layui-upload">'+
@@ -268,7 +335,7 @@
                         '</div>'+
                     '</td>'+
                     '<td>'+
-                        '<input type="text" class="layui-input sort'+length+'" name="form['+length+'][sort]" value="" placeholder="请输入序号" autocomplete="off" />'+
+                        '<input type="text" class="layui-input sort'+length+'" name="form['+length+'][sort]" value="'+sort+'" data-name="sort" placeholder="请输入序号" autocomplete="on" />'+
                     '</td>'+
                     '<td>'+
                         '<button type="button" class="layui-btn layui-btn-danger layui-btn-xs" data-key='+length+' onclick="delThis(this)">取消</button>'+
@@ -282,9 +349,48 @@
      * 删除一条
     */
     function delThis(e){
-        console.log($(e).data('key'));
+        console.log($(e).data('key')+'////');
         var key = $(e).data('key');
         $('.tr'+key).remove();
+        var length = $('.form-tr').length;
+        if(length > 0){
+            var tr = $('.form-tr');
+            tr.each(function(i,v){
+                $(v).removeClass();
+                $(v).addClass('form-tr tr'+i);
+                var td = $(v).children();
+                td.each(function(n,m){
+                    if($(m).hasClass('upl')){
+                        //文件上传
+                        var button = $(m).children('div.layui-upload').children('button');
+                        $(button).removeClass();
+                        $(button).addClass('layui-btn layui-btn-sm upload-img'+i);
+                        $(button).attr('data-key',i);
+                        var list = $(m).children('div.layui-upload').children('div.layui-upload-list');
+                        var img = $(list).children('img');
+                        var input = $(list).children('input');
+                        $(img).removeClass();
+                        $(img).addClass('layui-upload-img demo'+i);
+                        $(input).removeClass();
+                        $(input).addClass('thumb'+i);
+                        $(input).attr('name','form['+i+'][thumb]');
+                    }else{
+                        //输入框
+                        var input = $(m).children('input');
+                        var name = $(input).data('name');
+                        $(input).removeClass();
+                        $(input).addClass('layui-input '+name+i);
+                        $(input).attr('name','form['+i+']['+name+']');
+                        //取消按钮
+                        var button = $(m).children('button');
+                        if(button.length){
+                            console.log(button);
+                            $(button).attr('data-key',i);
+                        }
+                    }
+                });
+            });
+        }
         form.render();
         uploadImg(length);
     }

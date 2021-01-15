@@ -97,15 +97,17 @@ class GoodsCate extends Main
             return json($this->ret);
         }else{
             $id  = $this->request->get('id');
-            $pid = Db::name('goods_cate')->where('id',$id)->value('pid');
+            /* $pid = Db::name('goods_cate')->where('id',$id)->value('pid');
             if($pid!==0){
                 $p_title = Db::name('goods_cate')->where('id',$pid)->value('title');
             }else{
                 $p_title = '顶级栏目';
             }
-            $this->assign('p_title',$p_title);
+            $this->assign('p_title',$p_title); */
             $data  =   Db::name('goods_cate')->where('id',$id)->find();
-            return  $this->fetch('cate_edit',['data'=>$data]);
+            $auth = Db::name('goods_cate')->order(['sort' => 'DESC', 'id' => 'ASC'])->select();
+            $auth = array2Level($auth);
+            return  $this->fetch('cate_edit',['data'=>$data,'auth'=>$auth]);
         }
     }
     /**
